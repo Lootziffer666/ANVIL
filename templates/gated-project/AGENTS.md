@@ -80,6 +80,32 @@ If CI fails, CI output becomes the source of truth.
 
 ---
 
+## Broad Implementation Request Safety Rule
+
+If the user asks to replace all fake/stub implementations, make everything productive, wire everything end-to-end, remove all stubs, or "just finish it", do **not** start implementation immediately.
+
+First create:
+
+1. Fake/stub inventory
+2. Risk classification
+3. Safe gate split
+4. Recommended first gate
+5. Explicit non-goals
+
+Then stop.
+
+Implementation may begin only after the user explicitly selects one gate.
+
+Never collapse auth, token storage, HTTP clients, file/SAF access, UI navigation, ViewModels/state machines, write execution, automatic retries, and conflict/merge behavior into one unattended run.
+
+Short form:
+
+```text
+Everything productive = inventory first, gate second.
+```
+
+---
+
 ## Push / PR Failure Rule
 
 If push or PR creation fails because credentials are unavailable:
