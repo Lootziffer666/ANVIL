@@ -1,86 +1,35 @@
-# Gated Project Template
+# Gated Project Template (Legacy Volltemplate)
 
-A reusable ANVIL project scaffold for small-to-medium apps and utilities.
+Dieses Verzeichnis ist das **Legacy Volltemplate**.
 
-This template combines lessons from:
+Es bleibt als:
 
-- PAINKILLER — gated implementation + CI-first discipline
-- DEAFPIPER — staged product pipeline + artifact handoffs
-- OPENDORK — runtime profiles, validation profiles, artifacts and reports
-- CATALON-GUARD — cautionary lesson: a README alone is not enough
+1. Referenz für einen vollständigen All-in-One-Start, und
+2. Kompositionsbeispiel aus `templates/core-gated/` + optionalen Modulen unter `templates/modules/`.
 
-## What This Template Is For
+## Empfohlener neuer Standard
 
-Use this when starting a project that should be built by AI agents with human direction and strict scope control.
-
-## Root Files
+Starte künftig mit:
 
 ```text
-README.md
-AGENTS.md
-claude.md
-instructions.md
-knownbugs.md
+templates/core-gated/
 ```
 
-## Directories
+und schalte nur bei Bedarf zu:
 
 ```text
-.github/
-  PULL_REQUEST_TEMPLATE.md
-  ISSUE_TEMPLATE/
-  workflows/
-
-handoff/
-  README.md
-  GATE_X_HANDOFF_TEMPLATE.md
-
-work/
-  01_setup_prompting/
-  02_research_validation/
-  03_prd_planning/
-  04_ux_ui/
-  05_architecture/
-  06_build/
-  07_quality_security_compliance/
-  08_marketing_gtm/
-  09_analytics_iteration/
-  10_handoff/
-
-artifacts/
-  raw/
-  validated/
-  rejected/
-  gold/
-  diffs/
-  reports/
-  replays/
-
-config/
-  runtime-profiles.json
-  validation-profiles.json
-  provider-catalog.example.json
+templates/modules/runtime-profiles/
+templates/modules/validation-profiles/
+templates/modules/artifact-classes/
+templates/modules/stage-pipeline/
 ```
 
-## Minimal Use
+## Warum Legacy?
 
-For a tiny app, you do not need every `work/` stage immediately.
+Das frühere Volltemplate bündelt viele Konzepte auf einmal (Gates, Profile, Artefakte, Stages).
+Für kleine Projekte ist das oft zu schwergewichtig.
 
-Use at minimum:
-
-```text
-instructions.md
-AGENTS.md
-knownbugs.md
-handoff/
-README.md
-.github/PULL_REQUEST_TEMPLATE.md
-.github/workflows/
-```
-
-## Main Rule
-
-Do not let the template become heavier than the project.
+## Nutzung als Kompositionsbeispiel
 
 Use only the layers that reduce friction.
 

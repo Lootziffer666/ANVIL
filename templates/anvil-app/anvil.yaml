@@ -1,0 +1,14 @@
+name: Anvil Template
+package_name: anvil_template
+runtime_options:
+  version: 3
+  client_version: '3'
+  server_version: python3-sandbox
+metadata:
+  description: Reusable starter template for Anvil applications.
+  template_mode: true
+startup_form: _pages.HomePage
+services: {}
+dependencies: []
+allow_embedding: false
+db_schema: {}
