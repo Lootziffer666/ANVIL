@@ -1,0 +1,9 @@
+container:
+  type: ColumnPanel
+components:
+  - name: headline_label
+    type: Label
+    properties:
+      text: Anvil Template
+      role: headline
+is_package: true
