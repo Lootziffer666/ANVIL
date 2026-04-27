@@ -1,0 +1,20 @@
+{
+  "models": [
+    {
+      "modelName": "planning-model",
+      "providerClient": "example-provider",
+      "inputCostPer1K": 0.0,
+      "outputCostPer1K": 0.0,
+      "enabled": true,
+      "role": "planning"
+    },
+    {
+      "modelName": "execution-model",
+      "providerClient": "example-provider",
+      "inputCostPer1K": 0.0,
+      "outputCostPer1K": 0.0,
+      "enabled": true,
+      "role": "implementation"
+    }
+  ]
+}
