@@ -83,3 +83,5 @@ README.md
 Do not let the template become heavier than the project.
 
 Use only the layers that reduce friction.
+
+Vor jeder Übernahme in dieses Template: [Template Cleanup Checklist](../TEMPLATE_CLEANUP_CHECKLIST.md).
