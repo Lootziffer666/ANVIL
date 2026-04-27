@@ -20,6 +20,10 @@ Do not extract shared code until at least two projects prove the same need.
 - agent instructions
 - CI policies
 
+## Template-Artefakte
+
+Für Änderungen an Template-Artefakten gilt zusätzlich das Gate in `templates/TEMPLATE_CHANGE_GATE.md`.
+
 ## Extract Later
 
 - Compose components
