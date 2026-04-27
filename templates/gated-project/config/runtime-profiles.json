@@ -1,0 +1,20 @@
+{
+  "profiles": [
+    {
+      "name": "interactive",
+      "description": "User is present. Ask only when necessary. Prefer small safe steps."
+    },
+    {
+      "name": "batch",
+      "description": "Bounded autonomous work. Stop on ambiguity or failed checks."
+    },
+    {
+      "name": "overnight_safe",
+      "description": "Unattended conservative work. No destructive actions, no credential work, no unbounded scope."
+    },
+    {
+      "name": "overnight_aggressive",
+      "description": "Generation or analysis only. Never for writes, secrets, deletion, production deploys, or external side effects."
+    }
+  ]
+}
