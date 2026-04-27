@@ -1,0 +1,29 @@
+{
+  "profiles": {
+    "interactive": [
+      "scope-guard",
+      "no-secrets",
+      "handoff-present"
+    ],
+    "batch": [
+      "scope-guard",
+      "no-future-gate",
+      "checks-run",
+      "handoff-present"
+    ],
+    "overnight_safe": [
+      "scope-guard",
+      "no-secrets",
+      "no-destructive-actions",
+      "no-future-gate",
+      "checks-run",
+      "patch-export-on-push-failure"
+    ],
+    "overnight_aggressive": [
+      "generation-only",
+      "no-external-writes",
+      "no-secrets",
+      "artifact-preservation"
+    ]
+  }
+}
