@@ -1,0 +1,10 @@
+:root {
+  --template-primary: #1f4d7a;
+  --template-accent: #4c8bf5;
+  --template-text: #1e1e1e;
+}
+
+body {
+  color: var(--template-text);
+  font-family: Inter, Arial, sans-serif;
+}

@@ -1,0 +1,7 @@
+# Template-safe visual tokens.
+color:
+  primary: "#1f4d7a"
+  accent: "#4c8bf5"
+  text: "#1e1e1e"
+font:
+  base: "Inter, Arial, sans-serif"
