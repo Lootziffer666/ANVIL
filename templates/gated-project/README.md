@@ -31,5 +31,6 @@ Für kleine Projekte ist das oft zu schwergewichtig.
 
 ## Nutzung als Kompositionsbeispiel
 
-Nutze dieses Verzeichnis, um zu sehen, wie eine kombinierte Struktur aussehen kann,
-aber bevorzuge im Alltag den modularen Aufbau.
+Use only the layers that reduce friction.
+
+Vor jeder Übernahme in dieses Template: [Template Cleanup Checklist](../TEMPLATE_CLEANUP_CHECKLIST.md).

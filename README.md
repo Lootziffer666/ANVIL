@@ -40,4 +40,8 @@ templates/            Reusable project and app scaffolds.
 
 ## Rule
 
-Shared principles may be centralized early. Shared code is extracted only after reuse is proven.
+Shared principles may be centralised early. Shared code is extracted only after reuse is proven.
+
+Vor jeder Übernahme in Templates: [Template Cleanup Checklist](templates/TEMPLATE_CLEANUP_CHECKLIST.md).
+
+Do not move app source code into this repository without a specific migration plan.

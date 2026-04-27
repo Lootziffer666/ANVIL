@@ -18,3 +18,5 @@ It is a distillation layer for ANVIL templates.
 - `template-useful-patterns.md` — cross-project reusable patterns
 - `template-exclusion-rules.md` — what should not be copied into templates
 - `source-map.md` — which source contributed which pattern
+
+Vor jeder Übernahme in Templates: [Template Cleanup Checklist](../../templates/TEMPLATE_CLEANUP_CHECKLIST.md).
