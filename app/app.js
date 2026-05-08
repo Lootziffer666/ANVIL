@@ -294,4 +294,231 @@
     });
   }
 
+
+  // ── Token Management (Gate A13) ────────
+  const tokenList = $("#token-list");
+  const tokenEmpty = $("#token-empty");
+  const tokenForm = $("#token-form");
+  const btnAddToken = $("#btn-add-token");
+  const btnSaveToken = $("#btn-save-token");
+  const btnCancelToken = $("#btn-cancel-token");
+
+  function renderTokens() {
+    var tokens = TokenManager.list();
+    if (!tokens.length) { tokenEmpty.classList.remove("hidden"); return; }
+    tokenEmpty.classList.add("hidden");
+    var existing = tokenList.querySelectorAll(".token-item");
+    existing.forEach(function (e) { e.remove(); });
+    tokens.forEach(function (t) {
+      var div = document.createElement("div");
+      div.className = "token-item";
+      div.innerHTML =
+        '<div class="token-info">' +
+          '<span class="token-label">' + t.label + '</span>' +
+          '<span class="token-provider">' + t.provider + '</span>' +
+          '<span class="token-preview">' + t.key_preview + '</span>' +
+        '</div>' +
+        '<button class="btn-small btn-danger" data-tok="' + t.token_id + '">Löschen</button>';
+      div.querySelector(".btn-danger").addEventListener("click", function () {
+        if (confirm("Token " + t.label + " wirklich löschen?")) {
+          TokenManager.remove(t.token_id);
+          renderTokens();
+          addStatus("adapting", "Token gelöscht: " + t.label);
+        }
+      });
+      tokenList.appendChild(div);
+    });
+  }
+
+  function populateProviderSelect() {
+    var sel = $("#tok-provider");
+    sel.innerHTML = "";
+    Object.entries(PROVIDER_REGISTRY).forEach(function (entry) {
+      var opt = document.createElement("option");
+      opt.value = entry[0]; opt.textContent = entry[1].name;
+      sel.appendChild(opt);
+    });
+  }
+
+  if (btnAddToken) {
+    btnAddToken.addEventListener("click", function () {
+      populateProviderSelect();
+      tokenForm.classList.remove("hidden");
+    });
+  }
+  if (btnCancelToken) {
+    btnCancelToken.addEventListener("click", function () { tokenForm.classList.add("hidden"); });
+  }
+  if (btnSaveToken) {
+    btnSaveToken.addEventListener("click", function () {
+      try {
+        var r = TokenManager.create(
+          $("#tok-provider").value, $("#tok-label").value.trim(), $("#tok-key").value
+        );
+        tokenForm.classList.add("hidden");
+        $("#tok-label").value = ""; $("#tok-key").value = "";
+        renderTokens();
+        addStatus("stable", "Token erstellt: " + r.label);
+      } catch (err) { addStatus("failed", err.message); }
+    });
+  }
+  renderTokens();
+
+
+  // ── Provider Registry (Gate A14) ───────
+  loadCustomProviders();
+
+  function renderProviders() {
+    var list = $("#provider-list");
+    list.innerHTML = "";
+    Object.entries(PROVIDER_REGISTRY).forEach(function (entry) {
+      var id = entry[0], p = entry[1];
+      var tokens = TokenManager.getForProvider(id);
+      var st = tokens.length > 0 ? "stable" : (p.authType === "none" ? "stable" : "needs-token");
+      var modelCount = p.models ? p.models.length : 0;
+      var div = document.createElement("div");
+      div.className = "provider-item";
+      div.dataset.state = st;
+      div.innerHTML =
+        '<div class="provider-info">' +
+          '<span class="provider-icon">' + p.icon + '</span>' +
+          '<span class="provider-name">' + p.name + '</span>' +
+          '<span class="provider-models">' + modelCount + ' Modelle</span>' +
+        '</div>' +
+        '<span class="status-badge" data-state="' + (st === "needs-token" ? "act-now" : "stable") + '">' +
+          (st === "needs-token" ? "Token fehlt" : "Bereit") +
+        '</span>';
+      list.appendChild(div);
+    });
+  }
+
+  var btnAddProvider = $("#btn-add-provider");
+  var provForm = $("#provider-form");
+  if (btnAddProvider) {
+    btnAddProvider.addEventListener("click", function () { provForm.classList.remove("hidden"); });
+  }
+  if ($("#btn-cancel-provider")) {
+    $("#btn-cancel-provider").addEventListener("click", function () { provForm.classList.add("hidden"); });
+  }
+  if ($("#btn-save-provider")) {
+    $("#btn-save-provider").addEventListener("click", function () {
+      try {
+        addCustomProvider(
+          $("#prov-id").value.trim(), $("#prov-name").value.trim(),
+          $("#prov-url").value.trim(), $("#prov-auth").value
+        );
+        provForm.classList.add("hidden");
+        renderProviders();
+        addStatus("stable", "Provider hinzugefügt: " + $("#prov-name").value.trim());
+      } catch (err) { addStatus("failed", err.message); }
+    });
+  }
+  renderProviders();
+
+
+  // ── Nvidia Model Browser (Gate A15) ────
+  function renderNvidiaModels(filter) {
+    var list = $("#nv-model-list");
+    var count = $("#nv-count");
+    list.innerHTML = "";
+    var models = NVIDIA_MODELS.filter(function (m) {
+      return filter === "all" || m.type === filter;
+    });
+    count.textContent = models.length + " / " + NVIDIA_MODELS.length + " Modelle";
+    models.forEach(function (m) {
+      var div = document.createElement("div");
+      div.className = "model-item";
+      var typeIcons = { chat: "💬", code: "💻", vision: "👁️", embedding: "📊", reranking: "🔀", reasoning: "🧠", "image-gen": "🎨", "speech-to-text": "🎙️", "text-to-speech": "🔊" };
+      div.innerHTML =
+        '<span class="model-type-icon">' + (typeIcons[m.type] || "🤖") + '</span>' +
+        '<div class="model-info">' +
+          '<span class="model-name">' + m.name + '</span>' +
+          '<span class="model-id">' + m.id + '</span>' +
+        '</div>' +
+        '<div class="model-meta">' +
+          (m.params ? '<span class="model-params">' + m.params + '</span>' : '') +
+          (m.context ? '<span class="model-ctx">' + (m.context >= 1000 ? Math.round(m.context/1000) + "K" : m.context) + '</span>' : '') +
+          (m.dims ? '<span class="model-dims">' + m.dims + 'd</span>' : '') +
+        '</div>';
+      list.appendChild(div);
+    });
+  }
+  renderNvidiaModels("all");
+
+  document.querySelectorAll("#zone-nvidia .filter-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll("#zone-nvidia .filter-btn").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      renderNvidiaModels(btn.dataset.filter);
+    });
+  });
+
+
+  // ── HuggingFace Launcher (Gate A16) ────
+  var currentHFFilter = "all";
+  var currentHFSearch = "";
+
+  function renderHFModels() {
+    var list = $("#hf-model-list");
+    var count = $("#hf-count");
+    list.innerHTML = "";
+    var models = HF_TOP_MODELS.filter(function (m) {
+      var matchFilter = currentHFFilter === "all" || m.task === currentHFFilter;
+      var matchSearch = !currentHFSearch || m.name.toLowerCase().indexOf(currentHFSearch) !== -1 || m.id.toLowerCase().indexOf(currentHFSearch) !== -1;
+      return matchFilter && matchSearch;
+    });
+    count.textContent = models.length + " Modelle";
+    models.forEach(function (m) {
+      var div = document.createElement("div");
+      div.className = "model-item hf-model-item";
+      div.dataset.modelId = m.id;
+      div.innerHTML =
+        '<span class="model-type-icon">' + (HF_TASK_ICONS[m.task] || "🤖") + '</span>' +
+        '<div class="model-info">' +
+          '<span class="model-name">' + m.name + '</span>' +
+          '<span class="model-id">' + m.id + '</span>' +
+        '</div>' +
+        '<div class="model-meta">' +
+          '<span class="model-downloads">⬇️ ' + m.downloads + '</span>' +
+          '<span class="model-license">📜 ' + m.license + '</span>' +
+        '</div>';
+      div.addEventListener("click", function () { showHFDetail(m); });
+      list.appendChild(div);
+    });
+  }
+
+  function showHFDetail(m) {
+    var detail = $("#hf-detail");
+    detail.classList.remove("hidden");
+    $("#hf-detail-name").textContent = m.name;
+    $("#hf-detail-meta").textContent = m.task + " · " + m.downloads + " Downloads · " + m.license;
+    $("#hf-btn-card").href = "https://huggingface.co/" + m.id;
+    var cmds = getLocalRunCommands(m.id);
+    $("#hf-cmd-ollama").textContent = cmds.ollama;
+    $("#hf-cmd-llama").textContent = cmds.llamacpp;
+    if (m.task === "text-generation") {
+      $("#hf-local-cmds").classList.remove("hidden");
+    } else {
+      $("#hf-local-cmds").classList.add("hidden");
+    }
+  }
+
+  renderHFModels();
+
+  if ($("#hf-search")) {
+    $("#hf-search").addEventListener("input", function () {
+      currentHFSearch = this.value.toLowerCase().trim();
+      renderHFModels();
+    });
+  }
+
+  document.querySelectorAll("#hf-filter .filter-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll("#hf-filter .filter-btn").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      currentHFFilter = btn.dataset.filter;
+      renderHFModels();
+    });
+  });
+
 })();

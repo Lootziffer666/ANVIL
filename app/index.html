@@ -209,6 +209,114 @@
           </div>
         </div>
       </section>
+
+      <!-- 9. Token Management (Gate A13) -->
+      <section class="zone zone-tokens" id="zone-tokens">
+        <div class="zone-head">
+          <h2>🔑 Tokens</h2>
+          <button class="btn-small" id="btn-add-token">+ Neuer Token</button>
+        </div>
+        <div class="zone-body">
+          <div class="token-list" id="token-list">
+            <div class="empty-state" id="token-empty">
+              <span class="empty-icon">🔐</span>
+              <p>Keine Tokens gespeichert.</p>
+            </div>
+          </div>
+          <div class="token-form hidden" id="token-form">
+            <div class="ppb-field"><label>Provider *</label><select id="tok-provider"></select></div>
+            <div class="ppb-field"><label>Label *</label><input type="text" id="tok-label" placeholder="z.B. Mein Nvidia Key"></div>
+            <div class="ppb-field"><label>API Key *</label><input type="password" id="tok-key" placeholder="nvapi-..."></div>
+            <div class="token-form-actions">
+              <button class="btn-action" id="btn-save-token">Speichern</button>
+              <button class="btn-small" id="btn-cancel-token">Abbrechen</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10. Provider Registry (Gate A14) -->
+      <section class="zone zone-providers" id="zone-providers">
+        <div class="zone-head">
+          <h2>🌐 Provider</h2>
+          <button class="btn-small" id="btn-add-provider">+ Custom</button>
+        </div>
+        <div class="zone-body">
+          <div class="provider-list" id="provider-list"></div>
+          <div class="provider-form hidden" id="provider-form">
+            <div class="ppb-field"><label>ID *</label><input type="text" id="prov-id" placeholder="z.B. my-api"></div>
+            <div class="ppb-field"><label>Name *</label><input type="text" id="prov-name" placeholder="z.B. Mein Provider"></div>
+            <div class="ppb-field"><label>API Base URL *</label><input type="text" id="prov-url" placeholder="https://api.example.com/v1"></div>
+            <div class="ppb-field"><label>Auth-Typ</label>
+              <select id="prov-auth">
+                <option value="bearer">Bearer Token</option>
+                <option value="api-key">API Key Header</option>
+                <option value="query-param">Query Parameter</option>
+                <option value="none">Keine</option>
+              </select>
+            </div>
+            <div class="token-form-actions">
+              <button class="btn-action" id="btn-save-provider">Speichern</button>
+              <button class="btn-small" id="btn-cancel-provider">Abbrechen</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11. Nvidia Model Browser (Gate A15) -->
+      <section class="zone zone-nvidia" id="zone-nvidia">
+        <div class="zone-head">
+          <h2>🟢 Nvidia Build Models</h2>
+          <span class="model-count" id="nv-count"></span>
+        </div>
+        <div class="zone-body">
+          <div class="model-filter">
+            <button class="filter-btn active" data-filter="all">Alle</button>
+            <button class="filter-btn" data-filter="chat">Chat</button>
+            <button class="filter-btn" data-filter="code">Code</button>
+            <button class="filter-btn" data-filter="vision">Vision</button>
+            <button class="filter-btn" data-filter="embedding">Embedding</button>
+            <button class="filter-btn" data-filter="reasoning">Reasoning</button>
+            <button class="filter-btn" data-filter="image-gen">Image</button>
+            <button class="filter-btn" data-filter="speech-to-text">Speech</button>
+          </div>
+          <div class="model-list" id="nv-model-list"></div>
+        </div>
+      </section>
+
+      <!-- 12. HuggingFace Launcher (Gate A16) -->
+      <section class="zone zone-hf" id="zone-hf">
+        <div class="zone-head">
+          <h2>🤗 HuggingFace</h2>
+          <span class="model-count" id="hf-count"></span>
+        </div>
+        <div class="zone-body">
+          <div class="hf-search">
+            <input type="text" id="hf-search" placeholder="Modell suchen...">
+          </div>
+          <div class="model-filter" id="hf-filter">
+            <button class="filter-btn active" data-filter="all">Alle</button>
+            <button class="filter-btn" data-filter="text-generation">Chat</button>
+            <button class="filter-btn" data-filter="sentence-similarity">Embedding</button>
+            <button class="filter-btn" data-filter="automatic-speech-recognition">Speech</button>
+            <button class="filter-btn" data-filter="text-to-image">Image</button>
+          </div>
+          <div class="model-list" id="hf-model-list"></div>
+          <div class="hf-detail hidden" id="hf-detail">
+            <h3 id="hf-detail-name"></h3>
+            <p class="hf-detail-meta" id="hf-detail-meta"></p>
+            <div class="hf-actions">
+              <button class="btn-action" id="hf-btn-api">🚀 Inference API</button>
+              <a class="btn-small" id="hf-btn-card" href="#" target="_blank">📄 Model Card</a>
+            </div>
+            <div class="hf-local-cmds hidden" id="hf-local-cmds">
+              <p class="hint">Lokal ausführen:</p>
+              <pre id="hf-cmd-ollama"></pre>
+              <pre id="hf-cmd-llama"></pre>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- The Forge Overlay -->
@@ -227,6 +335,7 @@
 
   </div>
 
+  <script src="../modules/token-manager/src/index.js"></script>
   <script src="data.js"></script>
   <script src="../modules/prompt-pack-builder/src/index.js"></script>
   <script src="app.js"></script>
