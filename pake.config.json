@@ -1,0 +1,12 @@
+{
+  "name": "Anvil Bellows",
+  "version": "0.1.0",
+  "icon": "assets/anvil-icon",
+  "width": 1280,
+  "height": 800,
+  "transparent": true,
+  "fullscreen": false,
+  "resizable": true,
+  "inject": [],
+  "user_agent": ""
+}
