@@ -108,3 +108,39 @@ function createOutputManifest(module, workspace, type, filename) {
     checksum_sha256: null,
   };
 }
+
+
+/**
+ * Build Targets (Gate A9)
+ * Definiert in docs/ANDROID_BLUEPRINT_TRACK.md
+ */
+const BUILD_TARGETS = {
+  "android-blueprint": {
+    label: "Android Blueprint",
+    icon: "📐",
+    description: "Tasker/App-Factory Export — Bauplan, keine fertige App.",
+    status: "active",
+    warning: "Blueprint-Modus: Erzeugt einen Bauplan, keine fertige App."
+  },
+  "android-apk": {
+    label: "Android APK",
+    icon: "📱",
+    description: "Nativer APK Build.",
+    status: "planned",
+    warning: null
+  },
+  "windows-exe": {
+    label: "Windows EXE",
+    icon: "🖥️",
+    description: "Windows Desktop App.",
+    status: "planned",
+    warning: null
+  },
+  "export-only": {
+    label: "Nur Export",
+    icon: "📤",
+    description: "Artefakte exportieren, kein Build.",
+    status: "active",
+    warning: null
+  }
+};
