@@ -1,0 +1,16 @@
+{
+  "name": "Token Manager",
+  "purpose": "CRUD für API-Tokens. Kein Token im Code.",
+  "inputs": [
+    "config/json"
+  ],
+  "outputs": [
+    "config/json"
+  ],
+  "requiredPermissions": [
+    "storage.local"
+  ],
+  "canRunOffline": true,
+  "canExport": false,
+  "failureBehavior": "Fehlermeldung ohne Token-Inhalt."
+}

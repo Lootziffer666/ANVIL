@@ -209,6 +209,31 @@
           </div>
         </div>
       </section>
+
+      <!-- 9. Token Management (Gate A13) -->
+      <section class="zone zone-tokens" id="zone-tokens">
+        <div class="zone-head">
+          <h2>🔑 Tokens</h2>
+          <button class="btn-small" id="btn-add-token">+ Neuer Token</button>
+        </div>
+        <div class="zone-body">
+          <div class="token-list" id="token-list">
+            <div class="empty-state" id="token-empty">
+              <span class="empty-icon">🔐</span>
+              <p>Keine Tokens gespeichert.</p>
+            </div>
+          </div>
+          <div class="token-form hidden" id="token-form">
+            <div class="ppb-field"><label>Provider *</label><select id="tok-provider"></select></div>
+            <div class="ppb-field"><label>Label *</label><input type="text" id="tok-label" placeholder="z.B. Mein Nvidia Key"></div>
+            <div class="ppb-field"><label>API Key *</label><input type="password" id="tok-key" placeholder="nvapi-..."></div>
+            <div class="token-form-actions">
+              <button class="btn-action" id="btn-save-token">Speichern</button>
+              <button class="btn-small" id="btn-cancel-token">Abbrechen</button>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- The Forge Overlay -->
@@ -227,6 +252,7 @@
 
   </div>
 
+  <script src="../modules/token-manager/src/index.js"></script>
   <script src="data.js"></script>
   <script src="../modules/prompt-pack-builder/src/index.js"></script>
   <script src="app.js"></script>

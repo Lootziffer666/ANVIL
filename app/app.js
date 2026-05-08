@@ -294,4 +294,74 @@
     });
   }
 
+
+  // ── Token Management (Gate A13) ────────
+  const tokenList = $("#token-list");
+  const tokenEmpty = $("#token-empty");
+  const tokenForm = $("#token-form");
+  const btnAddToken = $("#btn-add-token");
+  const btnSaveToken = $("#btn-save-token");
+  const btnCancelToken = $("#btn-cancel-token");
+
+  function renderTokens() {
+    var tokens = TokenManager.list();
+    if (!tokens.length) { tokenEmpty.classList.remove("hidden"); return; }
+    tokenEmpty.classList.add("hidden");
+    var existing = tokenList.querySelectorAll(".token-item");
+    existing.forEach(function (e) { e.remove(); });
+    tokens.forEach(function (t) {
+      var div = document.createElement("div");
+      div.className = "token-item";
+      div.innerHTML =
+        '<div class="token-info">' +
+          '<span class="token-label">' + t.label + '</span>' +
+          '<span class="token-provider">' + t.provider + '</span>' +
+          '<span class="token-preview">' + t.key_preview + '</span>' +
+        '</div>' +
+        '<button class="btn-small btn-danger" data-tok="' + t.token_id + '">Löschen</button>';
+      div.querySelector(".btn-danger").addEventListener("click", function () {
+        if (confirm("Token " + t.label + " wirklich löschen?")) {
+          TokenManager.remove(t.token_id);
+          renderTokens();
+          addStatus("adapting", "Token gelöscht: " + t.label);
+        }
+      });
+      tokenList.appendChild(div);
+    });
+  }
+
+  function populateProviderSelect() {
+    var sel = $("#tok-provider");
+    sel.innerHTML = "";
+    Object.entries(PROVIDER_REGISTRY).forEach(function (entry) {
+      var opt = document.createElement("option");
+      opt.value = entry[0]; opt.textContent = entry[1].name;
+      sel.appendChild(opt);
+    });
+  }
+
+  if (btnAddToken) {
+    btnAddToken.addEventListener("click", function () {
+      populateProviderSelect();
+      tokenForm.classList.remove("hidden");
+    });
+  }
+  if (btnCancelToken) {
+    btnCancelToken.addEventListener("click", function () { tokenForm.classList.add("hidden"); });
+  }
+  if (btnSaveToken) {
+    btnSaveToken.addEventListener("click", function () {
+      try {
+        var r = TokenManager.create(
+          $("#tok-provider").value, $("#tok-label").value.trim(), $("#tok-key").value
+        );
+        tokenForm.classList.add("hidden");
+        $("#tok-label").value = ""; $("#tok-key").value = "";
+        renderTokens();
+        addStatus("stable", "Token erstellt: " + r.label);
+      } catch (err) { addStatus("failed", err.message); }
+    });
+  }
+  renderTokens();
+
 })();
