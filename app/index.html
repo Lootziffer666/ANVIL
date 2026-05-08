@@ -262,6 +262,27 @@
           </div>
         </div>
       </section>
+
+      <!-- 11. Nvidia Model Browser (Gate A15) -->
+      <section class="zone zone-nvidia" id="zone-nvidia">
+        <div class="zone-head">
+          <h2>🟢 Nvidia Build Models</h2>
+          <span class="model-count" id="nv-count"></span>
+        </div>
+        <div class="zone-body">
+          <div class="model-filter">
+            <button class="filter-btn active" data-filter="all">Alle</button>
+            <button class="filter-btn" data-filter="chat">Chat</button>
+            <button class="filter-btn" data-filter="code">Code</button>
+            <button class="filter-btn" data-filter="vision">Vision</button>
+            <button class="filter-btn" data-filter="embedding">Embedding</button>
+            <button class="filter-btn" data-filter="reasoning">Reasoning</button>
+            <button class="filter-btn" data-filter="image-gen">Image</button>
+            <button class="filter-btn" data-filter="speech-to-text">Speech</button>
+          </div>
+          <div class="model-list" id="nv-model-list"></div>
+        </div>
+      </section>
     </main>
 
     <!-- The Forge Overlay -->

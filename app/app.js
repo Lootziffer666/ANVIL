@@ -415,4 +415,42 @@
   }
   renderProviders();
 
+
+  // ── Nvidia Model Browser (Gate A15) ────
+  function renderNvidiaModels(filter) {
+    var list = $("#nv-model-list");
+    var count = $("#nv-count");
+    list.innerHTML = "";
+    var models = NVIDIA_MODELS.filter(function (m) {
+      return filter === "all" || m.type === filter;
+    });
+    count.textContent = models.length + " / " + NVIDIA_MODELS.length + " Modelle";
+    models.forEach(function (m) {
+      var div = document.createElement("div");
+      div.className = "model-item";
+      var typeIcons = { chat: "💬", code: "💻", vision: "👁️", embedding: "📊", reranking: "🔀", reasoning: "🧠", "image-gen": "🎨", "speech-to-text": "🎙️", "text-to-speech": "🔊" };
+      div.innerHTML =
+        '<span class="model-type-icon">' + (typeIcons[m.type] || "🤖") + '</span>' +
+        '<div class="model-info">' +
+          '<span class="model-name">' + m.name + '</span>' +
+          '<span class="model-id">' + m.id + '</span>' +
+        '</div>' +
+        '<div class="model-meta">' +
+          (m.params ? '<span class="model-params">' + m.params + '</span>' : '') +
+          (m.context ? '<span class="model-ctx">' + (m.context >= 1000 ? Math.round(m.context/1000) + "K" : m.context) + '</span>' : '') +
+          (m.dims ? '<span class="model-dims">' + m.dims + 'd</span>' : '') +
+        '</div>';
+      list.appendChild(div);
+    });
+  }
+  renderNvidiaModels("all");
+
+  document.querySelectorAll("#zone-nvidia .filter-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll("#zone-nvidia .filter-btn").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      renderNvidiaModels(btn.dataset.filter);
+    });
+  });
+
 })();

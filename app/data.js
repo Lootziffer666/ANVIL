@@ -325,3 +325,62 @@ function loadCustomProviders() {
     }
   });
 }
+
+
+/**
+ * Nvidia Build Models — Vollständig (Gate A15)
+ * Stand: Mai 2026 — build.nvidia.com
+ */
+const NVIDIA_MODELS = [
+  // Foundation / Chat
+  { id: "meta/llama-3.3-70b-instruct", name: "Llama 3.3 70B", type: "chat", context: 128000, params: "70B" },
+  { id: "meta/llama-3.1-405b-instruct", name: "Llama 3.1 405B", type: "chat", context: 128000, params: "405B" },
+  { id: "meta/llama-3.1-70b-instruct", name: "Llama 3.1 70B", type: "chat", context: 128000, params: "70B" },
+  { id: "meta/llama-3.1-8b-instruct", name: "Llama 3.1 8B", type: "chat", context: 128000, params: "8B" },
+  { id: "meta/llama-4-scout-17b-16e-instruct", name: "Llama 4 Scout", type: "chat", context: 512000, params: "17B" },
+  { id: "meta/llama-4-maverick-17b-128e-instruct", name: "Llama 4 Maverick", type: "chat", context: 256000, params: "17B" },
+  { id: "nvidia/llama-3.1-nemotron-70b-instruct", name: "Nemotron 70B", type: "chat", context: 128000, params: "70B" },
+  { id: "nvidia/llama-3.3-nemotron-super-49b-v1", name: "Nemotron Super 49B", type: "chat", context: 128000, params: "49B" },
+  { id: "nvidia/llama-3.1-nemotron-ultra-253b-v1", name: "Nemotron Ultra 253B", type: "chat", context: 128000, params: "253B" },
+  { id: "mistralai/mistral-large-2-instruct", name: "Mistral Large 2", type: "chat", context: 128000, params: "123B" },
+  { id: "mistralai/mixtral-8x22b-instruct-v0.1", name: "Mixtral 8x22B", type: "chat", context: 65536, params: "141B" },
+  { id: "google/gemma-2-27b-it", name: "Gemma 2 27B", type: "chat", context: 8192, params: "27B" },
+  { id: "qwen/qwen2.5-72b-instruct", name: "Qwen 2.5 72B", type: "chat", context: 128000, params: "72B" },
+  { id: "deepseek-ai/deepseek-r1", name: "DeepSeek R1", type: "reasoning", context: 65536, params: "671B" },
+
+  // Code
+  { id: "nvidia/llama-3.1-nemotron-nano-8b-v1", name: "Nemotron Nano 8B", type: "code", context: 128000, params: "8B" },
+  { id: "qwen/qwen2.5-coder-32b-instruct", name: "Qwen 2.5 Coder 32B", type: "code", context: 32768, params: "32B" },
+  { id: "meta/codellama-70b", name: "Code Llama 70B", type: "code", context: 16384, params: "70B" },
+
+  // Vision
+  { id: "nvidia/vila", name: "VILA", type: "vision", context: 4096, params: null },
+  { id: "microsoft/phi-3.5-vision-instruct", name: "Phi 3.5 Vision", type: "vision", context: 128000, params: "4B" },
+  { id: "meta/llama-3.2-90b-vision-instruct", name: "Llama 3.2 90B Vision", type: "vision", context: 128000, params: "90B" },
+  { id: "meta/llama-3.2-11b-vision-instruct", name: "Llama 3.2 11B Vision", type: "vision", context: 128000, params: "11B" },
+  { id: "google/deplot", name: "DePlot", type: "vision", context: 2048, params: null },
+
+  // Embedding
+  { id: "nvidia/nv-embedqa-e5-v5", name: "NV-EmbedQA E5 v5", type: "embedding", dims: 1024 },
+  { id: "nvidia/nv-embed-v2", name: "NV-Embed v2", type: "embedding", dims: 4096 },
+  { id: "snowflake/arctic-embed-l-v2.0", name: "Arctic Embed L v2", type: "embedding", dims: 1024 },
+  { id: "baai/bge-m3", name: "BGE-M3", type: "embedding", dims: 1024 },
+
+  // Reranking
+  { id: "nvidia/nv-rerankqa-mistral-4b-v3", name: "NV-RerankQA Mistral 4B", type: "reranking" },
+  { id: "nvidia/llama-3.2-nv-rerankqa-1b-v2", name: "Llama 3.2 NV-RerankQA 1B", type: "reranking" },
+
+  // Image Generation
+  { id: "nvidia/consistory", name: "Consistory", type: "image-gen" },
+  { id: "stabilityai/stable-diffusion-3-5-large", name: "Stable Diffusion 3.5 Large", type: "image-gen" },
+  { id: "black-forest-labs/flux-schnell", name: "FLUX Schnell", type: "image-gen" },
+
+  // Speech
+  { id: "nvidia/parakeet-ctc-0.6b-asr", name: "Parakeet ASR 0.6B", type: "speech-to-text" },
+  { id: "nvidia/fastpitch-hifigan-tts", name: "FastPitch HiFiGAN", type: "text-to-speech" }
+];
+
+// Wire into Provider Registry
+if (typeof PROVIDER_REGISTRY !== "undefined" && PROVIDER_REGISTRY.nvidia) {
+  PROVIDER_REGISTRY.nvidia.models = NVIDIA_MODELS;
+}
