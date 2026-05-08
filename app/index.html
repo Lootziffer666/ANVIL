@@ -317,7 +317,31 @@
           </div>
         </div>
       </section>
-    </main>
+    
+    <!-- ═══ Sync Zone (Gate A19) ═══ -->
+    <section class="zone" id="zone-sync">
+      <div class="zone-header">
+        <h2>🔄 Sync</h2>
+        <span class="status-badge" id="sync-status" data-state="stable">Bereit</span>
+      </div>
+      <div class="zone-body">
+        <div class="platform-info" id="platform-info">
+          <span id="platform-icon"></span>
+          <span id="platform-label"></span>
+          <span class="device-id" id="device-id"></span>
+        </div>
+        <div class="sync-actions">
+          <button class="btn-primary" id="btn-sync-export">📤 Bundle exportieren</button>
+          <button class="btn-secondary" id="btn-sync-import">📥 Bundle importieren</button>
+          <input type="file" id="sync-import-file" accept=".json" class="hidden">
+        </div>
+        <div class="sync-history hidden" id="sync-history">
+          <h3>Letzter Sync</h3>
+          <div id="sync-last-info"></div>
+        </div>
+      </div>
+    </section>
+  </main>
 
     <!-- The Forge Overlay -->
     <div class="forge-overlay hidden" id="forge-overlay">

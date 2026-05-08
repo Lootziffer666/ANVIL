@@ -610,3 +610,52 @@ body {
 .hf-detail-meta { font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem; }
 .hf-actions { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
 .hf-local-cmds pre { font-size: 0.75rem; background: var(--surface-dark, #1e1e1e); color: #d4d4d4; padding: 0.4rem; border-radius: 4px; margin: 0.25rem 0; }
+
+
+/* ═══ Platform & Sync (Gate A17/A19) ═══ */
+.platform-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  padding: var(--space-s) var(--space-m);
+  background: var(--anthracite-900);
+  border-radius: var(--radius-s);
+  margin-bottom: var(--space-m);
+  font-size: 0.85rem;
+}
+
+.platform-info #platform-icon { font-size: 1.2rem; }
+.platform-info #platform-label { color: var(--warm-white); font-weight: 600; }
+.platform-info .device-id { color: var(--warm-400); font-family: var(--font-mono); font-size: 0.75rem; margin-left: auto; }
+
+.sync-actions {
+  display: flex;
+  gap: var(--space-s);
+  flex-wrap: wrap;
+}
+
+.sync-history h3 {
+  font-size: 0.85rem;
+  color: var(--warm-400);
+  margin-bottom: var(--space-xs);
+}
+
+#sync-last-info {
+  font-size: 0.8rem;
+  color: var(--warm-300);
+  padding: var(--space-xs) var(--space-s);
+  background: var(--anthracite-900);
+  border-radius: var(--radius-s);
+}
+
+.btn-secondary {
+  background: var(--anthracite-700);
+  color: var(--warm-white);
+  border: 1px solid var(--anthracite-500);
+  padding: var(--space-xs) var(--space-m);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background var(--motion-fast);
+}
+.btn-secondary:hover { background: var(--anthracite-600); }
