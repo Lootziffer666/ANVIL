@@ -234,6 +234,34 @@
           </div>
         </div>
       </section>
+
+      <!-- 10. Provider Registry (Gate A14) -->
+      <section class="zone zone-providers" id="zone-providers">
+        <div class="zone-head">
+          <h2>🌐 Provider</h2>
+          <button class="btn-small" id="btn-add-provider">+ Custom</button>
+        </div>
+        <div class="zone-body">
+          <div class="provider-list" id="provider-list"></div>
+          <div class="provider-form hidden" id="provider-form">
+            <div class="ppb-field"><label>ID *</label><input type="text" id="prov-id" placeholder="z.B. my-api"></div>
+            <div class="ppb-field"><label>Name *</label><input type="text" id="prov-name" placeholder="z.B. Mein Provider"></div>
+            <div class="ppb-field"><label>API Base URL *</label><input type="text" id="prov-url" placeholder="https://api.example.com/v1"></div>
+            <div class="ppb-field"><label>Auth-Typ</label>
+              <select id="prov-auth">
+                <option value="bearer">Bearer Token</option>
+                <option value="api-key">API Key Header</option>
+                <option value="query-param">Query Parameter</option>
+                <option value="none">Keine</option>
+              </select>
+            </div>
+            <div class="token-form-actions">
+              <button class="btn-action" id="btn-save-provider">Speichern</button>
+              <button class="btn-small" id="btn-cancel-provider">Abbrechen</button>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- The Forge Overlay -->

@@ -364,4 +364,55 @@
   }
   renderTokens();
 
+
+  // ── Provider Registry (Gate A14) ───────
+  loadCustomProviders();
+
+  function renderProviders() {
+    var list = $("#provider-list");
+    list.innerHTML = "";
+    Object.entries(PROVIDER_REGISTRY).forEach(function (entry) {
+      var id = entry[0], p = entry[1];
+      var tokens = TokenManager.getForProvider(id);
+      var st = tokens.length > 0 ? "stable" : (p.authType === "none" ? "stable" : "needs-token");
+      var modelCount = p.models ? p.models.length : 0;
+      var div = document.createElement("div");
+      div.className = "provider-item";
+      div.dataset.state = st;
+      div.innerHTML =
+        '<div class="provider-info">' +
+          '<span class="provider-icon">' + p.icon + '</span>' +
+          '<span class="provider-name">' + p.name + '</span>' +
+          '<span class="provider-models">' + modelCount + ' Modelle</span>' +
+        '</div>' +
+        '<span class="status-badge" data-state="' + (st === "needs-token" ? "act-now" : "stable") + '">' +
+          (st === "needs-token" ? "Token fehlt" : "Bereit") +
+        '</span>';
+      list.appendChild(div);
+    });
+  }
+
+  var btnAddProvider = $("#btn-add-provider");
+  var provForm = $("#provider-form");
+  if (btnAddProvider) {
+    btnAddProvider.addEventListener("click", function () { provForm.classList.remove("hidden"); });
+  }
+  if ($("#btn-cancel-provider")) {
+    $("#btn-cancel-provider").addEventListener("click", function () { provForm.classList.add("hidden"); });
+  }
+  if ($("#btn-save-provider")) {
+    $("#btn-save-provider").addEventListener("click", function () {
+      try {
+        addCustomProvider(
+          $("#prov-id").value.trim(), $("#prov-name").value.trim(),
+          $("#prov-url").value.trim(), $("#prov-auth").value
+        );
+        provForm.classList.add("hidden");
+        renderProviders();
+        addStatus("stable", "Provider hinzugefügt: " + $("#prov-name").value.trim());
+      } catch (err) { addStatus("failed", err.message); }
+    });
+  }
+  renderProviders();
+
 })();

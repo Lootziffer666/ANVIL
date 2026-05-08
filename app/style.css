@@ -570,3 +570,13 @@ body {
 .token-form-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
 .btn-small { padding: 0.2rem 0.5rem; font-size: 0.8rem; border: 1px solid var(--border); border-radius: 4px; background: transparent; color: var(--text); cursor: pointer; }
 .btn-danger { color: #ef4444; border-color: #ef4444; }
+
+
+/* ── Provider Registry (Gate A14) ──────── */
+.zone-providers { grid-area: providers; }
+.provider-list { display: flex; flex-direction: column; gap: 0.35rem; }
+.provider-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; }
+.provider-info { display: flex; gap: 0.5rem; align-items: center; }
+.provider-icon { font-size: 1.2rem; }
+.provider-name { font-weight: 600; }
+.provider-models { font-size: 0.8rem; color: var(--text-secondary); }
