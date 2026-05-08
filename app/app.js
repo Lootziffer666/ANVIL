@@ -323,6 +323,13 @@
         if (confirm("Token " + t.label + " wirklich löschen?")) {
           TokenManager.remove(t.token_id);
           renderTokens();
+
+  // ── Platform Indicator (Gate A17) ─────
+  var platIndicator = $("#platform-indicator");
+  if (platIndicator && typeof AnvilPlatform !== "undefined") {
+    platIndicator.textContent = AnvilPlatform.info();
+    addStatus("stable", "Platform: " + AnvilPlatform.info());
+  }
           addStatus("adapting", "Token gelöscht: " + t.label);
         }
       });

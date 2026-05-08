@@ -23,28 +23,21 @@ Perfekt für Nachtläufe auf schwacher Hardware.
 
 ## Installation
 
-```bash
-# Docker (empfohlen)
-docker run -p 8080:8080 --name localai localai/localai:latest
 
-# Oder nativ
-curl https://localai.io/install.sh | sh
-localai run
-```
 
 ## Nutzung in Anvil
 
 LocalAI spricht OpenAI-API. In Anvil:
-1. Provider: `localai` wählen
-2. API Base: `http://localhost:8080` (oder Netzwerk-IP)
+1. Provider:  wählen
+2. API Base:  (oder Netzwerk-IP)
 3. Kein Token nötig
-4. Modelle über Gallery laden: `localai models list`
+4. Modelle über Gallery laden: 
 
 ## Nacht-Modus Workflow
 
-1. Abends: `localai run --model llama-3.1-8b` starten
+1. Abends:  starten
 2. Anvil-Jobs queuen (Prompt Packs, Batch-Inference)
-3. Morgens: Ergebnisse in `outputs/` prüfen
+3. Morgens: Ergebnisse in  prüfen
 
 ## Relevante Modelle für schwache Hardware
 
@@ -58,12 +51,6 @@ LocalAI spricht OpenAI-API. In Anvil:
 
 ## P2P / Swarm Mode
 
-```bash
-# Rechner A (Head)
-localai --p2p
 
-# Rechner B (Worker)
-localai --p2p-token <TOKEN_FROM_A>
-```
 
 → Modell wird über beide Rechner verteilt.
