@@ -384,3 +384,64 @@ const NVIDIA_MODELS = [
 if (typeof PROVIDER_REGISTRY !== "undefined" && PROVIDER_REGISTRY.nvidia) {
   PROVIDER_REGISTRY.nvidia.models = NVIDIA_MODELS;
 }
+
+
+/**
+ * HuggingFace Top Models (Gate A16)
+ */
+const HF_TOP_MODELS = [
+  // Text Generation
+  { id: "meta-llama/Llama-3.3-70B-Instruct", name: "Llama 3.3 70B Instruct", task: "text-generation", downloads: "10M+", license: "llama3.3" },
+  { id: "meta-llama/Llama-4-Scout-17B-16E-Instruct", name: "Llama 4 Scout", task: "text-generation", downloads: "2M+", license: "llama4" },
+  { id: "meta-llama/Llama-4-Maverick-17B-128E-Instruct", name: "Llama 4 Maverick", task: "text-generation", downloads: "1M+", license: "llama4" },
+  { id: "mistralai/Mistral-Large-Instruct-2411", name: "Mistral Large", task: "text-generation", downloads: "1M+", license: "apache-2.0" },
+  { id: "Qwen/Qwen2.5-72B-Instruct", name: "Qwen 2.5 72B", task: "text-generation", downloads: "5M+", license: "qwen" },
+  { id: "Qwen/Qwen2.5-Coder-32B-Instruct", name: "Qwen 2.5 Coder 32B", task: "text-generation", downloads: "3M+", license: "qwen" },
+  { id: "google/gemma-2-27b-it", name: "Gemma 2 27B", task: "text-generation", downloads: "2M+", license: "gemma" },
+  { id: "deepseek-ai/DeepSeek-R1", name: "DeepSeek R1", task: "text-generation", downloads: "5M+", license: "mit" },
+  { id: "microsoft/phi-3.5-mini-instruct", name: "Phi 3.5 Mini", task: "text-generation", downloads: "3M+", license: "mit" },
+  { id: "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF", name: "Nemotron 70B", task: "text-generation", downloads: "500K+", license: "llama3.1" },
+
+  // Embeddings
+  { id: "sentence-transformers/all-MiniLM-L6-v2", name: "MiniLM L6 v2", task: "sentence-similarity", downloads: "50M+", license: "apache-2.0" },
+  { id: "BAAI/bge-large-en-v1.5", name: "BGE Large EN", task: "sentence-similarity", downloads: "10M+", license: "mit" },
+
+  // Speech
+  { id: "openai/whisper-large-v3", name: "Whisper Large v3", task: "automatic-speech-recognition", downloads: "10M+", license: "apache-2.0" },
+  { id: "openai/whisper-large-v3-turbo", name: "Whisper Large v3 Turbo", task: "automatic-speech-recognition", downloads: "5M+", license: "apache-2.0" },
+
+  // Image
+  { id: "stabilityai/stable-diffusion-xl-base-1.0", name: "SDXL Base", task: "text-to-image", downloads: "15M+", license: "openrail++" },
+  { id: "black-forest-labs/FLUX.1-schnell", name: "FLUX.1 Schnell", task: "text-to-image", downloads: "3M+", license: "apache-2.0" },
+
+  // Classification
+  { id: "facebook/bart-large-mnli", name: "BART Large MNLI", task: "zero-shot-classification", downloads: "10M+", license: "apache-2.0" },
+  { id: "cross-encoder/ms-marco-MiniLM-L-12-v2", name: "MS MARCO MiniLM", task: "text-ranking", downloads: "5M+", license: "apache-2.0" }
+];
+
+const HF_TASK_ICONS = {
+  "text-generation": "💬",
+  "sentence-similarity": "📊",
+  "automatic-speech-recognition": "🎙️",
+  "text-to-image": "🎨",
+  "zero-shot-classification": "🏷️",
+  "text-ranking": "🔀"
+};
+
+// Wire into Provider Registry
+if (typeof PROVIDER_REGISTRY !== "undefined" && PROVIDER_REGISTRY.huggingface) {
+  PROVIDER_REGISTRY.huggingface.models = HF_TOP_MODELS.map(function (m) {
+    return { id: m.id, name: m.name, type: m.task, context: null };
+  });
+}
+
+/**
+ * Generate local run commands for a HF model
+ */
+function getLocalRunCommands(modelId) {
+  return {
+    ollama: "ollama run " + modelId.split("/").pop().toLowerCase(),
+    llamacpp: "llama-cli -m " + modelId.split("/").pop() + ".gguf -p \"Hello\"",
+    hfUrl: "https://huggingface.co/" + modelId
+  };
+}

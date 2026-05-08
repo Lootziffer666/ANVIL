@@ -596,3 +596,17 @@ body {
 .model-meta { display: flex; gap: 0.35rem; }
 .model-params, .model-ctx, .model-dims { font-size: 0.7rem; padding: 0.1rem 0.3rem; border-radius: 3px; background: var(--surface); }
 .model-count { font-size: 0.8rem; color: var(--text-secondary); }
+
+
+/* ── HuggingFace Launcher (Gate A16) ───── */
+.zone-hf { grid-area: hf; }
+.hf-search { margin-bottom: 0.5rem; }
+.hf-search input { width: 100%; padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); }
+.hf-model-item { cursor: pointer; transition: background 0.15s; }
+.hf-model-item:hover { background: var(--surface); }
+.model-downloads, .model-license { font-size: 0.7rem; padding: 0.1rem 0.3rem; border-radius: 3px; background: var(--surface); }
+.hf-detail { margin-top: 0.75rem; padding: 0.75rem; border: 1px solid var(--accent); border-radius: 6px; }
+.hf-detail h3 { margin: 0 0 0.25rem; }
+.hf-detail-meta { font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 0.5rem; }
+.hf-actions { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
+.hf-local-cmds pre { font-size: 0.75rem; background: var(--surface-dark, #1e1e1e); color: #d4d4d4; padding: 0.4rem; border-radius: 4px; margin: 0.25rem 0; }

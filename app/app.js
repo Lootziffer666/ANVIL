@@ -453,4 +453,72 @@
     });
   });
 
+
+  // ── HuggingFace Launcher (Gate A16) ────
+  var currentHFFilter = "all";
+  var currentHFSearch = "";
+
+  function renderHFModels() {
+    var list = $("#hf-model-list");
+    var count = $("#hf-count");
+    list.innerHTML = "";
+    var models = HF_TOP_MODELS.filter(function (m) {
+      var matchFilter = currentHFFilter === "all" || m.task === currentHFFilter;
+      var matchSearch = !currentHFSearch || m.name.toLowerCase().indexOf(currentHFSearch) !== -1 || m.id.toLowerCase().indexOf(currentHFSearch) !== -1;
+      return matchFilter && matchSearch;
+    });
+    count.textContent = models.length + " Modelle";
+    models.forEach(function (m) {
+      var div = document.createElement("div");
+      div.className = "model-item hf-model-item";
+      div.dataset.modelId = m.id;
+      div.innerHTML =
+        '<span class="model-type-icon">' + (HF_TASK_ICONS[m.task] || "🤖") + '</span>' +
+        '<div class="model-info">' +
+          '<span class="model-name">' + m.name + '</span>' +
+          '<span class="model-id">' + m.id + '</span>' +
+        '</div>' +
+        '<div class="model-meta">' +
+          '<span class="model-downloads">⬇️ ' + m.downloads + '</span>' +
+          '<span class="model-license">📜 ' + m.license + '</span>' +
+        '</div>';
+      div.addEventListener("click", function () { showHFDetail(m); });
+      list.appendChild(div);
+    });
+  }
+
+  function showHFDetail(m) {
+    var detail = $("#hf-detail");
+    detail.classList.remove("hidden");
+    $("#hf-detail-name").textContent = m.name;
+    $("#hf-detail-meta").textContent = m.task + " · " + m.downloads + " Downloads · " + m.license;
+    $("#hf-btn-card").href = "https://huggingface.co/" + m.id;
+    var cmds = getLocalRunCommands(m.id);
+    $("#hf-cmd-ollama").textContent = cmds.ollama;
+    $("#hf-cmd-llama").textContent = cmds.llamacpp;
+    if (m.task === "text-generation") {
+      $("#hf-local-cmds").classList.remove("hidden");
+    } else {
+      $("#hf-local-cmds").classList.add("hidden");
+    }
+  }
+
+  renderHFModels();
+
+  if ($("#hf-search")) {
+    $("#hf-search").addEventListener("input", function () {
+      currentHFSearch = this.value.toLowerCase().trim();
+      renderHFModels();
+    });
+  }
+
+  document.querySelectorAll("#hf-filter .filter-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll("#hf-filter .filter-btn").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      currentHFFilter = btn.dataset.filter;
+      renderHFModels();
+    });
+  });
+
 })();

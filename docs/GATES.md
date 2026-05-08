@@ -25,6 +25,11 @@ Gates sind sequenziell, jede hat:
 | A11 | Governance Files | ✅ |
 | A12 | First Real Module: Prompt Pack Builder | ✅ |
 
+| A13 | Token Management | ✅ |
+| A14 | Provider Registry + Multi-Provider | ✅ |
+| A15 | Nvidia Build Models | ✅ |
+| A16 | HuggingFace Launcher Surface | ✅ |
+
 ## Änderungsprotokoll
 
 Jede neue Gate wird hier eingetragen. Gate-Reihenfolge wird nicht nachträglich geändert.

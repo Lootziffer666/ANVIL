@@ -283,6 +283,40 @@
           <div class="model-list" id="nv-model-list"></div>
         </div>
       </section>
+
+      <!-- 12. HuggingFace Launcher (Gate A16) -->
+      <section class="zone zone-hf" id="zone-hf">
+        <div class="zone-head">
+          <h2>🤗 HuggingFace</h2>
+          <span class="model-count" id="hf-count"></span>
+        </div>
+        <div class="zone-body">
+          <div class="hf-search">
+            <input type="text" id="hf-search" placeholder="Modell suchen...">
+          </div>
+          <div class="model-filter" id="hf-filter">
+            <button class="filter-btn active" data-filter="all">Alle</button>
+            <button class="filter-btn" data-filter="text-generation">Chat</button>
+            <button class="filter-btn" data-filter="sentence-similarity">Embedding</button>
+            <button class="filter-btn" data-filter="automatic-speech-recognition">Speech</button>
+            <button class="filter-btn" data-filter="text-to-image">Image</button>
+          </div>
+          <div class="model-list" id="hf-model-list"></div>
+          <div class="hf-detail hidden" id="hf-detail">
+            <h3 id="hf-detail-name"></h3>
+            <p class="hf-detail-meta" id="hf-detail-meta"></p>
+            <div class="hf-actions">
+              <button class="btn-action" id="hf-btn-api">🚀 Inference API</button>
+              <a class="btn-small" id="hf-btn-card" href="#" target="_blank">📄 Model Card</a>
+            </div>
+            <div class="hf-local-cmds hidden" id="hf-local-cmds">
+              <p class="hint">Lokal ausführen:</p>
+              <pre id="hf-cmd-ollama"></pre>
+              <pre id="hf-cmd-llama"></pre>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- The Forge Overlay -->

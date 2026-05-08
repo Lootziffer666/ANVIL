@@ -1,6 +1,6 @@
 # CURRENT_TREE.md
 
-Stand: 2026-05-08 (nach Gate A12)
+Stand: 2026-05-08 (nach Gate A16)
 
 ```
 ./.gitignore
@@ -18,8 +18,12 @@ Stand: 2026-05-08 (nach Gate A12)
 ./docs/ANVIL_CONCEPT_CONTRACT.md
 ./docs/ARTIFACT_OUTPUT_LAYER.md
 ./docs/GATES.md
+./docs/HUGGINGFACE_LAUNCHER.md
 ./docs/KNOWN_DRIFT_RISKS.md
 ./docs/MODULE_CONTRACT.md
+./docs/NVIDIA_BUILD_MODELS.md
+./docs/PROVIDER_REGISTRY.md
+./docs/TOKEN_MANAGEMENT.md
 ./docs/WORKSPACE_MODEL.md
 ./examples/workspace.sample.json
 ./knownbugs-global/README.md
@@ -32,6 +36,8 @@ Stand: 2026-05-08 (nach Gate A12)
 ./modules/prompt-pack-builder/README.md
 ./modules/prompt-pack-builder/module.json
 ./modules/prompt-pack-builder/src/index.js
+./modules/token-manager/module.json
+./modules/token-manager/src/index.js
 ./outputs/.gitkeep
 ./outputs/agent-pack-example.json
 ./outputs/agent-pack-example.md
