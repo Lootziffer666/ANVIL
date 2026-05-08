@@ -191,4 +191,107 @@
 
   // ── Boot ───────────────────────────────
   init();
+
+  // ── Preview Surface (Gate A10) ─────────
+  const previewStatus  = $("#preview-status");
+  const previewEmpty   = $("#preview-empty");
+  const previewContent = $("#preview-content");
+  const previewRender  = $("#preview-render");
+  const previewError   = $("#preview-error");
+  const errorMessage   = $("#error-message");
+  const errorHint      = $("#error-hint");
+  const errorStack     = $("#error-stack");
+
+  function showPreview(content, type) {
+    previewEmpty.classList.add("hidden");
+    previewContent.classList.remove("hidden");
+    previewError.classList.add("hidden");
+
+    try {
+      switch (type) {
+        case "markdown":
+          previewRender.innerHTML = `<div class="preview-md">${escapeHtml(content)}</div>`;
+          break;
+        case "json":
+          const parsed = JSON.parse(content);
+          previewRender.innerHTML = `<pre class="preview-json">${escapeHtml(JSON.stringify(parsed, null, 2))}</pre>`;
+          break;
+        case "html":
+          previewRender.innerHTML = `<iframe class="preview-iframe" srcdoc="${escapeAttr(content)}"></iframe>`;
+          break;
+        default:
+          previewRender.innerHTML = `<pre class="preview-text">${escapeHtml(content)}</pre>`;
+      }
+      setStatusBadge(previewStatus, "stable");
+    } catch (err) {
+      showPreviewError(err);
+    }
+  }
+
+  function showPreviewError(err) {
+    previewContent.classList.remove("hidden");
+    previewRender.innerHTML = "";
+    previewError.classList.remove("hidden");
+
+    const recovery = getRecoveryHint(err);
+    errorMessage.textContent = recovery.message;
+    errorHint.textContent = recovery.hint;
+    errorStack.textContent = err.stack || String(err);
+    setStatusBadge(previewStatus, "failed");
+  }
+
+  function getRecoveryHint(err) {
+    if (err instanceof SyntaxError) {
+      return {
+        message: "JSON ist ungültig.",
+        hint: "Prüfe ob alle Klammern geschlossen sind und Kommas stimmen."
+      };
+    }
+    if (err.message && err.message.includes("encoding")) {
+      return {
+        message: "Encoding-Problem.",
+        hint: "Datei als UTF-8 speichern und erneut versuchen."
+      };
+    }
+    return {
+      message: "Vorschau konnte nicht erstellt werden.",
+      hint: "Dateiformat prüfen oder anderen Preview-Typ wählen."
+    };
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function escapeAttr(str) {
+    return str.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+
+  // ── Prompt Pack Builder (Gate A12) ─────
+  const btnBuildPack = $("#btn-build-pack");
+  if (btnBuildPack) {
+    btnBuildPack.addEventListener("click", function () {
+      const project = $("#ppb-project").value.trim();
+      const goal = $("#ppb-goal").value.trim();
+      const constraints = $("#ppb-constraints").value.split(",").map(s => s.trim()).filter(Boolean);
+      const nextGate = $("#ppb-gate").value.trim();
+      const agentTarget = $("#ppb-agent").value;
+      const contextFiles = $("#ppb-context").value.split(",").map(s => s.trim()).filter(Boolean);
+
+      try {
+        const result = buildPromptPack({
+          project, goal, constraints, nextGate, agentTarget, contextFiles
+        });
+        $("#ppb-output").classList.remove("hidden");
+        $("#ppb-result").textContent = result.markdown;
+        addStatus("stable", `Prompt Pack für "${project}" erstellt.`);
+      } catch (err) {
+        $("#ppb-output").classList.remove("hidden");
+        $("#ppb-result").textContent = "❌ " + err.message;
+        addStatus("failed", err.message);
+      }
+    });
+  }
+
 })();

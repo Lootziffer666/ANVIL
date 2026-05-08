@@ -1,0 +1,32 @@
+{
+  "pack_type": "agent-handoff",
+  "version": 1,
+  "project": "Anvil",
+  "agent_target": "viktor",
+  "gates": [
+    "A13",
+    "A14",
+    "A15",
+    "A16",
+    "A17",
+    "A18"
+  ],
+  "constraints": [
+    "State Surface Design — kein Dashboard",
+    "Module Contract einhalten",
+    "Gates sequentiell",
+    "Kein API-Key im Code"
+  ],
+  "kill_criteria": [
+    "Scope Creep → stoppen",
+    "3+ Files ohne Test → stoppen",
+    "GUI-Komplexität ohne Funktion → stoppen"
+  ],
+  "context_files": [
+    "docs/ANVIL_CONCEPT_CONTRACT.md",
+    "docs/MODULE_CONTRACT.md",
+    "docs/WORKSPACE_MODEL.md",
+    "docs/ARTIFACT_OUTPUT_LAYER.md",
+    "docs/AGENT_HANDOFF_FORMAT.md"
+  ]
+}

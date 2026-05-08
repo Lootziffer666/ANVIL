@@ -100,6 +100,115 @@
         </div>
       </section>
 
+
+      <!-- 5. Output-Bereich (Gate A7) -->
+      <section class="zone zone-outputs" id="zone-outputs">
+        <div class="zone-head">
+          <h2>Outputs</h2>
+          <span class="status-badge" id="out-status" data-state="empty">Leer</span>
+        </div>
+        <div class="zone-body" id="out-body">
+          <div class="empty-state" id="out-empty-state">
+            <span class="empty-icon">📤</span>
+            <p>Noch keine Outputs.</p>
+          </div>
+          <div class="output-list hidden" id="output-list"></div>
+        </div>
+      </section>
+
+      <!-- 6. Build Targets (Gate A9) -->
+      <section class="zone zone-targets" id="zone-targets">
+        <div class="zone-head">
+          <h2>Build Target</h2>
+        </div>
+        <div class="zone-body" id="target-body">
+          <div class="target-current" id="target-current">
+            <span class="target-icon" id="target-icon">📐</span>
+            <span class="target-label" id="target-label">Kein Target</span>
+          </div>
+          <div class="target-warning hidden" id="target-warning"></div>
+        </div>
+      </section>
+
+      <!-- 7. Preview Surface (Gate A10) -->
+      <section class="zone zone-preview" id="zone-preview">
+        <div class="zone-head">
+          <h2>Preview</h2>
+          <span class="status-badge" id="preview-status" data-state="empty">Leer</span>
+        </div>
+        <div class="zone-body" id="preview-body">
+          <div class="empty-state" id="preview-empty">
+            <span class="empty-icon">👁️</span>
+            <p>Kein Preview verfügbar.</p>
+          </div>
+          <div class="preview-content hidden" id="preview-content">
+            <div class="preview-tabs" id="preview-tabs">
+              <button class="preview-tab active" data-type="markdown">📝 Markdown</button>
+              <button class="preview-tab" data-type="json">📋 JSON</button>
+              <button class="preview-tab" data-type="text">📄 Text</button>
+              <button class="preview-tab" data-type="html">🌐 HTML</button>
+            </div>
+            <div class="preview-render" id="preview-render"></div>
+            <div class="preview-error hidden" id="preview-error">
+              <div class="error-recovery" id="error-recovery">
+                <span class="error-icon">⚠️</span>
+                <p class="error-message" id="error-message"></p>
+                <p class="error-hint" id="error-hint"></p>
+              </div>
+              <details class="error-details">
+                <summary>Technische Details</summary>
+                <pre class="error-stack" id="error-stack"></pre>
+              </details>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. Prompt Pack Builder (Gate A12) -->
+      <section class="zone zone-ppb" id="zone-ppb">
+        <div class="zone-head">
+          <h2>🤖 Prompt Pack Builder</h2>
+          <span class="status-badge" data-state="stable">Bereit</span>
+        </div>
+        <div class="zone-body">
+          <div class="ppb-form" id="ppb-form">
+            <div class="ppb-field">
+              <label for="ppb-project">Projektname *</label>
+              <input type="text" id="ppb-project" placeholder="z.B. Anvil">
+            </div>
+            <div class="ppb-field">
+              <label for="ppb-goal">Ziel *</label>
+              <input type="text" id="ppb-goal" placeholder="Was soll erreicht werden?">
+            </div>
+            <div class="ppb-field">
+              <label for="ppb-constraints">Constraints (kommagetrennt) *</label>
+              <input type="text" id="ppb-constraints" placeholder="z.B. Kein Scope Creep, Tests Pflicht">
+            </div>
+            <div class="ppb-field">
+              <label for="ppb-gate">Nächste Gate *</label>
+              <input type="text" id="ppb-gate" placeholder="z.B. Gate A13: Provider System">
+            </div>
+            <div class="ppb-field">
+              <label for="ppb-agent">Agent-Zielsystem *</label>
+              <select id="ppb-agent">
+                <option value="viktor">Viktor AI</option>
+                <option value="claude">Claude</option>
+                <option value="codex">Codex</option>
+                <option value="manual">Manuell</option>
+              </select>
+            </div>
+            <div class="ppb-field">
+              <label for="ppb-context">Kontext-Dateien (kommagetrennt)</label>
+              <input type="text" id="ppb-context" placeholder="z.B. README.md, docs/SPEC.md">
+            </div>
+            <button class="btn-action" id="btn-build-pack">📦 Pack erstellen</button>
+          </div>
+          <div class="ppb-output hidden" id="ppb-output">
+            <h3>Ergebnis:</h3>
+            <pre class="ppb-result" id="ppb-result"></pre>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- The Forge Overlay -->
@@ -119,6 +228,7 @@
   </div>
 
   <script src="data.js"></script>
+  <script src="../modules/prompt-pack-builder/src/index.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

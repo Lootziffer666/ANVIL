@@ -1,0 +1,18 @@
+{
+  "name": "Prompt Pack Builder",
+  "purpose": "Erzeugt strukturierte Prompt-Pakete für Agent-Übergaben.",
+  "inputs": [
+    "text/plain",
+    "config/json"
+  ],
+  "outputs": [
+    "text/markdown",
+    "application/json"
+  ],
+  "requiredPermissions": [
+    "filesystem.write"
+  ],
+  "canRunOffline": true,
+  "canExport": true,
+  "failureBehavior": "Gibt Fehlermeldung mit fehlendem Pflichtfeld zurück."
+}
