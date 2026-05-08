@@ -163,6 +163,52 @@
           </div>
         </div>
       </section>
+
+      <!-- 8. Prompt Pack Builder (Gate A12) -->
+      <section class="zone zone-ppb" id="zone-ppb">
+        <div class="zone-head">
+          <h2>🤖 Prompt Pack Builder</h2>
+          <span class="status-badge" data-state="stable">Bereit</span>
+        </div>
+        <div class="zone-body">
+          <div class="ppb-form" id="ppb-form">
+            <div class="ppb-field">
+              <label for="ppb-project">Projektname *</label>
+              <input type="text" id="ppb-project" placeholder="z.B. Anvil">
+            </div>
+            <div class="ppb-field">
+              <label for="ppb-goal">Ziel *</label>
+              <input type="text" id="ppb-goal" placeholder="Was soll erreicht werden?">
+            </div>
+            <div class="ppb-field">
+              <label for="ppb-constraints">Constraints (kommagetrennt) *</label>
+              <input type="text" id="ppb-constraints" placeholder="z.B. Kein Scope Creep, Tests Pflicht">
+            </div>
+            <div class="ppb-field">
+              <label for="ppb-gate">Nächste Gate *</label>
+              <input type="text" id="ppb-gate" placeholder="z.B. Gate A13: Provider System">
+            </div>
+            <div class="ppb-field">
+              <label for="ppb-agent">Agent-Zielsystem *</label>
+              <select id="ppb-agent">
+                <option value="viktor">Viktor AI</option>
+                <option value="claude">Claude</option>
+                <option value="codex">Codex</option>
+                <option value="manual">Manuell</option>
+              </select>
+            </div>
+            <div class="ppb-field">
+              <label for="ppb-context">Kontext-Dateien (kommagetrennt)</label>
+              <input type="text" id="ppb-context" placeholder="z.B. README.md, docs/SPEC.md">
+            </div>
+            <button class="btn-action" id="btn-build-pack">📦 Pack erstellen</button>
+          </div>
+          <div class="ppb-output hidden" id="ppb-output">
+            <h3>Ergebnis:</h3>
+            <pre class="ppb-result" id="ppb-result"></pre>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- The Forge Overlay -->
@@ -182,6 +228,7 @@
   </div>
 
   <script src="data.js"></script>
+  <script src="../modules/prompt-pack-builder/src/index.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

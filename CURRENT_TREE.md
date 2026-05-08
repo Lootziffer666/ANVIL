@@ -1,96 +1,109 @@
-# CURRENT_TREE.md — ANVIL Repo Snapshot
+# CURRENT_TREE.md
 
-**Erstellt:** 2026-05-08  
-**Commit:** 424d21d (main, HEAD vor Gate-Arbeit)  
-**Branch:** `main` → neuer Branch `gates-a1-a6`
+Stand: 2026-05-08 (nach Gate A12)
 
-## Root-Dateien
-
-| Datei       | Typ      |
-|-------------|----------|
-| `README.md` | Doku     |
-
-Keine weiteren Root-Dateien (kein `.gitignore`, kein `package.json`, kein `requirements.txt`, kein `AGENTS.md`, kein `claude.md` auf Root-Ebene).
-
-## Verzeichnisstruktur
-
-```text
-ANVIL/
-├── README.md
-├── knownbugs-global/
-│   ├── README.md
-│   ├── agent-failure-patterns.md
-│   ├── github-friction.md
-│   └── knownbugs.md
-├── principles/
-│   ├── README.md
-│   ├── anti-dashboard.md
-│   ├── broad-implementation-request-safety.md
-│   ├── ci-first-gated-development.md
-│   ├── frictionless-design.md
-│   ├── shared-code-policy.md
-│   └── state-surface-design.md
-├── projects/
-│   ├── README.md
-│   ├── borderline.md
-│   ├── catchit.md
-│   ├── flow-family.md
-│   ├── module-roadmap.md
-│   ├── painkiller.md
-│   └── tabula.md
-├── sources/
-│   └── template-extraction/
-│       ├── README.md
-│       ├── import-plan-template-system.md
-│       ├── source-map.md
-│       ├── template-exclusion-rules.md
-│       └── template-useful-patterns.md
-└── templates/
-    ├── TEMPLATE_ASSEMBLY_GUIDE.md
-    ├── TEMPLATE_CHANGE_GATE.md
-    ├── TEMPLATE_CLEANUP_CHECKLIST.md
-    ├── anvil-app/
-    │   ├── .gitignore
-    │   ├── README.md
-    │   ├── TEMPLATE_SETUP.md
-    │   ├── anvil.yaml
-    │   ├── client_code/ (startup, _pages/HomePage, _components, _flows)
-    │   ├── server_code/ (auth, bootstrap, permissions, repositories/, services/)
-    │   ├── theme/ (theme.css, parameters.yaml, standard-page.html, templates.yaml)
-    │   └── docs/ (architecture.md, customization.md, deployment.md)
-    ├── core-gated/
-    │   ├── .github/ (PR template, CI workflow)
-    │   ├── AGENTS.md
-    │   ├── README.md
-    │   ├── claude.md
-    │   ├── handoff/ (gate handoff templates)
-    │   ├── instructions.md
-    │   └── knownbugs.md
-    ├── gated-project/
-    │   ├── AGENTS.md, README.md, claude.md, instructions.md, knownbugs.md
-    │   ├── config/ (provider-catalog, runtime-profiles, validation-profiles)
-    │   └── handoff/
-    └── modules/
-        ├── artifact-classes/
-        ├── runtime-profiles/
-        ├── stage-pipeline/
-        └── validation-profiles/
 ```
-
-## Erkannte Agent-/Design-Dateien
-
-| Datei | Ort |
-|-------|-----|
-| `AGENTS.md` | `templates/core-gated/`, `templates/gated-project/` (nur in Templates) |
-| `claude.md` | `templates/core-gated/`, `templates/gated-project/` (nur in Templates) |
-| `README.md` | Root + diverse Unterverzeichnisse |
-| Design-Dateien | `principles/state-surface-design.md`, `principles/anti-dashboard.md`, `principles/frictionless-design.md` |
-| Knownbugs | `knownbugs-global/` (3 Dateien) |
-
-## Erkenntnisse
-
-- Repo ist aktuell ein **reines Doku-/Prinzipien-/Template-Repo** — kein lauffähiger Code auf Root-Ebene.
-- Templates enthalten Scaffolding für `anvil-app`, `core-gated`, `gated-project` und `modules`.
-- `projects/module-roadmap.md` definiert 19 Gates über 5 Phasen (Kivy-basiert, Android-fokussiert).
-- Keine `.gitignore` auf Root-Ebene.
-- Keine bestehende App-Oberfläche, kein Build-System.
+./.gitignore
+./AGENTS.md
+./CLAUDE.md
+./CURRENT_TREE.md
+./README.md
+./REPO_ACCESS_PROOF.md
+./app/app.js
+./app/data.js
+./app/index.html
+./app/style.css
+./docs/AGENT_HANDOFF_FORMAT.md
+./docs/ANDROID_BLUEPRINT_TRACK.md
+./docs/ANVIL_CONCEPT_CONTRACT.md
+./docs/ARTIFACT_OUTPUT_LAYER.md
+./docs/GATES.md
+./docs/KNOWN_DRIFT_RISKS.md
+./docs/MODULE_CONTRACT.md
+./docs/WORKSPACE_MODEL.md
+./examples/workspace.sample.json
+./knownbugs-global/README.md
+./knownbugs-global/agent-failure-patterns.md
+./knownbugs-global/github-friction.md
+./knownbugs-global/knownbugs.md
+./modules/example-module/README.md
+./modules/example-module/module.json
+./modules/example-module/src/index.js
+./modules/prompt-pack-builder/README.md
+./modules/prompt-pack-builder/module.json
+./modules/prompt-pack-builder/src/index.js
+./outputs/.gitkeep
+./outputs/agent-pack-example.json
+./outputs/agent-pack-example.md
+./outputs/registry.json
+./principles/README.md
+./principles/anti-dashboard.md
+./principles/broad-implementation-request-safety.md
+./principles/ci-first-gated-development.md
+./principles/frictionless-design.md
+./principles/shared-code-policy.md
+./principles/state-surface-design.md
+./projects/README.md
+./projects/borderline.md
+./projects/catchit.md
+./projects/flow-family.md
+./projects/module-roadmap.md
+./projects/painkiller.md
+./projects/tabula.md
+./sources/template-extraction/README.md
+./sources/template-extraction/import-plan-template-system.md
+./sources/template-extraction/source-map.md
+./sources/template-extraction/template-exclusion-rules.md
+./sources/template-extraction/template-useful-patterns.md
+./templates/TEMPLATE_ASSEMBLY_GUIDE.md
+./templates/TEMPLATE_CHANGE_GATE.md
+./templates/TEMPLATE_CLEANUP_CHECKLIST.md
+./templates/anvil-app/.gitignore
+./templates/anvil-app/README.md
+./templates/anvil-app/TEMPLATE_SETUP.md
+./templates/anvil-app/anvil.yaml
+./templates/anvil-app/client_code/__init__.py
+./templates/anvil-app/client_code/_components/__init__.py
+./templates/anvil-app/client_code/_flows/__init__.py
+./templates/anvil-app/client_code/_pages/HomePage/__init__.py
+./templates/anvil-app/client_code/_pages/HomePage/form_template.yaml
+./templates/anvil-app/client_code/_pages/__init__.py
+./templates/anvil-app/client_code/startup/__init__.py
+./templates/anvil-app/client_code/startup/config.py
+./templates/anvil-app/docs/architecture.md
+./templates/anvil-app/docs/customization.md
+./templates/anvil-app/docs/deployment.md
+./templates/anvil-app/server_code/__init__.py
+./templates/anvil-app/server_code/auth.py
+./templates/anvil-app/server_code/bootstrap.py
+./templates/anvil-app/server_code/permissions.py
+./templates/anvil-app/server_code/repositories/__init__.py
+./templates/anvil-app/server_code/services/__init__.py
+./templates/anvil-app/theme/parameters.yaml
+./templates/anvil-app/theme/standard-page.html
+./templates/anvil-app/theme/templates.yaml
+./templates/anvil-app/theme/theme.css
+./templates/core-gated/.github/PULL_REQUEST_TEMPLATE.md
+./templates/core-gated/.github/workflows/ci.yml
+./templates/core-gated/AGENTS.md
+./templates/core-gated/README.md
+./templates/core-gated/claude.md
+./templates/core-gated/handoff/GATE_X_HANDOFF_TEMPLATE.md
+./templates/core-gated/handoff/README.md
+./templates/core-gated/instructions.md
+./templates/core-gated/knownbugs.md
+./templates/gated-project/AGENTS.md
+./templates/gated-project/README.md
+./templates/gated-project/claude.md
+./templates/gated-project/config/provider-catalog.example.json
+./templates/gated-project/config/runtime-profiles.json
+./templates/gated-project/config/validation-profiles.json
+./templates/gated-project/handoff/GATE_X_HANDOFF_TEMPLATE.md
+./templates/gated-project/handoff/README.md
+./templates/gated-project/instructions.md
+./templates/gated-project/knownbugs.md
+./templates/modules/artifact-classes/README.md
+./templates/modules/runtime-profiles/README.md
+./templates/modules/stage-pipeline/README.md
+./templates/modules/validation-profiles/README.md
+```

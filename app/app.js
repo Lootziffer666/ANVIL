@@ -267,4 +267,31 @@
     return str.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
+
+  // ── Prompt Pack Builder (Gate A12) ─────
+  const btnBuildPack = $("#btn-build-pack");
+  if (btnBuildPack) {
+    btnBuildPack.addEventListener("click", function () {
+      const project = $("#ppb-project").value.trim();
+      const goal = $("#ppb-goal").value.trim();
+      const constraints = $("#ppb-constraints").value.split(",").map(s => s.trim()).filter(Boolean);
+      const nextGate = $("#ppb-gate").value.trim();
+      const agentTarget = $("#ppb-agent").value;
+      const contextFiles = $("#ppb-context").value.split(",").map(s => s.trim()).filter(Boolean);
+
+      try {
+        const result = buildPromptPack({
+          project, goal, constraints, nextGate, agentTarget, contextFiles
+        });
+        $("#ppb-output").classList.remove("hidden");
+        $("#ppb-result").textContent = result.markdown;
+        addStatus("stable", `Prompt Pack für "${project}" erstellt.`);
+      } catch (err) {
+        $("#ppb-output").classList.remove("hidden");
+        $("#ppb-result").textContent = "❌ " + err.message;
+        addStatus("failed", err.message);
+      }
+    });
+  }
+
 })();

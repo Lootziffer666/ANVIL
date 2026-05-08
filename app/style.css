@@ -541,3 +541,20 @@ body {
 .error-details { margin-top: 0.5rem; }
 .error-details summary { cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; }
 .error-stack { font-size: 0.75rem; background: var(--surface-dark, #1e1e1e); color: #d4d4d4; padding: 0.5rem; border-radius: 4px; overflow: auto; max-height: 200px; }
+
+
+/* ── Prompt Pack Builder (Gate A12) ────── */
+.zone-ppb { grid-area: ppb; }
+.ppb-form { display: flex; flex-direction: column; gap: 0.5rem; }
+.ppb-field { display: flex; flex-direction: column; gap: 0.15rem; }
+.ppb-field label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
+.ppb-field input, .ppb-field select {
+  padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 4px;
+  background: var(--surface); color: var(--text); font-size: 0.85rem;
+}
+.ppb-output { margin-top: 0.75rem; }
+.ppb-result {
+  font-family: monospace; font-size: 0.8rem; white-space: pre-wrap;
+  background: var(--surface-dark, #1e1e1e); color: #d4d4d4;
+  padding: 0.75rem; border-radius: 6px; max-height: 400px; overflow: auto;
+}

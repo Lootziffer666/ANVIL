@@ -52,6 +52,18 @@ const MODULE_REGISTRY = {
     status: "adapting",
     lastOutput: null
   },
+  "prompt-pack-builder": {
+    name: "Prompt Pack Builder",
+    purpose: "Erzeugt strukturierte Prompt-Pakete für Agent-Übergaben.",
+    inputs: ["text/plain", "config/json"],
+    outputs: ["text/markdown", "application/json"],
+    requiredPermissions: ["filesystem.write"],
+    canRunOffline: true,
+    canExport: true,
+    failureBehavior: "Gibt Fehlermeldung mit fehlendem Pflichtfeld zurück.",
+    status: "stable",
+    lastOutput: null
+  },
   "android-blueprint": {
     name: "Android Blueprint Tool",
     purpose: "APK-Scaffolding: Manifest, Gradle, Signatur-Konfiguration.",
@@ -115,6 +127,18 @@ function createOutputManifest(module, workspace, type, filename) {
  * Definiert in docs/ANDROID_BLUEPRINT_TRACK.md
  */
 const BUILD_TARGETS = {
+  "prompt-pack-builder": {
+    name: "Prompt Pack Builder",
+    purpose: "Erzeugt strukturierte Prompt-Pakete für Agent-Übergaben.",
+    inputs: ["text/plain", "config/json"],
+    outputs: ["text/markdown", "application/json"],
+    requiredPermissions: ["filesystem.write"],
+    canRunOffline: true,
+    canExport: true,
+    failureBehavior: "Gibt Fehlermeldung mit fehlendem Pflichtfeld zurück.",
+    status: "stable",
+    lastOutput: null
+  },
   "android-blueprint": {
     label: "Android Blueprint",
     icon: "📐",
