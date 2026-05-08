@@ -76,3 +76,35 @@ const STATE_LABELS = {
   "failed":    "Failed",
   "empty":     "Leer"
 };
+
+
+/**
+ * Output Types (Gate A7)
+ * Definiert in docs/ARTIFACT_OUTPUT_LAYER.md
+ */
+const OUTPUT_TYPES = {
+  "text/markdown":    { ext: ".md",          label: "Markdown",  icon: "📝" },
+  "application/json": { ext: ".json",        label: "JSON",      icon: "📋" },
+  "application/zip":  { ext: ".zip",         label: "ZIP",       icon: "📦" },
+  "text/x-diff":      { ext: ".patch",       label: "Patch",     icon: "🔧" },
+  "text/prompt":      { ext: ".prompt.md",   label: "Prompt",    icon: "🤖" },
+  "application/config": { ext: ".config.json", label: "Config", icon: "⚙️" },
+};
+
+/**
+ * Create output manifest
+ */
+function createOutputManifest(module, workspace, type, filename) {
+  const now = new Date();
+  const ts = now.toISOString().replace(/[-:T]/g, "").slice(0, 14);
+  const id = `OUT_${ts}_${String(Math.floor(Math.random() * 999) + 1).padStart(3, "0")}`;
+  return {
+    output_id: id,
+    created_at: now.toISOString(),
+    origin: { module, workspace, run_id: `RUN_${ts}` },
+    type,
+    filename,
+    size_bytes: 0,
+    checksum_sha256: null,
+  };
+}
