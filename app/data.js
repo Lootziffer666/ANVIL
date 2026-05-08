@@ -283,6 +283,17 @@ const PROVIDER_REGISTRY = {
       { id: "Qwen/Qwen2.5-Coder-32B-Instruct", name: "Qwen 2.5 Coder 32B", type: "code", context: 32000 }
     ]
   },
+  "localai": {
+    name: "LocalAI (Any Hardware)",
+    icon: "🖥️",
+    apiBase: "http://localhost:8080",
+    authType: "none",
+    authHeader: null,
+    status: "offline",
+    builtin: true,
+    models: [],
+    note: "mudler/LocalAI — Run any model on any hardware. No GPU required. Ideal für Nachtläufe."
+  },
   "ollama": {
     name: "Ollama (Lokal)",
     icon: "🏠",

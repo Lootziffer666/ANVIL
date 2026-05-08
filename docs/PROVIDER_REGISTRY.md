@@ -24,6 +24,7 @@ Anvil unterstützt mehrere KI-Provider. Jeder Provider hat:
 | Groq | `groq` | `https://api.groq.com/openai/v1` | Bearer Token |
 | Mistral | `mistral` | `https://api.mistral.ai/v1` | Bearer Token |
 | Together AI | `together` | `https://api.together.xyz/v1` | Bearer Token |
+| LocalAI (Any HW) | `localai` | `http://localhost:8080` | Keine |
 | Ollama (Local) | `ollama` | `http://localhost:11434` | Keine |
 
 ## Custom Provider hinzufügen
