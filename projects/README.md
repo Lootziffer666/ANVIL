@@ -10,6 +10,10 @@ Index of ANVIL project families and their current relationship to the shared wor
 - `borderline.md` — Zen-OS-style Android context and friction reduction
 - `tabula.md` — system/workspace cleanup and order utility
 
+## Roadmaps
+
+- `module-roadmap.md` — starred-repo module integration plan (19 gates, 5 phases)
+
 ## Rule
 
 Each project keeps its own repo and local truth until a deliberate migration plan says otherwise.
