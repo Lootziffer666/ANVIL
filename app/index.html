@@ -129,6 +129,40 @@
           <div class="target-warning hidden" id="target-warning"></div>
         </div>
       </section>
+
+      <!-- 7. Preview Surface (Gate A10) -->
+      <section class="zone zone-preview" id="zone-preview">
+        <div class="zone-head">
+          <h2>Preview</h2>
+          <span class="status-badge" id="preview-status" data-state="empty">Leer</span>
+        </div>
+        <div class="zone-body" id="preview-body">
+          <div class="empty-state" id="preview-empty">
+            <span class="empty-icon">👁️</span>
+            <p>Kein Preview verfügbar.</p>
+          </div>
+          <div class="preview-content hidden" id="preview-content">
+            <div class="preview-tabs" id="preview-tabs">
+              <button class="preview-tab active" data-type="markdown">📝 Markdown</button>
+              <button class="preview-tab" data-type="json">📋 JSON</button>
+              <button class="preview-tab" data-type="text">📄 Text</button>
+              <button class="preview-tab" data-type="html">🌐 HTML</button>
+            </div>
+            <div class="preview-render" id="preview-render"></div>
+            <div class="preview-error hidden" id="preview-error">
+              <div class="error-recovery" id="error-recovery">
+                <span class="error-icon">⚠️</span>
+                <p class="error-message" id="error-message"></p>
+                <p class="error-hint" id="error-hint"></p>
+              </div>
+              <details class="error-details">
+                <summary>Technische Details</summary>
+                <pre class="error-stack" id="error-stack"></pre>
+              </details>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- The Forge Overlay -->
