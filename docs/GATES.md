@@ -33,3 +33,27 @@ Gates sind sequenziell, jede hat:
 ## Änderungsprotokoll
 
 Jede neue Gate wird hier eingetragen. Gate-Reihenfolge wird nicht nachträglich geändert.
+
+## Gate A17 — Platform Abstraction Layer
+- **Branch:** `gates-a17-a20`
+- **Dateien:** `app/platform.js`, `docs/PLATFORM_ABSTRACTION.md`
+- **Zweck:** OS-Erkennung, portable Pfade, Feature Flags, Platform Indicator
+- **Akzeptanz:** Platform wird korrekt erkannt, Pfade sind intern immer POSIX
+
+## Gate A18 — Pake Desktop Shell
+- **Branch:** `gates-a17-a20`
+- **Dateien:** `pake.config.json`, `docs/PAKE_DESKTOP_SHELL.md`
+- **Zweck:** Anvil als native Windows/Mac/Linux Desktop-App (5 MB statt 200 MB)
+- **Quelle:** tw93/Pake, gitbutlerapp/gitbutler (Tauri-Pattern)
+
+## Gate A19 — Workspace Sync Protocol
+- **Branch:** `gates-a17-a20`
+- **Dateien:** `app/sync.js`, `docs/WORKSPACE_SYNC.md`
+- **Zweck:** Cross-Device Sync (Android ↔ Windows), Export/Import Bundles
+- **Sicherheit:** Token-Keys werden NIEMALS exportiert
+
+## Gate A20 — OmniRoute Gateway Bridge
+- **Branch:** `gates-a17-a20`
+- **Dateien:** `docs/OMNIROUTE_BRIDGE.md`
+- **Zweck:** Ein Endpoint für 160+ Provider, Smart Fallback, Sync-freundlich
+- **Quelle:** diegosouzapw/OmniRoute

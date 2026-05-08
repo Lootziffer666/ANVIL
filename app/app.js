@@ -323,6 +323,13 @@
         if (confirm("Token " + t.label + " wirklich löschen?")) {
           TokenManager.remove(t.token_id);
           renderTokens();
+
+  // ── Platform Indicator (Gate A17) ─────
+  var platIndicator = $("#platform-indicator");
+  if (platIndicator && typeof AnvilPlatform !== "undefined") {
+    platIndicator.textContent = AnvilPlatform.info();
+    addStatus("stable", "Platform: " + AnvilPlatform.info());
+  }
           addStatus("adapting", "Token gelöscht: " + t.label);
         }
       });
@@ -521,4 +528,60 @@
     });
   });
 
+
+
+  // ── Sync Zone (Gate A19) ───────────────
+  if (typeof AnvilSync !== "undefined" && typeof AnvilPlatform !== "undefined") {
+    var piIcon = $("#platform-icon");
+    var piLabel = $("#platform-label");
+    var piDevice = $("#device-id");
+    if (piIcon) piIcon.textContent = AnvilPlatform.meta().icon;
+    if (piLabel) piLabel.textContent = AnvilPlatform.meta().label;
+    if (piDevice) piDevice.textContent = AnvilSync.getDeviceId();
+
+    var syncExport = $("#btn-sync-export");
+    var syncImport = $("#btn-sync-import");
+    var syncFile = $("#sync-import-file");
+
+    if (syncExport) {
+      syncExport.addEventListener("click", function () {
+        AnvilSync.downloadBundle();
+        addStatus("stable", "Sync-Bundle exportiert.");
+        updateSyncHistory();
+      });
+    }
+
+    if (syncImport && syncFile) {
+      syncImport.addEventListener("click", function () { syncFile.click(); });
+      syncFile.addEventListener("change", function (e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+          try {
+            var report = AnvilSync.importBundle(ev.target.result);
+            addStatus("stable", "Sync-Import: " + report.custom_providers_added + " Provider, " +
+              report.tokens_needing_reentry + " Tokens zur Neueingabe.");
+            updateSyncHistory();
+            renderProviders();
+          } catch (err) {
+            addStatus("failed", "Sync-Import fehlgeschlagen: " + err.message);
+          }
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    function updateSyncHistory() {
+      var hist = $("#sync-history");
+      var info = $("#sync-last-info");
+      var manifest = AnvilSync.loadSyncManifest();
+      if (manifest.sync_history.length > 0) {
+        hist.classList.remove("hidden");
+        var last = manifest.sync_history[manifest.sync_history.length - 1];
+        info.textContent = last.type.toUpperCase() + " — " + last.at;
+      }
+    }
+    updateSyncHistory();
+  }
 })();

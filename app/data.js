@@ -283,6 +283,17 @@ const PROVIDER_REGISTRY = {
       { id: "Qwen/Qwen2.5-Coder-32B-Instruct", name: "Qwen 2.5 Coder 32B", type: "code", context: 32000 }
     ]
   },
+  "omniroute": {
+    name: "OmniRoute Gateway",
+    icon: "🌐",
+    apiBase: "http://localhost:8090/v1",
+    authType: "bearer",
+    authHeader: "Authorization",
+    status: "offline",
+    builtin: true,
+    models: [],
+    note: "diegosouzapw/OmniRoute — 160+ Provider, ein Endpoint. Smart Fallback."
+  },
   "localai": {
     name: "LocalAI (Any Hardware)",
     icon: "🖥️",
