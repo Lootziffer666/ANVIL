@@ -1,0 +1,10 @@
+{
+  "name": "Example Module",
+  "purpose": "Dummy-Modul zum Testen des Module Slot Contracts.",
+  "inputs": ["text/plain"],
+  "outputs": ["text/plain"],
+  "requiredPermissions": [],
+  "canRunOffline": true,
+  "canExport": false,
+  "failureBehavior": "Gibt Input unverändert zurück mit Fehlermeldung im Status."
+}

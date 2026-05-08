@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anvil — Werkbank</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="shell-header">
+      <div class="header-left">
+        <span class="logo">⚒ Anvil</span>
+        <span class="header-label">Werkbank</span>
+      </div>
+      <div class="header-right">
+        <button class="btn-forge" id="btn-forge" title="The Forge öffnen">
+          🔥 The Forge
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Shell: 4 Bereiche -->
+    <main class="shell-main">
+
+      <!-- 1. Workspace-Bereich -->
+      <section class="zone zone-workspace" id="zone-workspace">
+        <div class="zone-head">
+          <h2>Workspace</h2>
+          <span class="status-badge" id="ws-status" data-state="empty">Leer</span>
+        </div>
+        <div class="zone-body" id="ws-body">
+          <div class="empty-state">
+            <span class="empty-icon">📂</span>
+            <p>Kein Workspace geladen.</p>
+            <button class="btn-action" id="btn-load-ws">Beispiel laden</button>
+          </div>
+          <!-- Filled state (hidden initially) -->
+          <div class="ws-loaded hidden" id="ws-loaded">
+            <div class="ws-meta">
+              <h3 id="ws-name"></h3>
+              <p id="ws-desc" class="ws-description"></p>
+            </div>
+            <div class="ws-detail-row">
+              <span class="detail-label">Build Target:</span>
+              <span class="detail-value" id="ws-target"></span>
+            </div>
+            <div class="ws-detail-row">
+              <span class="detail-label">Status:</span>
+              <span class="status-badge" id="ws-loaded-status"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Modul-Bereich -->
+      <section class="zone zone-modules" id="zone-modules">
+        <div class="zone-head">
+          <h2>Module</h2>
+          <span class="module-count" id="mod-count">0 aktiv</span>
+        </div>
+        <div class="zone-body" id="mod-body">
+          <div class="empty-state" id="mod-empty">
+            <span class="empty-icon">🔧</span>
+            <p>Keine Module eingebunden.</p>
+            <p class="hint">Lade einen Workspace oder öffne The Forge.</p>
+          </div>
+          <ul class="module-list hidden" id="mod-list"></ul>
+        </div>
+      </section>
+
+      <!-- 3. Output / Artifact-Bereich -->
+      <section class="zone zone-output" id="zone-output">
+        <div class="zone-head">
+          <h2>Artifacts</h2>
+        </div>
+        <div class="zone-body" id="out-body">
+          <div class="empty-state" id="out-empty">
+            <span class="empty-icon">📦</span>
+            <p>Noch keine Artifacts erzeugt.</p>
+          </div>
+          <ul class="artifact-list hidden" id="out-list"></ul>
+        </div>
+      </section>
+
+      <!-- 4. Status-Bereich -->
+      <section class="zone zone-status" id="zone-status">
+        <div class="zone-head">
+          <h2>Status</h2>
+        </div>
+        <div class="zone-body">
+          <div class="status-timeline" id="status-timeline">
+            <div class="status-entry" data-state="stable">
+              <span class="status-dot"></span>
+              <span class="status-text">Anvil bereit. Kein aktiver Workspace.</span>
+              <span class="status-time" id="status-time"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- The Forge Overlay -->
+    <div class="forge-overlay hidden" id="forge-overlay">
+      <div class="forge-panel">
+        <div class="forge-head">
+          <h2>🔥 The Forge</h2>
+          <span class="forge-subtitle">Werkzeuge bereit</span>
+          <button class="btn-close" id="btn-close-forge">✕</button>
+        </div>
+        <div class="forge-body" id="forge-body">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

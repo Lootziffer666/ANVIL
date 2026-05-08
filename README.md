@@ -31,11 +31,23 @@ That template is organized around canonical Anvil concerns:
 ## Repository Zones
 
 ```text
+app/                  Anvil Werkbank — minimale Shell-Oberfläche (HTML/CSS/JS).
+docs/                 Concept contracts, workspace model, module contract.
+examples/             Beispiel-Workspaces und Konfigurationen.
+modules/              Module, die dem MODULE_CONTRACT folgen.
 knownbugs-global/     Cross-project bug/risk/failure-pattern memory.
 principles/           UX, product, and agent-development doctrine.
 projects/             Index and status documents for active projects.
 sources/              Extraction notes from reference repositories.
 templates/            Reusable project and app scaffolds.
+```
+
+## Quick Start
+
+```bash
+# Anvil Werkbank lokal öffnen:
+open app/index.html
+# oder: python -m http.server 8000 -d app/
 ```
 
 ## Rule

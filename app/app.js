@@ -1,0 +1,194 @@
+/* ═══════════════════════════════════════════
+   Anvil — Werkbank App Logic
+   State Surface Design · Anti-Dashboard
+   ═══════════════════════════════════════════ */
+
+(function () {
+  "use strict";
+
+  // ── State ──────────────────────────────
+  let currentWorkspace = null;
+
+  // ── DOM refs ───────────────────────────
+  const $ = (sel) => document.querySelector(sel);
+
+  const wsStatus       = $("#ws-status");
+  const wsBody         = $("#ws-body");
+  const wsEmpty        = wsBody.querySelector(".empty-state");
+  const wsLoaded       = $("#ws-loaded");
+  const wsName         = $("#ws-name");
+  const wsDesc         = $("#ws-desc");
+  const wsTarget       = $("#ws-target");
+  const wsLoadedStatus = $("#ws-loaded-status");
+
+  const modCount  = $("#mod-count");
+  const modEmpty  = $("#mod-empty");
+  const modList   = $("#mod-list");
+
+  const outEmpty  = $("#out-empty");
+  const outList   = $("#out-list");
+
+  const timeline  = $("#status-timeline");
+  const statusTime = $("#status-time");
+
+  const forgeOverlay = $("#forge-overlay");
+  const forgeBody    = $("#forge-body");
+
+  // ── Init ───────────────────────────────
+  function init() {
+    statusTime.textContent = timeNow();
+
+    $("#btn-load-ws").addEventListener("click", loadExampleWorkspace);
+    $("#btn-forge").addEventListener("click", openForge);
+    $("#btn-close-forge").addEventListener("click", closeForge);
+
+    forgeOverlay.addEventListener("click", (e) => {
+      if (e.target === forgeOverlay) closeForge();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeForge();
+    });
+
+    renderForge();
+  }
+
+  // ── Workspace ──────────────────────────
+  function loadExampleWorkspace() {
+    currentWorkspace = { ...EXAMPLE_WORKSPACE };
+    renderWorkspace();
+    renderModules();
+    addStatus("stable", `Workspace „${currentWorkspace.name}" geladen.`);
+  }
+
+  function renderWorkspace() {
+    if (!currentWorkspace) return;
+
+    wsEmpty.classList.add("hidden");
+    wsLoaded.classList.remove("hidden");
+
+    wsName.textContent = currentWorkspace.name;
+    wsDesc.textContent = currentWorkspace.description;
+    wsTarget.textContent = currentWorkspace.buildTarget;
+
+    setStatusBadge(wsStatus, currentWorkspace.status);
+    setStatusBadge(wsLoadedStatus, currentWorkspace.status);
+  }
+
+  // ── Modules ────────────────────────────
+  function renderModules() {
+    if (!currentWorkspace || currentWorkspace.modules.length === 0) {
+      modEmpty.classList.remove("hidden");
+      modList.classList.add("hidden");
+      modCount.textContent = "0 aktiv";
+      return;
+    }
+
+    modEmpty.classList.add("hidden");
+    modList.classList.remove("hidden");
+    modList.innerHTML = "";
+
+    currentWorkspace.modules.forEach((modId) => {
+      const mod = MODULE_REGISTRY[modId];
+      if (!mod) return;
+
+      const li = document.createElement("li");
+      li.className = "module-item";
+      li.innerHTML = `
+        <div>
+          <div class="module-name">${mod.name}</div>
+          <div class="module-purpose">${mod.purpose}</div>
+        </div>
+        <span class="status-badge" data-state="${mod.status}">${STATE_LABELS[mod.status]}</span>
+      `;
+      modList.appendChild(li);
+    });
+
+    modCount.textContent = `${currentWorkspace.modules.length} aktiv`;
+    addStatus("adapting", `${currentWorkspace.modules.length} Module eingebunden.`);
+  }
+
+  // ── Artifacts ──────────────────────────
+  function renderArtifacts(artifacts) {
+    if (!artifacts || artifacts.length === 0) return;
+
+    outEmpty.classList.add("hidden");
+    outList.classList.remove("hidden");
+    outList.innerHTML = "";
+
+    artifacts.forEach((art) => {
+      const li = document.createElement("li");
+      li.className = "artifact-item";
+      li.innerHTML = `
+        <span class="artifact-name">${art.name}</span>
+        <span class="artifact-type">${art.type}</span>
+      `;
+      outList.appendChild(li);
+    });
+  }
+
+  // ── The Forge ──────────────────────────
+  function renderForge() {
+    forgeBody.innerHTML = "";
+
+    Object.entries(MODULE_REGISTRY).forEach(([id, mod]) => {
+      const div = document.createElement("div");
+      div.className = "forge-module";
+      div.innerHTML = `
+        <div class="forge-module-info">
+          <div class="forge-module-name">${mod.name}</div>
+          <div class="forge-module-purpose">${mod.purpose}</div>
+        </div>
+        <div class="forge-module-meta">
+          <span class="status-badge forge-module-status" data-state="${mod.status}">${STATE_LABELS[mod.status]}</span>
+          <button class="btn-forge-open" data-mod="${id}">Öffnen</button>
+        </div>
+      `;
+      forgeBody.appendChild(div);
+    });
+
+    // Open-buttons (no-op for now, but wired)
+    forgeBody.querySelectorAll(".btn-forge-open").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const modId = btn.dataset.mod;
+        addStatus("adapting", `Modul „${MODULE_REGISTRY[modId].name}" ausgewählt.`);
+        closeForge();
+      });
+    });
+  }
+
+  function openForge() {
+    forgeOverlay.classList.remove("hidden");
+  }
+
+  function closeForge() {
+    forgeOverlay.classList.add("hidden");
+  }
+
+  // ── Status Timeline ────────────────────
+  function addStatus(state, text) {
+    const entry = document.createElement("div");
+    entry.className = "status-entry";
+    entry.dataset.state = state;
+    entry.innerHTML = `
+      <span class="status-dot"></span>
+      <span class="status-text">${text}</span>
+      <span class="status-time">${timeNow()}</span>
+    `;
+    timeline.prepend(entry);
+  }
+
+  // ── Helpers ────────────────────────────
+  function setStatusBadge(el, state) {
+    el.dataset.state = state;
+    el.textContent = STATE_LABELS[state] || state;
+  }
+
+  function timeNow() {
+    const d = new Date();
+    return d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  }
+
+  // ── Boot ───────────────────────────────
+  init();
+})();

@@ -1,0 +1,522 @@
+/* ═══════════════════════════════════════════
+   Anvil Werkbank — Style
+   State Surface Design · Anti-Dashboard
+   ═══════════════════════════════════════════ */
+
+:root {
+  /* Werkstatt-Palette: dunkel, funktional, klar */
+  --bg-root:      #0e0e12;
+  --bg-zone:      #16161c;
+  --bg-zone-head: #1c1c24;
+  --bg-hover:     #22222c;
+  --bg-overlay:   rgba(0, 0, 0, 0.85);
+
+  --text-primary:   #e8e8ec;
+  --text-secondary: #8888a0;
+  --text-muted:     #55556a;
+
+  --border:       #2a2a36;
+  --border-light: #33334a;
+
+  /* Zustandsfarben */
+  --state-stable:   #3cba6e;
+  --state-adapting:  #5b8def;
+  --state-act-now:   #e8943a;
+  --state-failed:    #e04848;
+  --state-empty:     #55556a;
+
+  /* Akzent */
+  --accent:       #e8943a;
+  --accent-hover: #f0a44e;
+
+  --radius: 6px;
+  --radius-lg: 10px;
+  --font: 'Inter', 'SF Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg-root);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ──────────────────────────────── */
+
+.shell-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: var(--bg-zone);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.header-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.btn-forge {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font);
+}
+
+.btn-forge:hover {
+  background: var(--accent);
+  color: var(--bg-root);
+}
+
+/* ── Main Grid ───────────────────────────── */
+
+.shell-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 1px;
+  background: var(--border);
+  min-height: calc(100vh - 49px);
+}
+
+/* Zone layout order */
+.zone-workspace { grid-column: 1; grid-row: 1; }
+.zone-modules   { grid-column: 2; grid-row: 1; }
+.zone-output    { grid-column: 1; grid-row: 2; }
+.zone-status    { grid-column: 2; grid-row: 2; }
+
+/* ── Zone (shared) ───────────────────────── */
+
+.zone {
+  background: var(--bg-zone);
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+}
+
+.zone-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--bg-zone-head);
+  border-bottom: 1px solid var(--border);
+}
+
+.zone-head h2 {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+}
+
+.zone-body {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+/* ── Empty States ────────────────────────── */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  min-height: 180px;
+  gap: 8px;
+}
+
+.empty-icon {
+  font-size: 32px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.hint {
+  font-size: 12px !important;
+  color: var(--text-muted) !important;
+}
+
+/* ── Buttons ─────────────────────────────── */
+
+.btn-action {
+  background: var(--bg-hover);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font);
+  margin-top: 4px;
+}
+
+.btn-action:hover {
+  background: var(--border-light);
+  border-color: var(--text-muted);
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.btn-close:hover {
+  color: var(--text-primary);
+}
+
+/* ── Status Badge ────────────────────────── */
+
+.status-badge {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.status-badge[data-state="stable"]   { background: rgba(60,186,110,0.15); color: var(--state-stable); }
+.status-badge[data-state="adapting"] { background: rgba(91,141,239,0.15); color: var(--state-adapting); }
+.status-badge[data-state="act-now"]  { background: rgba(232,148,58,0.15); color: var(--state-act-now); }
+.status-badge[data-state="failed"]   { background: rgba(224,72,72,0.15); color: var(--state-failed); }
+.status-badge[data-state="empty"]    { background: rgba(85,85,106,0.15); color: var(--state-empty); }
+
+/* ── Workspace Loaded ────────────────────── */
+
+.ws-meta h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.ws-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.ws-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+}
+
+.detail-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 100px;
+}
+
+.detail-value {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+/* ── Module List ─────────────────────────── */
+
+.module-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.module-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--bg-root);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  transition: border-color 0.15s;
+}
+
+.module-item:hover {
+  border-color: var(--border-light);
+}
+
+.module-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.module-purpose {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ── Artifact List ───────────────────────── */
+
+.artifact-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.artifact-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--bg-root);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.artifact-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.artifact-type {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* ── Status Timeline ─────────────────────── */
+
+.status-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.status-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.status-entry:last-child {
+  border-bottom: none;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-entry[data-state="stable"]  .status-dot { background: var(--state-stable); }
+.status-entry[data-state="adapting"] .status-dot { background: var(--state-adapting); }
+.status-entry[data-state="act-now"]  .status-dot { background: var(--state-act-now); }
+.status-entry[data-state="failed"]   .status-dot { background: var(--state-failed); }
+
+.status-text {
+  font-size: 13px;
+  flex: 1;
+}
+
+.status-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+
+/* ── Module Count ────────────────────────── */
+
+.module-count {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ── The Forge Overlay ───────────────────── */
+
+.forge-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.15s ease;
+}
+
+.forge-overlay.hidden {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.forge-panel {
+  background: var(--bg-zone);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.forge-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.forge-head h2 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.forge-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  flex: 1;
+}
+
+.forge-body {
+  padding: 16px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forge-module {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--bg-root);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 0.15s;
+}
+
+.forge-module:hover {
+  border-color: var(--border-light);
+}
+
+.forge-module-info {
+  flex: 1;
+}
+
+.forge-module-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.forge-module-purpose {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.forge-module-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.forge-module-status {
+  font-size: 11px;
+}
+
+.btn-forge-open {
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font);
+}
+
+.btn-forge-open:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Responsive ──────────────────────────── */
+
+@media (max-width: 768px) {
+  .shell-main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+  }
+  .zone-workspace { grid-column: 1; grid-row: 1; }
+  .zone-modules   { grid-column: 1; grid-row: 2; }
+  .zone-output    { grid-column: 1; grid-row: 3; }
+  .zone-status    { grid-column: 1; grid-row: 4; }
+}
+
+/* ── Utility ─────────────────────────────── */
+
+.hidden {
+  display: none !important;
+}
