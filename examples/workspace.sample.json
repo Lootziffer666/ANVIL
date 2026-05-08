@@ -1,0 +1,30 @@
+{
+  "name": "Android Text Tool",
+  "description": "Textverarbeitung für Android — Markdown zu PDF, mit Rechtschreibprüfung.",
+  "modules": [
+    "text-tool",
+    "file-tool"
+  ],
+  "inputs": [
+    {
+      "name": "Eingabetext",
+      "type": "text/markdown"
+    },
+    {
+      "name": "Quelldatei",
+      "type": "file/*"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Verarbeiteter Text",
+      "type": "text/plain"
+    },
+    {
+      "name": "Export-PDF",
+      "type": "application/pdf"
+    }
+  ],
+  "buildTarget": "android-apk",
+  "status": "stable"
+}
