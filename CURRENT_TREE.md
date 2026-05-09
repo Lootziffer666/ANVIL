@@ -1,30 +1,40 @@
 # CURRENT_TREE.md
 
-Stand: 2026-05-08 (nach Gate A16)
+Stand: 2026-05-09 (nach Gate AX — Repo Reality Lock)
 
 ```
 ./.gitignore
 ./AGENTS.md
 ./CLAUDE.md
 ./CURRENT_TREE.md
+./GATES.md
 ./README.md
 ./REPO_ACCESS_PROOF.md
 ./app/app.js
 ./app/data.js
 ./app/index.html
+./app/platform.js
 ./app/style.css
+./app/sync.js
 ./docs/AGENT_HANDOFF_FORMAT.md
 ./docs/ANDROID_BLUEPRINT_TRACK.md
 ./docs/ANVIL_CONCEPT_CONTRACT.md
 ./docs/ARTIFACT_OUTPUT_LAYER.md
 ./docs/GATES.md
+./docs/GATE_RECONCILIATION.md
 ./docs/HUGGINGFACE_LAUNCHER.md
 ./docs/KNOWN_DRIFT_RISKS.md
+./docs/LOCALAI_INTEGRATION.md
 ./docs/MODULE_CONTRACT.md
 ./docs/NVIDIA_BUILD_MODELS.md
+./docs/OMNIROUTE_BRIDGE.md
+./docs/PAKE_DESKTOP_SHELL.md
+./docs/PLATFORM_ABSTRACTION.md
 ./docs/PROVIDER_REGISTRY.md
+./docs/REPO_REALITY_LOCK.md
 ./docs/TOKEN_MANAGEMENT.md
 ./docs/WORKSPACE_MODEL.md
+./docs/WORKSPACE_SYNC.md
 ./examples/workspace.sample.json
 ./knownbugs-global/README.md
 ./knownbugs-global/agent-failure-patterns.md
@@ -42,6 +52,7 @@ Stand: 2026-05-08 (nach Gate A16)
 ./outputs/agent-pack-example.json
 ./outputs/agent-pack-example.md
 ./outputs/registry.json
+./pake.config.json
 ./principles/README.md
 ./principles/anti-dashboard.md
 ./principles/broad-implementation-request-safety.md
@@ -113,3 +124,17 @@ Stand: 2026-05-08 (nach Gate A16)
 ./templates/modules/stage-pipeline/README.md
 ./templates/modules/validation-profiles/README.md
 ```
+
+## Änderungen seit letztem Stand (2026-05-08)
+
+### Neue Dateien (Gate AX)
+- `docs/GATE_RECONCILIATION.md` — Vollständige Bewertung A1–A20
+- `docs/REPO_REALITY_LOCK.md` — Tatsächlicher Repo-Zustand
+
+### Geänderte Dateien (Gate AX)
+- `GATES.md` — Konsolidiert, Statusklassen eingeführt
+- `docs/GATES.md` — Konsolidiert, verweist auf Root
+- `docs/KNOWN_DRIFT_RISKS.md` — 6 neue Risiken
+- `CURRENT_TREE.md` — Dieses Dokument
+- `REPO_ACCESS_PROOF.md` — Aktualisiert
+- `pake.config.json` — Name "Anvil Bellows" → "Anvil"

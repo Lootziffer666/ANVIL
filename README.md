@@ -7,7 +7,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-Android%20|%20Windows-green?style=flat-square" />
   <img src="https://img.shields.io/badge/Language-JavaScript-yellow?style=flat-square" />
-  <img src="https://img.shields.io/badge/Gates-A1--A20%20Done-brightgreen?style=flat-square" />
+  <img src="https://img.shields.io/badge/Gates-13%2F20%20Done-yellow?style=flat-square" />
   <img src="https://img.shields.io/badge/Typ-Werkbank-orange?style=flat-square" />
 </p>
 

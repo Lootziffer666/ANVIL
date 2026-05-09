@@ -27,7 +27,7 @@ npm install -g pake-cli
 ### Windows .exe
 ```bash
 pake ./app/index.html \
-  --name "Anvil Bellows" \
+  --name "Anvil" \
   --icon assets/anvil-icon.ico \
   --width 1280 --height 800 \
   --transparent \
@@ -37,7 +37,7 @@ pake ./app/index.html \
 ### macOS .dmg
 ```bash
 pake ./app/index.html \
-  --name "Anvil Bellows" \
+  --name "Anvil" \
   --icon assets/anvil-icon.icns \
   --width 1280 --height 800 \
   --targets .dmg
@@ -46,7 +46,7 @@ pake ./app/index.html \
 ### Linux .AppImage
 ```bash
 pake ./app/index.html \
-  --name "Anvil Bellows" \
+  --name "Anvil" \
   --icon assets/anvil-icon.png \
   --width 1280 --height 800 \
   --targets .appimage
@@ -56,7 +56,7 @@ pake ./app/index.html \
 
 ```json
 {
-  "name": "Anvil Bellows",
+  "name": "Anvil",
   "version": "0.1.0",
   "icon": "assets/anvil-icon",
   "width": 1280,
