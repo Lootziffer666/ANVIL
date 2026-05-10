@@ -54,9 +54,43 @@
 
 ---
 
-## 🔜 Nächste Gates
+## 🧬 Native Donor-Codebase Transplant Preparation
 
-### Gate A21: Android-APK-Builder
+| Gate | Name | Status | Dateien |
+|------|------|--------|---------|
+| AT1 | Source License & Provenance Lock | `done` | `docs/provenance/OGCODE_SOURCE_AUDIT.md`, `docs/provenance/LICENSE_DECISION.md`, `docs/provenance/THIRD_PARTY_NOTICES.md` |
+| AT2 | Donor Codebase Inventory | `done` | `docs/provenance/OGCODE_CODEBASE_INVENTORY.md`, `docs/provenance/OGCODE_FEATURE_MAP.md`, `docs/provenance/OGCODE_RISK_MAP.md` |
+| AT3 | Transplant Map: Keep / Rewrite / Drop | `done` | `docs/provenance/TRANSPLANT_MAP.md`, `docs/CODEBASE_TRANSPLANT_RULES.md` |
+| AT4 | Execution Core Skeleton | `done` | `src/core/*/README.md`, `docs/EXECUTION_CORE_ARCHITECTURE.md`, `docs/INTERNAL_EXECUTION_PLAN.md`, `docs/RUN_MODEL.md`, `docs/TASK_GRAPH_MODEL.md` |
+
+### Gate AT1 — Source License & Provenance Lock
+- **Ziel:** Lizenz, Copyright, Attribution der Donor-Codebase dokumentieren
+- **Entscheidung:** MIT-Lizenz — kompatibel. Kein Code-Import vor AT1–AT3 abgeschlossen.
+- **Kill:** Lizenz inkompatibel, Attribution unmöglich
+
+### Gate AT2 — Donor Codebase Inventory
+- **Ziel:** Donor-Repo vollständig inventarisieren — Ordner, Dateien, Capabilities, Risiken
+- **Ergebnis:** 22 Abschnitte, ~12.850 Go-Zeilen + ~8.570 Web-Zeilen dokumentiert
+- **Kill:** Repo nicht zugreifbar
+
+### Gate AT3 — Transplant Map: Keep / Rewrite / Drop
+- **Ziel:** Für jeden Donor-Bereich entscheiden: KEEP / REWRITE / DROP / DEFER / UNKNOWN
+- **Ergebnis:** 0 KEEP, 27 REWRITE, 18 DROP, 5 DEFER, 1 UNKNOWN
+- **Kill:** Donor-Code ohne Map-Eintrag in aktive Pfade kopiert
+
+### Gate AT4 — Execution Core Skeleton
+- **Ziel:** Native Zielarchitektur für spätere Transplantation anlegen (nur Skeleton, keine Execution)
+- **Ergebnis:** `src/core/` mit 11 Unterverzeichnissen + README.md je Verzeichnis + 4 Architektur-Docs
+- **Kill:** Execution-Code implementiert, Donor-Code importiert
+
+---
+
+## 🔜 Deferred Gates (warten auf Execution Core)
+
+> A21–A24 können nicht sinnvoll implementiert werden, bevor der Execution Core existiert.
+> Sie bleiben als Roadmap dokumentiert, werden aber nicht priorisiert.
+
+### Gate A21: Android-APK-Builder *(deferred until Execution Core exists)*
 - **Branch:** `gate/a21-apk-builder`
 - **To-Dos:**
   - [ ] Workspace → APK Export Pipeline
@@ -66,7 +100,7 @@
 - **Akzeptanz:** Funktionierendes APK aus Workspace
 - **Kill:** Broken APK
 
-### Gate A22: Plugin-Marketplace
+### Gate A22: Plugin-Marketplace *(deferred until Execution Core exists)*
 - **Branch:** `gate/a22-marketplace`
 - **To-Dos:**
   - [ ] Module Registry (JSON-basiert)
@@ -76,7 +110,7 @@
 - **Akzeptanz:** Module installierbar und auffindbar
 - **Kill:** Zentrale Server-Abhängigkeit
 
-### Gate A23: Agent Prompt Pack v2
+### Gate A23: Agent Prompt Pack v2 *(deferred until Execution Core exists)*
 - **Branch:** `gate/a23-prompt-pack-v2`
 - **To-Dos:**
   - [ ] Strukturiertes Prompt-Format
@@ -86,7 +120,7 @@
 - **Akzeptanz:** Agent kann Workspace lesen und modifizieren
 - **Kill:** Prompt > 100K Tokens
 
-### Gate A24: Collaborative Workspaces
+### Gate A24: Collaborative Workspaces *(deferred until Execution Core exists)*
 - **Branch:** `gate/a24-collab`
 - **To-Dos:**
   - [ ] Workspace-Export/Import (ZIP)
@@ -104,5 +138,7 @@
 |-------|----------|
 | 2026-05-08 | Gates A1–A20 initial erstellt und gepusht |
 | 2026-05-09 | Gate AX: Reconciliation — Status korrigiert, Statusklassen eingeführt |
+| 2026-05-10 | Gates AT1–AT4: Donor-Codebase Transplant Preparation angelegt |
+| 2026-05-10 | Gates A21–A24 als "deferred until Execution Core exists" markiert |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.

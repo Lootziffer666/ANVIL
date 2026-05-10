@@ -85,6 +85,39 @@ Für vollständige Details pro Gate siehe:
 
 ---
 
+## 🧬 Native Donor-Codebase Transplant Preparation
+
+> Transplant-Gates vorbereiten die spätere native Übernahme von Architekturmustern  
+> aus einer Donor-Codebase in den Anvil Execution Core.  
+> Kein Code-Import. Keine Dependency. Keine Runtime-Kopplung.  
+> Siehe: [`docs/CODEBASE_TRANSPLANT_RULES.md`](CODEBASE_TRANSPLANT_RULES.md)
+
+| Gate | Name | Status |
+|------|------|--------|
+| AT1 | Source License & Provenance Lock | `done` |
+| AT2 | Donor Codebase Inventory | `done` |
+| AT3 | Transplant Map: Keep / Rewrite / Drop | `done` |
+| AT4 | Execution Core Skeleton | `done` |
+
+### Transplant-Dokumente
+
+| Datei | Zweck |
+|-------|-------|
+| [`provenance/OGCODE_SOURCE_AUDIT.md`](provenance/OGCODE_SOURCE_AUDIT.md) | Lizenz-Audit der Donor-Codebase |
+| [`provenance/LICENSE_DECISION.md`](provenance/LICENSE_DECISION.md) | Entscheidungslogik basierend auf Lizenzstatus |
+| [`provenance/THIRD_PARTY_NOTICES.md`](provenance/THIRD_PARTY_NOTICES.md) | Attribution-Tracking (pending — keine KEEP-Entscheidungen) |
+| [`provenance/OGCODE_CODEBASE_INVENTORY.md`](provenance/OGCODE_CODEBASE_INVENTORY.md) | Strukturelles Inventar der Donor-Codebase |
+| [`provenance/OGCODE_FEATURE_MAP.md`](provenance/OGCODE_FEATURE_MAP.md) | Capability-Mapping Donor → Anvil |
+| [`provenance/OGCODE_RISK_MAP.md`](provenance/OGCODE_RISK_MAP.md) | Risikoanalyse pro Bereich |
+| [`provenance/TRANSPLANT_MAP.md`](provenance/TRANSPLANT_MAP.md) | Keep / Rewrite / Drop pro Donor-Bereich |
+| [`CODEBASE_TRANSPLANT_RULES.md`](CODEBASE_TRANSPLANT_RULES.md) | Repo-weite Transplant-Regeln |
+| [`EXECUTION_CORE_ARCHITECTURE.md`](EXECUTION_CORE_ARCHITECTURE.md) | Zielarchitektur Execution Core |
+| [`INTERNAL_EXECUTION_PLAN.md`](INTERNAL_EXECUTION_PLAN.md) | Plan-Datenmodell |
+| [`RUN_MODEL.md`](RUN_MODEL.md) | Run-Datenmodell |
+| [`TASK_GRAPH_MODEL.md`](TASK_GRAPH_MODEL.md) | Task-Datenmodell |
+
+---
+
 ## Änderungsprotokoll
 
 Jede neue Gate wird hier eingetragen. Gate-Reihenfolge wird nicht nachträglich geändert.
@@ -93,3 +126,4 @@ Jede neue Gate wird hier eingetragen. Gate-Reihenfolge wird nicht nachträglich 
 |-------|------|----------|
 | 2026-05-08 | A1–A20 | Initial erstellt |
 | 2026-05-09 | AX | Reconciliation, Statusklassen eingeführt, Status korrigiert |
+| 2026-05-10 | AT1–AT4 | Donor-Codebase Transplant Preparation angelegt |

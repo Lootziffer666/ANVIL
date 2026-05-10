@@ -1,6 +1,6 @@
 # Known Drift Risks
 
-**Letzte Aktualisierung:** 2026-05-09 (Gate AX)
+**Letzte Aktualisierung:** 2026-05-10 (Gates AT1–AT4)
 
 ---
 
@@ -47,11 +47,12 @@ State Surface: Zustand zuerst, nicht Menüs.
 **Gegenmaßnahme:** Statusklassen-System eingeführt (done/prototype/docs-only/partial/blocked/superseded). Keine Gate darf als "done" gelten, wenn nur Docs existieren.  
 **Betroffene Gates:** A7 (partial), A8 (partial), A9 (docs-only), A10 (prototype), A13 (prototype), A18 (docs-only), A20 (docs-only)
 
-### 8. Naming-Drift: "Anvil Bellows" ⚠️ AKTIV
+### 8. Naming-Drift: "Anvil Bellows" ✅ BEHOBEN
 **Risiko:** `pake.config.json` und Docs verwenden "Anvil Bellows" als Pake-Build-Name.  
 **Problem:** Laut ANVIL_CONCEPT_CONTRACT.md ist "Anvil-Bellows" ein eigenständiges IIG-Projekt (ehem. CATALON-GUARD). Nicht das Anvil-IDE.  
 **Gegenmaßnahme:** Name in pake.config.json und PAKE_DESKTOP_SHELL.md zu "Anvil" korrigieren.  
-**Dateien:** `pake.config.json`, `docs/PAKE_DESKTOP_SHELL.md`
+**Dateien:** `pake.config.json`, `docs/PAKE_DESKTOP_SHELL.md`  
+**Status:** Korrigiert — beide Dateien verwenden jetzt "Anvil" (verifiziert 2026-05-10).
 
 ### 9. Permission-Drift: Token Manager ⚠️ AKTIV
 **Risiko:** `modules/token-manager/module.json` nutzt Permission `storage.local`.  
@@ -77,3 +78,38 @@ Erlaubt sind: `filesystem.read`, `filesystem.write`, `network.api`, `network.bui
 **Risiko:** Null Tests im gesamten Repo. Kein CI/CD.  
 **Folge:** Jede Änderung kann bestehende Funktionalität brechen, ohne dass es auffällt.  
 **Gegenmaßnahme:** Mindestens Smoke-Tests für Kernfunktionen (TokenManager, AnvilSync, buildPromptPack).
+
+---
+
+## Neue Risiken (Gates AT1–AT4 identifiziert)
+
+### 13. Donor-Codebase Assimilation Drift ⚠️ AKTIV
+**Risiko:** Donor-Code wird unkontrolliert in aktive Anvil-Pfade kopiert, ohne Transplant Map, ohne Provenance, ohne Umbenennung.  
+**Folge:** Fremde Produktidentität im Anvil-Repo. Lizenz-Verletzungen. Architektur-Chaos.  
+**Gegenmaßnahmen:**
+- `docs/CODEBASE_TRANSPLANT_RULES.md` — repo-weite kanonische Regeln
+- `docs/provenance/TRANSPLANT_MAP.md` — jede Übernahme muss hier stehen
+- `docs/provenance/OGCODE_SOURCE_AUDIT.md` — Lizenz-Audit
+- Gates AT1–AT4 — vollständige Vorbereitungskette
+- Kein Code-Import ohne Map-Eintrag
+**Status:** Durch AT1–AT4 abgesichert. Risiko bleibt aktiv, solange Execution Core implementiert wird.
+
+### 14. Premature Execution Core Implementation ⚠️ AKTIV
+**Risiko:** Execution-Code wird implementiert, bevor Architektur und Transplant-Regeln stehen.  
+**Folge:** Code ohne Sicherheitskonzept (kein Command Guard, kein Review Gate). Rückbau teuer.  
+**Gegenmaßnahmen:**
+- AT4 definiert Skeleton ohne Execution-Code
+- `docs/EXECUTION_CORE_ARCHITECTURE.md` definiert Regeln
+- A21–A24 als "deferred until Execution Core exists" markiert
+- Kein Execution-Runner, Provider-Call, Shell-Runner, Branch-Automation vor Safety-Policy
+**Status:** Aktiv. AT4 Skeleton steht, aber kein Code. Nächster Schritt: Safety Policy definieren.
+
+### 15. ogcode Product Identity Leak ⚠️ AKTIV
+**Risiko:** Donor-Produktbegriffe ("ogcode", "Striker", "ogden") erscheinen in aktiven Anvil-Dateien.  
+**Folge:** Identitätsverwirrung. Markenrechtsprobleme. Unprofessioneller Eindruck.  
+**Gegenmaßnahmen:**
+- `CODEBASE_TRANSPLANT_RULES.md` Abschnitt 6: Naming Rules
+- Verbotene Begriffe in Produkt-/UI-/Core-Dateien definiert
+- Erlaubte Anvil-Begriffe definiert
+- Donor-Referenzen nur in `docs/provenance/` erlaubt
+**Status:** Aktiv. Regeln stehen. Muss bei jeder Transplant-Aktion geprüft werden.
