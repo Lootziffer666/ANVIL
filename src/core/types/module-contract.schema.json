@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "anvil/module-contract",
+  "title": "ModuleContract",
+  "description": "The module.json contract every Anvil module must satisfy. Mirrors docs/MODULE_CONTRACT.md.",
+  "type": "object",
+  "required": ["name", "purpose", "inputs", "outputs", "requiredPermissions", "canRunOffline", "canExport", "failureBehavior"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique, human-readable module name"
+    },
+    "purpose": {
+      "type": "string",
+      "description": "One sentence: what this module does"
+    },
+    "inputs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Accepted MIME-like input types"
+    },
+    "outputs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Produced MIME-like output types"
+    },
+    "requiredPermissions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "filesystem.read",
+          "filesystem.write",
+          "network.api",
+          "network.build-server",
+          "camera",
+          "clipboard"
+        ]
+      },
+      "description": "Required system permissions — only from the approved list in MODULE_CONTRACT.md"
+    },
+    "canRunOffline": {
+      "type": "boolean",
+      "description": "True if this module works without network access"
+    },
+    "canExport": {
+      "type": "boolean",
+      "description": "True if this module can export its result as an Artifact"
+    },
+    "failureBehavior": {
+      "type": "string",
+      "description": "Concrete description of what happens on failure — not 'returns an error'"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["stable", "adapting", "act-now", "failed"],
+      "description": "Current module status"
+    },
+    "version": {
+      "type": ["string", "null"],
+      "description": "Semantic version string"
+    }
+  },
+  "additionalProperties": false
+}

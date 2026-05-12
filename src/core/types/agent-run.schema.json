@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "anvil/agent-run",
+  "title": "AgentRun",
+  "description": "An ANVIL agent run — tracks who ran it, what tool, what goal, and what state it reached. Distinct from the execution Run schema in RUN_MODEL.md: this captures the agent identity and intent layer.",
+  "type": "object",
+  "required": ["run_id", "started_at", "agent", "tool", "input", "goal", "status", "changed_files", "tests_run"],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "Unique run ID — format: RUN_{YYYYMMDD}_{HHMMSS}_{NNN}",
+      "pattern": "^RUN_[0-9]{8}_[0-9]{6}_[0-9]{3}$"
+    },
+    "started_at": {
+      "type": "string",
+      "description": "ISO 8601 timestamp when the run started"
+    },
+    "finished_at": {
+      "type": ["string", "null"],
+      "description": "ISO 8601 timestamp when the run ended. null if still running."
+    },
+    "agent": {
+      "type": "string",
+      "description": "Agent identifier (e.g. 'claude-code', 'viktor-ai', 'human')"
+    },
+    "tool": {
+      "type": "string",
+      "description": "Tool or environment name (e.g. 'claude-code-cli', 'bash', 'github-actions')"
+    },
+    "input": {
+      "description": "What was given to the run — prompt string or structured input object"
+    },
+    "goal": {
+      "type": "string",
+      "description": "What the run was trying to achieve — one sentence"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["stable", "adapting", "act_now", "failed"],
+      "description": "Current run status"
+    },
+    "changed_files": {
+      "type": "array",
+      "description": "Files modified during this run",
+      "items": {
+        "type": "object",
+        "required": ["path", "action"],
+        "properties": {
+          "path": { "type": "string" },
+          "action": { "type": "string", "enum": ["create", "modify", "delete"] },
+          "diff": { "type": ["string", "null"] },
+          "timestamp": { "type": "string" },
+          "rollback_available": { "type": "boolean" }
+        }
+      }
+    },
+    "tests_run": {
+      "type": "array",
+      "description": "Tests executed during this run",
+      "items": {
+        "type": "object",
+        "required": ["test_name", "status"],
+        "properties": {
+          "test_name": { "type": "string" },
+          "status": { "type": "string", "enum": ["pass", "fail", "skip", "error"] },
+          "output": { "type": ["string", "null"] },
+          "timestamp": { "type": "string" }
+        }
+      }
+    },
+    "failure_state": {
+      "type": ["string", "null"],
+      "description": "Exact error text when status is 'failed'. Required if status === 'failed'."
+    },
+    "recovery_step": {
+      "type": ["string", "null"],
+      "description": "Concrete next action when status is 'failed'. Required if status === 'failed'."
+    },
+    "artifacts": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Output IDs produced by this run"
+    },
+    "human_review_required": {
+      "type": "boolean",
+      "description": "Whether human review is required before this run's output is used. Defaults to true.",
+      "default": true
+    },
+    "gate": {
+      "type": ["string", "null"],
+      "description": "Gate ID this run is part of (e.g. '001')"
+    }
+  },
+  "additionalProperties": false
+}

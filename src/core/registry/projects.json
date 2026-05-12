@@ -1,0 +1,127 @@
+{
+  "version": "1",
+  "updated_at": "2026-05-12",
+  "gate": "001",
+  "projects": [
+    {
+      "id": "catchit",
+      "name": "CatchIt",
+      "repo": null,
+      "status": "active",
+      "gate_phase": "Planning",
+      "notes": "State-surface UX + mobility trust tool",
+      "removed_at": null,
+      "removed_reason": null
+    },
+    {
+      "id": "flow",
+      "name": "FLOW",
+      "repo": null,
+      "status": "active",
+      "gate_phase": "Planning",
+      "notes": "Language toolchain — part of FLOW family",
+      "removed_at": null,
+      "removed_reason": null
+    },
+    {
+      "id": "spin",
+      "name": "SPIN",
+      "repo": null,
+      "status": "active",
+      "gate_phase": "Planning",
+      "notes": "Language toolchain — part of FLOW family",
+      "removed_at": null,
+      "removed_reason": null
+    },
+    {
+      "id": "loom",
+      "name": "LOOM",
+      "repo": null,
+      "status": "active",
+      "gate_phase": "Planning",
+      "notes": "Language toolchain — part of FLOW family",
+      "removed_at": null,
+      "removed_reason": null
+    },
+    {
+      "id": "smash",
+      "name": "SMASH",
+      "repo": null,
+      "status": "active",
+      "gate_phase": "Planning",
+      "notes": "Language toolchain — part of FLOW family",
+      "removed_at": null,
+      "removed_reason": null
+    },
+    {
+      "id": "borderline",
+      "name": "Borderline",
+      "repo": null,
+      "status": "active",
+      "gate_phase": "Planning",
+      "notes": "Android context reduction / Zen-OS layer",
+      "removed_at": null,
+      "removed_reason": null
+    },
+    {
+      "id": "zenos",
+      "name": "ZenOS",
+      "repo": null,
+      "status": "planned",
+      "gate_phase": "Concept",
+      "notes": "Minimal Android OS layer; scope TBD — archive if no gate defined within two milestone reviews",
+      "removed_at": null,
+      "removed_reason": null
+    },
+    {
+      "id": "grid",
+      "name": "GRID",
+      "repo": null,
+      "status": "planned",
+      "gate_phase": "Concept",
+      "notes": "Purpose TBD — awaiting gate definition",
+      "removed_at": null,
+      "removed_reason": null
+    },
+    {
+      "id": "kids-launcher",
+      "name": "Kids Launcher",
+      "repo": null,
+      "status": "planned",
+      "gate_phase": "Concept",
+      "notes": "Android launcher for children",
+      "removed_at": null,
+      "removed_reason": null
+    },
+    {
+      "id": "tabula",
+      "name": "Tabula",
+      "repo": null,
+      "status": "active",
+      "gate_phase": "Planning",
+      "notes": "Workspace cleanup utility",
+      "removed_at": null,
+      "removed_reason": null
+    },
+    {
+      "id": "pdf-splitter",
+      "name": "PDF Splitter",
+      "repo": null,
+      "status": "planned",
+      "gate_phase": "Concept",
+      "notes": "PDF processing tool",
+      "removed_at": null,
+      "removed_reason": null
+    },
+    {
+      "id": "iig",
+      "name": "Ink & Iron Glow",
+      "repo": null,
+      "status": "active",
+      "gate_phase": "Separate repo track",
+      "notes": "Tattoo-studio brand — NOT an Anvil module. Listed for tracking only. No IIG code enters Anvil.",
+      "removed_at": null,
+      "removed_reason": null
+    }
+  ]
+}

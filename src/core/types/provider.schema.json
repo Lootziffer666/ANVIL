@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "anvil/provider",
+  "title": "Provider",
+  "description": "An OPENDORK provider entry — one API endpoint with model list and fallback config.",
+  "type": "object",
+  "required": ["id", "name", "endpoint", "auth_type", "models", "status"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique provider identifier (kebab-case)",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable provider name"
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "Base URL for this provider's API"
+    },
+    "auth_type": {
+      "type": "string",
+      "enum": ["bearer", "api-key", "oauth"],
+      "description": "Authentication method"
+    },
+    "models": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "List of model IDs available at this provider"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "degraded", "disabled"],
+      "description": "Current provider status"
+    },
+    "fallback_to": {
+      "type": ["string", "null"],
+      "description": "Provider ID to fall back to when this provider fails. null = no fallback."
+    }
+  },
+  "additionalProperties": false
+}
