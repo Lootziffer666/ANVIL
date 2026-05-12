@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "anvil/gate",
+  "title": "Gate",
+  "description": "An ANVIL gate spec — the unit of verified progress.",
+  "type": "object",
+  "required": ["gate_id", "name", "status", "acceptance", "kill", "files"],
+  "properties": {
+    "gate_id": {
+      "type": "string",
+      "description": "Gate identifier (e.g. '001', 'AT4', 'AX')"
+    },
+    "name": {
+      "type": "string",
+      "description": "Short human-readable gate name"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "in_progress", "done", "blocked", "failed", "prototype", "partial", "docs-only"],
+      "description": "Current gate status"
+    },
+    "branch": {
+      "type": ["string", "null"],
+      "description": "Git branch for this gate"
+    },
+    "acceptance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["criterion", "met"],
+        "properties": {
+          "criterion": { "type": "string" },
+          "met": { "type": "boolean" },
+          "evidence": { "type": ["string", "null"] }
+        }
+      },
+      "description": "Acceptance criteria — each must be met for gate to be done"
+    },
+    "kill": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Kill criteria — if any is triggered, gate halts immediately"
+    },
+    "files": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Files created or modified by this gate"
+    },
+    "not_built": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Things intentionally NOT built in this gate"
+    },
+    "open_conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["conflict", "resolution"],
+        "properties": {
+          "conflict": { "type": "string" },
+          "resolution": { "type": "string" }
+        }
+      },
+      "description": "Naming or design conflicts and their resolutions"
+    },
+    "started_at": {
+      "type": ["string", "null"],
+      "description": "ISO 8601 timestamp when gate work began"
+    },
+    "completed_at": {
+      "type": ["string", "null"],
+      "description": "ISO 8601 timestamp when gate was marked done"
+    }
+  },
+  "additionalProperties": false
+}

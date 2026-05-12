@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "anvil/project",
+  "title": "Project",
+  "description": "An ANVIL project registry entry — a known project with status and gate phase.",
+  "type": "object",
+  "required": ["id", "name", "status", "gate_phase"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique project identifier (kebab-case)",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable project name"
+    },
+    "repo": {
+      "type": ["string", "null"],
+      "description": "GitHub repo in owner/repo format, or null if not yet on GitHub"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "paused", "archived", "planned"],
+      "description": "Current project status"
+    },
+    "gate_phase": {
+      "type": "string",
+      "description": "Current gate or milestone description"
+    },
+    "notes": {
+      "type": ["string", "null"],
+      "description": "One-sentence context, open conflict, or blocker"
+    },
+    "removed_at": {
+      "type": ["string", "null"],
+      "description": "ISO 8601 timestamp if project was removed from registry. Entries are never silently deleted."
+    },
+    "removed_reason": {
+      "type": ["string", "null"],
+      "description": "Reason for removal, required if removed_at is set"
+    }
+  },
+  "additionalProperties": false
+}

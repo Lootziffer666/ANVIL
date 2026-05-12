@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "anvil/artifact",
+  "title": "Artifact",
+  "description": "An ANVIL artifact — every output produced by a run, with ID, lifecycle, and manifest.",
+  "type": "object",
+  "required": ["output_id", "type", "lifecycle", "origin", "filename", "created_at"],
+  "properties": {
+    "output_id": {
+      "type": "string",
+      "description": "Unique artifact ID — format: OUT_{YYYYMMDD}_{HHMMSS}_{NNN}",
+      "pattern": "^OUT_[0-9]{8}_[0-9]{6}_[0-9]{3}$"
+    },
+    "type": {
+      "type": "string",
+      "description": "MIME-like artifact type",
+      "enum": [
+        "text/markdown",
+        "application/json",
+        "application/zip",
+        "text/x-diff",
+        "text/plain",
+        "application/octet-stream"
+      ]
+    },
+    "lifecycle": {
+      "type": "string",
+      "enum": ["raw", "final", "broken", "discarded"],
+      "description": "Current lifecycle state of this artifact"
+    },
+    "origin": {
+      "type": "object",
+      "required": ["module", "workspace", "run_id"],
+      "properties": {
+        "module": { "type": "string" },
+        "workspace": { "type": ["string", "null"] },
+        "run_id": { "type": "string" }
+      },
+      "description": "Where this artifact came from"
+    },
+    "filename": {
+      "type": "string",
+      "description": "Filename of the artifact (without path)"
+    },
+    "created_at": {
+      "type": "string",
+      "description": "ISO 8601 timestamp when artifact was created"
+    },
+    "size_bytes": {
+      "type": ["integer", "null"],
+      "description": "File size in bytes"
+    },
+    "checksum_sha256": {
+      "type": ["string", "null"],
+      "description": "SHA-256 checksum of the artifact file"
+    },
+    "gate": {
+      "type": ["string", "null"],
+      "description": "Gate ID this artifact belongs to"
+    },
+    "discarded_at": {
+      "type": ["string", "null"],
+      "description": "ISO 8601 timestamp if lifecycle is 'discarded'"
+    },
+    "discarded_reason": {
+      "type": ["string", "null"],
+      "description": "Reason for discarding, required if lifecycle is 'discarded'"
+    }
+  },
+  "additionalProperties": false
+}
