@@ -1,6 +1,6 @@
 # Known Drift Risks
 
-**Letzte Aktualisierung:** 2026-05-10 (Gates AT1–AT4)
+**Letzte Aktualisierung:** 2026-05-20 (Drift-Bereinigung)
 
 ---
 
@@ -41,11 +41,12 @@ State Surface: Zustand zuerst, nicht Menüs.
 
 ## Neue Risiken (Gate AX entdeckt)
 
-### 7. Status-Inflation ⚠️ AKTIV
+### 7. Status-Inflation ✅ BEHOBEN
 **Risiko:** Gates als "done" markiert, obwohl nur Docs vorhanden (A9, A18, A20).  
 **Realität:** 5 von 20 Gates sind nicht `done` — davon 3 reine Docs-Gates.  
 **Gegenmaßnahme:** Statusklassen-System eingeführt (done/prototype/docs-only/partial/blocked/superseded). Keine Gate darf als "done" gelten, wenn nur Docs existieren.  
-**Betroffene Gates:** A7 (partial), A8 (partial), A9 (docs-only), A10 (prototype), A13 (prototype), A18 (docs-only), A20 (docs-only)
+**Betroffene Gates:** A7 (partial), A8 (partial), A9 (docs-only), A10 (prototype), A13 (prototype), A18 (docs-only), A20 (docs-only)  
+**Status:** GATES.md durch Gate AX aktualisiert — alle Gates tragen jetzt korrekten Status. Verifiziert 2026-05-20.
 
 ### 8. Naming-Drift: "Anvil Bellows" ✅ BEHOBEN
 **Risiko:** `pake.config.json` und Docs verwenden "Anvil Bellows" als Pake-Build-Name.  
@@ -54,11 +55,10 @@ State Surface: Zustand zuerst, nicht Menüs.
 **Dateien:** `pake.config.json`, `docs/PAKE_DESKTOP_SHELL.md`  
 **Status:** Korrigiert — beide Dateien verwenden jetzt "Anvil" (verifiziert 2026-05-10).
 
-### 9. Permission-Drift: Token Manager ⚠️ AKTIV
+### 9. Permission-Drift: Token Manager ✅ BEHOBEN
 **Risiko:** `modules/token-manager/module.json` nutzt Permission `storage.local`.  
-**Problem:** `storage.local` ist nicht in der erlaubten Permission-Liste von MODULE_CONTRACT.md.  
-Erlaubt sind: `filesystem.read`, `filesystem.write`, `network.api`, `network.build-server`, `camera`, `clipboard`.  
-**Gegenmaßnahme:** Entweder `storage.local` in MODULE_CONTRACT.md aufnehmen, oder Token Manager Permission ändern.
+**Problem:** `storage.local` war nicht in der erlaubten Permission-Liste von MODULE_CONTRACT.md.  
+**Gegenmaßnahme:** `storage.local` in `docs/MODULE_CONTRACT.md` nachgetragen. Verifiziert 2026-05-20.
 
 ### 10. Execution-Gap ⚠️ KRITISCH
 **Risiko:** Anvil hat kein Execution Core. Module werden definiert, aber nie ausgeführt.  
@@ -66,13 +66,13 @@ Erlaubt sind: `filesystem.read`, `filesystem.write`, `network.api`, `network.bui
 **Gegenmaßnahme:** Execution Core muss als eigene Gate priorisiert werden (vor A21–A24).  
 **Vorschlag:** Gate AX+1 oder Gate-Nummer reservieren.
 
-### 11. Docs-vs-Code-Drift ⚠️ AKTIV
+### 11. Docs-vs-Code-Drift ⚠️ TEILWEISE BEHOBEN
 **Risiko:** Docs beschreiben Features, die nicht existieren, als ob sie vorhanden wären.  
-**Beispiele:**
-- `docs/OMNIROUTE_BRIDGE.md` beschreibt Integration detailliert — kein Code vorhanden
-- `docs/ANDROID_BLUEPRINT_TRACK.md` listet "✅ Aktiv" für android-blueprint Target — existiert nur in data.js
-- `docs/PAKE_DESKTOP_SHELL.md` enthält Build-Befehle — kein Build möglich (keine Icons, kein Pake installiert)
-**Gegenmaßnahme:** Docs müssen ihren Status klar deklarieren (z.B. "Status: Referenz" wie bei A18/A20, aber konsequenter).
+**Stand 2026-05-20:**
+- `docs/OMNIROUTE_BRIDGE.md` — ✅ trägt `**Status:** Referenz`
+- `docs/PAKE_DESKTOP_SHELL.md` — ✅ trägt `**Status:** Referenz`
+- `docs/ANDROID_BLUEPRINT_TRACK.md` — ✅ `android-blueprint` Target-Status auf `docs-only` korrigiert; `**Status:** docs-only` gesetzt  
+**Verbleibend:** Docs-only Gates (A9, A20) enthalten Implementierungsdetails ohne Execution-Code. Akzeptiert bis Execution Core existiert.
 
 ### 12. Test-Lücke
 **Risiko:** Null Tests im gesamten Repo. Kein CI/CD.  
@@ -112,4 +112,4 @@ Erlaubt sind: `filesystem.read`, `filesystem.write`, `network.api`, `network.bui
 - Verbotene Begriffe in Produkt-/UI-/Core-Dateien definiert
 - Erlaubte Anvil-Begriffe definiert
 - Donor-Referenzen nur in `docs/provenance/` erlaubt
-**Status:** Aktiv. Regeln stehen. Muss bei jeder Transplant-Aktion geprüft werden.
+**Status:** Regeln stehen. Compliance-Prüfung 2026-05-20: Keine verbotenen Begriffe ("ogcode", "Striker", "ogden") außerhalb `docs/provenance/` gefunden. Muss bei jeder Transplant-Aktion erneut geprüft werden.

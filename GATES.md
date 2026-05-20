@@ -140,5 +140,6 @@
 | 2026-05-09 | Gate AX: Reconciliation — Status korrigiert, Statusklassen eingeführt |
 | 2026-05-10 | Gates AT1–AT4: Donor-Codebase Transplant Preparation angelegt |
 | 2026-05-10 | Gates A21–A24 als "deferred until Execution Core exists" markiert |
+| 2026-05-20 | Drift-Bereinigung: Risk 7 (Status-Inflation) ✅, Risk 9 (Permission-Drift) ✅; storage.local in MODULE_CONTRACT.md ergänzt; ANDROID_BLUEPRINT_TRACK Status auf docs-only gesetzt; GATE_RECONCILIATION A18 Pake-Name-Befund aktualisiert; ogcode-Compliance verifiziert |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.
