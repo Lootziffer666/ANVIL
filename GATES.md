@@ -1,7 +1,7 @@
 # 🚪 GATES — ANVIL
 
 > Statusklassen: `done` · `prototype` · `docs-only` · `partial` · `blocked` · `superseded`  
-> Letzte Reconciliation: 2026-05-09 (Gate AX) · Letzte Aktualisierung: 2026-05-20 (Gates B1–B2)  
+> Letzte Reconciliation: 2026-05-09 (Gate AX) · Letzte Aktualisierung: 2026-05-20 (Gate B5)
 > Vollständige Analyse: [`docs/GATE_RECONCILIATION.md`](docs/GATE_RECONCILIATION.md)
 
 ---
@@ -41,7 +41,7 @@
 ## Docs-Only Gates
 
 | Gate | Name | Status | Dateien | Was fehlt |
-|------|------|--------|---------|-----------|
+|------|------|--------|---------|----------|
 | A9 | Tasker/App-Factory Blueprint | `docs-only` | `docs/ANDROID_BLUEPRINT_TRACK.md` | Kein Modul-Verzeichnis, kein Scaffolding-Code |
 | A18 | Pake Desktop Shell | `docs-only` | `pake.config.json`, `docs/PAKE_DESKTOP_SHELL.md` | Kein Build, keine Icons, Name falsch ("Anvil Bellows") |
 | A20 | OmniRoute Gateway Bridge | `docs-only` | `docs/OMNIROUTE_BRIDGE.md` | Kein Bridge-Code, nur Provider-Eintrag |
@@ -96,7 +96,7 @@
 | B2 | KMP Core Contracts | `done` | `anvil-kmp/core/contracts/`, `anvil-kmp/core/quality/` | B1 |
 | B3 | KMP Core Domain | `geplant` | `anvil-kmp/core/domain/` | B2 |
 | B4 | KMP Core Pipeline | `geplant` | `anvil-kmp/core/pipeline/` | B3 |
-| B5 | KMP Bellows (LLM-Routing) | `geplant` | `anvil-kmp/modules/bellows/` | B2 |
+| B5 | KMP Bellows (LLM-Routing) | `done` | `anvil-kmp/modules/bellows/` (ProviderAdapter, BellowsRouter, BellowsLegacyClient, AnvilBellowsBridgeAdapter) | B2 |
 | B6 | KMP Knight (Datei-I/O) | `geplant` | `anvil-kmp/modules/forge/knight/` | B3 |
 
 ### Gate B1 — Safety Policy
@@ -109,6 +109,16 @@
 - **Ergebnis:** `ModuleSlotContract`, `BellowsContract`, `CredentialVaultContract`, `QualityState`, `QualityGuard`, `QualityReport`
 - **Besonders:** `CredentialVaultContract` adressiert Risk 5 (Token Manager Plaintext) für alle künftigen Implementierungen
 - **Kill:** Donor-Code importiert, Execution-Code geschrieben (nur Interfaces!)
+
+### Gate B5 — KMP Bellows (LLM-Routing)
+- **Ziel:** Erste Bellows-Implementierung als Bridge-Adapter zu ANVIL-BELLOWS (Android)
+- **Ergebnis:**
+  - `commonMain`: `ProviderAdapter` (pluggable adapter interface), `BellowsRouter` (implements `BellowsContract`)
+  - `androidMain`: `BellowsLegacyClient` (fun interface), `AnvilBellowsBridgeAdapter` (delegates to ANVIL-BELLOWS)
+- **Wiring in `:app:android`:** `BellowsRouter(listOf(AnvilBellowsBridgeAdapter(legacyClient)))`
+- **Privacy-Mode:** `LOCAL_ONLY` wirft `BellowsExhaustedException` — kein Cloud-Fallback. `AnvilBellowsBridgeAdapter.isLocal = false` → wird bei `LOCAL_ONLY` korrekt ausgeschlossen.
+- **Nächste Gate (Bellows-KMP-Migration):** ANVIL-BELLOWS Internals nach KMP portieren, Bridge entfernt
+- **Kill:** Donor-Code importiert, Credentials im Klartext, `LOCAL_ONLY` mit Cloud-Fallback
 
 ---
 
@@ -170,5 +180,6 @@
 | 2026-05-20 | Drift-Bereinigung: Risk 7 (Status-Inflation) ✅, Risk 9 (Permission-Drift) ✅; storage.local in MODULE_CONTRACT.md ergänzt; ANDROID_BLUEPRINT_TRACK Status auf docs-only gesetzt; GATE_RECONCILIATION A18 Pake-Name-Befund aktualisiert; ogcode-Compliance verifiziert |
 | 2026-05-20 | Gate B1: Safety Policy (docs/SAFETY_POLICY.md) — Risk 14 behoben |
 | 2026-05-20 | Gate B2: KMP Core Contracts (core/contracts + core/quality) — Risk 10 teilweise, Risk 5 adressiert |
+| 2026-05-20 | Gate B5: KMP Bellows — BellowsRouter + AnvilBellowsBridgeAdapter (Bridge zu ANVIL-BELLOWS) |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.
