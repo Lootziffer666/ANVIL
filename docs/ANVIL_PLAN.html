@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANVIL — Gesamtplan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0e0e0f;
+    --bg2:      #141416;
+    --bg3:      #1c1c1f;
+    --border:   #2a2a2e;
+    --text:     #e8e8ec;
+    --muted:    #888;
+    --accent:   #e8a030;       /* Amboss-Gold */
+    --accent2:  #5c9cf5;       /* Blau */
+    --stable:   #3cb36a;
+    --degraded: #5c9cf5;
+    --blocked:  #e8a030;
+    --failed:   #e05555;
+    --mono:     'IBM Plex Mono', monospace;
+    --sans:     'IBM Plex Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── Layout ─────────────────────────────────────────────── */
+  .layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 100vh;
+  }
+
+  nav {
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 32px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .nav-logo {
+    padding: 0 20px 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .nav-logo h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .nav-logo p {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: var(--mono);
+  }
+
+  nav a {
+    display: block;
+    padding: 7px 20px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.15s, background 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  nav a:hover, nav a.active {
+    color: var(--text);
+    background: var(--bg3);
+    border-left-color: var(--accent);
+  }
+
+  nav .nav-section {
+    padding: 16px 20px 6px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  main {
+    padding: 60px 72px;
+    max-width: 960px;
+  }
+
+  /* ── Typography ─────────────────────────────────────────── */
+  h1 {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 60px 0 20px;
+    padding-top: 60px;
+    border-top: 1px solid var(--border);
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 28px 0 12px;
+    color: var(--accent);
+    font-family: var(--mono);
+  }
+
+  p { margin-bottom: 16px; color: #ccc; }
+
+  strong { color: var(--text); font-weight: 600; }
+
+  /* ── Badges ─────────────────────────────────────────────── */
+  .badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+
+  .badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+
+  .badge-accent   { background: rgba(232,160,48,0.15); color: var(--accent); border: 1px solid rgba(232,160,48,0.3); }
+  .badge-blue     { background: rgba(92,156,245,0.12); color: var(--accent2); border: 1px solid rgba(92,156,245,0.25); }
+  .badge-stable   { background: rgba(60,179,106,0.12); color: var(--stable); border: 1px solid rgba(60,179,106,0.25); }
+  .badge-muted    { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
+
+  /* ── Code blocks ─────────────────────────────────────────── */
+  pre {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    margin: 16px 0 24px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--accent);
+  }
+
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    color: #c9d1d9;
+  }
+
+  /* Syntax-ish coloring */
+  .kw { color: #ff79c6; }
+  .ty { color: #8be9fd; }
+  .fn { color: #50fa7b; }
+  .st { color: #f1fa8c; }
+  .cm { color: #6272a4; font-style: italic; }
+  .nm { color: var(--accent); }
+
+  /* ── Tables ─────────────────────────────────────────────── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 13.5px;
+  }
+
+  th {
+    background: var(--bg3);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── State pills ─────────────────────────────────────────── */
+  .s-stable   { color: var(--stable);   font-weight: 600; font-family: var(--mono); font-size: 12px; }
+  .s-degraded { color: var(--degraded); font-weight: 600; font-family: var(--mono); font-size: 12px; }
+  .s-blocked  { color: var(--blocked);  font-weight: 600; font-family: var(--mono); font-size: 12px; }
+  .s-failed   { color: var(--failed);   font-weight: 600; font-family: var(--mono); font-size: 12px; }
+
+  /* Gate pills */
+  .gate-done    { display: inline-block; background: rgba(60,179,106,0.12); color: var(--stable); border: 1px solid rgba(60,179,106,0.25); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: var(--mono); }
+  .gate-partial { display: inline-block; background: rgba(232,160,48,0.12); color: var(--blocked); border: 1px solid rgba(232,160,48,0.25); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: var(--mono); }
+  .gate-deferred{ display: inline-block; background: var(--bg3); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: var(--mono); }
+  .gate-todo    { display: inline-block; background: rgba(92,156,245,0.10); color: var(--accent2); border: 1px solid rgba(92,156,245,0.2); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: var(--mono); }
+
+  /* ── Module cards ─────────────────────────────────────────── */
+  .module-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .module-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    transition: border-color 0.15s;
+  }
+
+  .module-card:hover { border-color: var(--accent); }
+
+  .module-card .card-id {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .module-card .card-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .module-card .card-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .module-card .card-libs {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .lib-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: rgba(232,160,48,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(232,160,48,0.2);
+  }
+
+  /* ── Pipeline ─────────────────────────────────────────────── */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+
+  .pipe-step {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .pipe-step.gate-step { border-color: var(--accent); color: var(--accent); }
+  .pipe-step.human-step { border-color: var(--accent2); color: var(--accent2); }
+
+  .pipe-arrow {
+    color: var(--muted);
+    padding: 0 8px;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* ── Phase timeline ───────────────────────────────────────── */
+  .timeline { margin: 24px 0; }
+
+  .tl-item {
+    display: flex;
+    gap: 20px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .tl-item:last-child { border-bottom: none; }
+
+  .tl-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .tl-done    { background: rgba(60,179,106,0.12); color: var(--stable); border: 1px solid rgba(60,179,106,0.25); }
+  .tl-active  { background: rgba(232,160,48,0.12); color: var(--blocked); border: 1px solid rgba(232,160,48,0.25); }
+  .tl-pending { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
+
+  .tl-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .tl-content p  { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+
+  /* ── Kill criteria ─────────────────────────────────────────── */
+  .kill-box {
+    background: rgba(224,85,85,0.07);
+    border: 1px solid rgba(224,85,85,0.25);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin: 16px 0;
+  }
+
+  .kill-box h4 {
+    color: var(--failed);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+
+  .kill-box ul { list-style: none; }
+  .kill-box li {
+    font-size: 13px;
+    color: #ccc;
+    padding: 4px 0;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .kill-box li::before {
+    content: "✕";
+    position: absolute;
+    left: 0;
+    color: var(--failed);
+    font-weight: 600;
+  }
+
+  /* ── Info box ─────────────────────────────────────────────── */
+  .info-box {
+    background: rgba(92,156,245,0.07);
+    border: 1px solid rgba(92,156,245,0.2);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 13.5px;
+    color: #c5d0e0;
+  }
+
+  .info-box strong { color: var(--accent2); }
+
+  /* ── Scrollbar ────────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── Responsive ───────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    nav { position: static; height: auto; }
+    main { padding: 32px 24px; }
+    .module-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ── NAV ─────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-logo">
+    <h2>⚒ ANVIL</h2>
+    <p>Gesamtplan · Stand 2026-05-20</p>
+  </div>
+
+  <div class="nav-section">Übersicht</div>
+  <a href="#was-ist-anvil">Was ist Anvil?</a>
+  <a href="#stack">Stack</a>
+  <a href="#architektur">Architektur</a>
+
+  <div class="nav-section">Design</div>
+  <a href="#module">Module</a>
+  <a href="#pipeline">Run-Pipeline</a>
+  <a href="#bellows">Bellows</a>
+  <a href="#knight">Knight</a>
+  <a href="#qualitaet">Quality Guard</a>
+
+  <div class="nav-section">Plan</div>
+  <a href="#phasen">Phasen</a>
+  <a href="#mvp">MVP-Schnitt</a>
+  <a href="#gates">Gates</a>
+
+  <div class="nav-section">Governance</div>
+  <a href="#kill">Kill-Kriterien</a>
+  <a href="#naming">Naming</a>
+  <a href="#donor">Donor-Disziplin</a>
+</nav>
+
+<!-- ── MAIN ─────────────────────────────────────────────────── -->
+<main>
+
+  <!-- HERO -->
+  <h1>⚒ <span>ANVIL</span> — Gesamtplan</h1>
+  <p class="hero-sub">KI-native agentische IDE · Kotlin Multiplatform · Gate-getriebene Entwicklung</p>
+
+  <div class="badges">
+    <span class="badge badge-accent">KMP + Compose</span>
+    <span class="badge badge-blue">Android + JVM Desktop</span>
+    <span class="badge badge-stable">Stand: 2026-05-20</span>
+    <span class="badge badge-muted">Phase: KMP Bootstrap</span>
+  </div>
+
+  <!-- 1. WAS IST ANVIL -->
+  <h2 id="was-ist-anvil">Was ist Anvil?</h2>
+
+  <p>Anvil ist eine <strong>KI-native, agentische IDE</strong> — eine Werkbank für einen Entwickler (Christian Amine). Kein Showroom, kein Dashboard, kein App Store. Alles, was Anvil produziert, hat eine ID und eine Provenienz.</p>
+
+  <table>
+    <tr><th>✅ Ist</th><th>❌ Ist nicht</th></tr>
+    <tr><td>Eine <strong>Werkbank</strong> — Workspaces mit Modulen</td><td>Kein App Store</td></tr>
+    <tr><td>Ein <strong>Launchpad</strong> (<em>The Forge</em>)</td><td>Kein Dashboard</td></tr>
+    <tr><td>Ein <strong>Output-System</strong> — alles mit ID</td><td>Kein Framework / Library</td></tr>
+    <tr><td>Ein <strong>KMP-Monorepo</strong> mit stabilen Contracts</td><td>Kein Mono-Lith</td></tr>
+  </table>
+
+  <h3>Zustands-Grammatik</h3>
+  <p>Vier kanonische Zustände gelten für <em>alles</em>: Workspaces, Module, Runs, Artifacts.</p>
+  <table>
+    <tr><th>Zustand</th><th>Bedeutung</th><th>Farb-Intent</th></tr>
+    <tr><td><span class="s-stable">STABLE</span></td><td>Alles in Ordnung, kein Handlungsbedarf</td><td>Grün</td></tr>
+    <tr><td><span class="s-degraded">DEGRADED</span></td><td>Eingeschränkt funktionsfähig</td><td>Blau</td></tr>
+    <tr><td><span class="s-blocked">BLOCKED</span></td><td>Wartet auf Bedingung</td><td>Orange</td></tr>
+    <tr><td><span class="s-failed">FAILED</span></td><td>Fehler, Eingriff nötig</td><td>Rot</td></tr>
+  </table>
+
+  <!-- 2. STACK -->
+  <h2 id="stack">Stack</h2>
+
+  <table>
+    <tr><th>Layer</th><th>Technologie</th><th>Warum</th></tr>
+    <tr><td>Sprache</td><td><strong>Kotlin Multiplatform (KMP)</strong></td><td>Einmal schreiben, Android + Desktop</td></tr>
+    <tr><td>UI</td><td><strong>Compose Multiplatform</strong> (Desktop) + <strong>Jetpack Compose</strong> (Android)</td><td>Native UI, kein JS-Engine-Overhead</td></tr>
+    <tr><td>Serialization</td><td><strong>kotlinx.serialization</strong></td><td>JSON-as-source-of-truth, @Serializable</td></tr>
+    <tr><td>Async</td><td><strong>kotlinx.coroutines</strong></td><td>Structured concurrency, suspend-Funktionen</td></tr>
+    <tr><td>File I/O</td><td><strong>Okio</strong> (Square)</td><td>KMP-kompatibel, Kotlin-nativ</td></tr>
+    <tr><td>Persistence</td><td><strong>SQLDelight</strong></td><td>Typsichere SQL-Queries, KMP-kompatibel</td></tr>
+    <tr><td>HTTP (Cloud LLM)</td><td><strong>Ktor Client</strong></td><td>KMP-kompatibel, async</td></tr>
+    <tr><td>Diff-Anzeige</td><td><strong>diff-match-patch</strong> (Apache 2.0)</td><td>1 Java-Datei, vendor-bar, kein JS</td></tr>
+    <tr><td>Build</td><td><strong>Gradle KTS</strong> + Version Catalog</td><td>Typsicher, maintainbar</td></tr>
+    <tr><td>DI</td><td>Koin oder kotlin-inject <em>(Phase 5.5 — offen)</em></td><td>KMP-kompatibel (Hilt disqualifiziert)</td></tr>
+  </table>
+
+  <!-- 3. ARCHITEKTUR -->
+  <h2 id="architektur">Architektur</h2>
+
+  <pre>
+<span class="cm">// Modul-Abhängigkeits-Richtung (nie umkehren)</span>
+<span class="ty">:core:contracts</span>
+    ↑
+<span class="ty">:core:domain</span>  <span class="ty">:core:pipeline</span>  <span class="ty">:core:quality</span>
+    ↑
+<span class="ty">:modules:forge:knight</span>  <span class="ty">:modules:bellows</span>
+    ↑
+<span class="ty">:surfaces:commander</span>
+    ↑
+<span class="ty">:app:android</span>  <span class="ty">:app:desktop</span></pre>
+
+  <pre>
+anvil-kmp/
+├── core/
+│   ├── contracts/      <span class="cm">← ModuleSlotContract, BellowsContract, CheckpointCapable</span>
+│   ├── domain/         <span class="cm">← Workspace, Run, Artifact, Snapshot, MemoryEntry</span>
+│   ├── pipeline/       <span class="cm">← RunStep sealed, RunResult sealed, StepRecord</span>
+│   └── quality/        <span class="cm">← QualityState, QualityGuard, QualityReport</span>
+├── modules/
+│   ├── forge/
+│   │   └── knight/     <span class="cm">← Okio, Unified Diff, diff-match-patch</span>
+│   └── bellows/        <span class="cm">← BellowsRouter, Provider-Adapters, LocalModelBridge</span>
+├── surfaces/
+│   └── commander/      <span class="cm">← Compose Desktop Shell (Workspace-Browser, Diff-Viewer)</span>
+└── app/
+    ├── android/         <span class="cm">← Compose Android Entry Point</span>
+    └── desktop/         <span class="cm">← Compose Desktop Entry Point (JVM)</span></pre>
+
+  <!-- 4. MODULE -->
+  <h2 id="module">Module im Detail</h2>
+
+  <div class="module-grid">
+
+    <div class="module-card">
+      <div class="card-id">:core:contracts</div>
+      <div class="card-name">Contracts</div>
+      <div class="card-desc">Stabile Interfaces. Jedes Modul implementiert <code>ModuleSlotContract</code>. Kein Code, nur Verträge.</div>
+      <div class="card-libs">
+        <span class="lib-tag">kotlinx.serialization</span>
+        <span class="lib-tag">coroutines</span>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="card-id">:core:domain</div>
+      <div class="card-name">Domain</div>
+      <div class="card-desc">Alle Domain-Typen als <code>@Serializable data class</code>. JSON-as-source-of-truth. IDs als <code>@JvmInline value class</code>.</div>
+      <div class="card-libs">
+        <span class="lib-tag">@Serializable</span>
+        <span class="lib-tag">ISO-8601</span>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="card-id">:core:pipeline</div>
+      <div class="card-name">Pipeline</div>
+      <div class="card-desc">Run-Ablauf als sealed types: <code>PLAN → PATCH → DIFF → GATE → BUILD → TEST → ARTIFACT</code>. <code>RunResult</code> als Success / DegradedAtStep / BlockedAtGate / ModuleFailure.</div>
+      <div class="card-libs">
+        <span class="lib-tag">sealed class</span>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="card-id">:core:quality</div>
+      <div class="card-name">Quality Guard</div>
+      <div class="card-desc">QualityState-Enforcement. PR-Safety: Änderungen außerhalb <code>Workspace.rootPath</code> → FAILED. Triade: Quality Guard + FLUBBER + Räumliche Ordnung.</div>
+      <div class="card-libs">
+        <span class="lib-tag">STABLE</span>
+        <span class="lib-tag">DEGRADED</span>
+        <span class="lib-tag">BLOCKED</span>
+        <span class="lib-tag">FAILED</span>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="card-id">:modules:forge:knight</div>
+      <div class="card-name">Knight — Datei-I/O</div>
+      <div class="card-desc">Datei-Lesen/-Schreiben über Okio. Unified Diff Format. diff-match-patch für Diff-Berechnung und -Anzeige. Kein Tree-sitter im MVP.</div>
+      <div class="card-libs">
+        <span class="lib-tag">Okio 3.9</span>
+        <span class="lib-tag">diff-match-patch</span>
+        <span class="lib-tag">Unified Diff</span>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="card-id">:modules:bellows</div>
+      <div class="card-name">Bellows — LLM-Routing</div>
+      <div class="card-desc">LLM-Routing-Layer. BellowsRouter → ProviderRegistry → QuotaManager. PrivacyMode.LOCAL_ONLY ist hartes Enforcement. Einziger KMP-Split im gesamten System.</div>
+      <div class="card-libs">
+        <span class="lib-tag">Ktor</span>
+        <span class="lib-tag">LiteRT (Android)</span>
+        <span class="lib-tag">llama.cpp JNI (JVM)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 5. PIPELINE -->
+  <h2 id="pipeline">Run-Pipeline (MVP)</h2>
+
+  <div class="pipeline">
+    <div class="pipe-step">PLAN</div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">PATCH</div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">DIFF</div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step gate-step">GATE</div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step human-step">Mensch</div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">ARTIFACT</div>
+  </div>
+
+  <table>
+    <tr><th>Gate</th><th>Prüfung</th><th>Kill-Bedingung</th></tr>
+    <tr><td><strong>Plan Gate</strong></td><td>Sind die geplanten Änderungen sinnvoll? Keine Wildcard-Pfade?</td><td>Änderungen außerhalb <code>rootPath</code></td></tr>
+    <tr><td><strong>Diff Gate</strong></td><td>Ist der Patch korrekt? Compiliert der Code? Gibt es Regressionen?</td><td>Compilation-Fehler, fehlende Tests</td></tr>
+    <tr><td><strong>Artifact Gate</strong></td><td>Ist der Output exportierbar? Hat er Provenance-Metadaten?</td><td>Kein Manifest, keine ID</td></tr>
+  </table>
+
+  <!-- 6. BELLOWS -->
+  <h2 id="bellows">Bellows — LLM-Routing-Layer</h2>
+
+  <pre>
+<span class="kw">interface</span> <span class="ty">BellowsContract</span> : <span class="ty">ModuleSlotContract</span> {
+    <span class="kw">suspend fun</span> <span class="fn">route</span>(request: <span class="ty">ModelRequest</span>): <span class="ty">ModelResponse</span>
+    <span class="kw">fun</span> <span class="fn">estimateCost</span>(request: <span class="ty">ModelRequest</span>): <span class="ty">CostEstimate</span>
+    <span class="kw">fun</span> <span class="fn">localAvailable</span>(): <span class="ty">Boolean</span>
+}
+
+<span class="kw">enum class</span> <span class="ty">PrivacyMode</span> {
+    <span class="nm">LOCAL_ONLY</span>,    <span class="cm">// Hartes Enforcement — nie Cloud-Fallback</span>
+    <span class="nm">CLOUD_ALLOWED</span>
+}
+
+<span class="kw">enum class</span> <span class="ty">ModelCapability</span> {
+    <span class="nm">REASONING</span>, <span class="nm">CODE_PATCH</span>, <span class="nm">SUMMARIZATION</span>, <span class="nm">EMBEDDING</span>, <span class="nm">FUNCTION_CALL</span>
+}</pre>
+
+  <p>Der einzige legale <code>expect/actual</code>-Split im gesamten System:</p>
+
+  <table>
+    <tr><th>Target</th><th>Bridge</th><th>Technologie</th></tr>
+    <tr><td><code>commonMain</code></td><td><code>expect class LocalModelBridge</code></td><td>Interface only</td></tr>
+    <tr><td><code>androidMain</code></td><td><code>LiteRTModelBridge</code></td><td>Google LiteRT (TFLite successor)</td></tr>
+    <tr><td><code>jvmMain</code></td><td><code>LlamaCppModelBridge</code></td><td>llama.cpp via JNI</td></tr>
+  </table>
+
+  <!-- 7. KNIGHT -->
+  <h2 id="knight">Knight — Datei-I/O & Diff</h2>
+
+  <table>
+    <tr><th>Komponente</th><th>Bibliothek</th><th>Lizenz</th><th>Warum</th></tr>
+    <tr><td>Datei-I/O</td><td>Okio (Square)</td><td>Apache 2.0</td><td>KMP-kompatibel, bewährt</td></tr>
+    <tr><td>Diff-Format</td><td>Unified Diff</td><td>Standard</td><td>Lesbar für Menschen + LLMs</td></tr>
+    <tr><td>Diff-Engine</td><td>diff-match-patch (Google)</td><td>Apache 2.0</td><td>1 Java-Datei, vendor-bar, JetBrains/VSCode nutzen es</td></tr>
+  </table>
+
+  <div class="info-box">
+    <strong>Kein Tree-sitter im MVP.</strong> Tree-sitter kommt in Phase 2 (Syntax-Highlighting, semantisches Diff). Im MVP genügt Unified Diff + diff-match-patch für alle Anzeige-Anforderungen.<br><br>
+    <strong>Kein Monaco / CodeMirror.</strong> Beide benötigen einen JS-Engine — inkompatibel mit Compose Multiplatform.
+  </div>
+
+  <!-- 8. QUALITY GUARD -->
+  <h2 id="qualitaet">Quality Guard</h2>
+
+  <pre>
+<span class="kw">interface</span> <span class="ty">ModuleSlotContract</span> {
+    <span class="kw">val</span> id: <span class="ty">ModuleId</span>
+    <span class="kw">val</span> version: <span class="ty">SemVer</span>
+    <span class="kw">val</span> capabilities: <span class="ty">Set</span>&lt;<span class="ty">Capability</span>&gt;
+    <span class="kw">val</span> requires: <span class="ty">Set</span>&lt;<span class="ty">Capability</span>&gt;
+    <span class="kw">suspend fun</span> <span class="fn">boot</span>(ctx: <span class="ty">ModuleContext</span>): <span class="ty">BootResult</span>
+    <span class="kw">suspend fun</span> <span class="fn">handle</span>(step: <span class="ty">RunStep</span>): <span class="ty">StepResult</span>
+    <span class="kw">fun</span> <span class="fn">qualityState</span>(): <span class="ty">QualityState</span>   <span class="cm">// Pflicht — nie hardcode STABLE</span>
+}</pre>
+
+  <p><strong>Triade der Reject-Tests</strong> (alle drei müssen bestehen):</p>
+  <ol style="padding-left:20px; color:#ccc; font-size:14px; line-height:2;">
+    <li><strong>Quality Guard</strong> — QualityState ≥ DEGRADED für alle Module</li>
+    <li><strong>FLUBBER Acceptance Test</strong> — Output ist vom Mensch abnehmbar</li>
+    <li><strong>Räumliche Ordnung</strong> — Alle Dateien liegen im erwarteten Pfad</li>
+  </ol>
+
+  <!-- 9. PHASEN -->
+  <h2 id="phasen">Planungsphasen</h2>
+
+  <div class="timeline">
+
+    <div class="tl-item">
+      <span class="tl-badge tl-done">✓ Phase 5.1</span>
+      <div class="tl-content">
+        <h4>Architektur-Skelett</h4>
+        <p>Gradle-Module, Modul-Slot-Contract (7 Felder), Run-Pipeline als sealed types, Plugin-Loader-Konzept. Vollständig entschieden.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <span class="tl-badge tl-done">✓ Phase 5.2</span>
+      <div class="tl-content">
+        <h4>Datenmodell</h4>
+        <p>Workspace, Run, Artifact, Snapshot, MemoryEntry als JSON-as-source-of-truth. SQLDelight-Schema. ContentRef sealed class. Alle Typen @Serializable.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <span class="tl-badge tl-done">✓ Phase 5.3</span>
+      <div class="tl-content">
+        <h4>Bellows — LLM-Routing</h4>
+        <p>BellowsContract, BellowsRouter, RoutingPolicy, QuotaManager, ProviderRegistry. PrivacyMode als hartes Enforcement. LocalModelBridge als einziger KMP-Split. BellowsExhaustedException statt Silent-Fail.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <span class="tl-badge tl-done">✓ Phase 10.2</span>
+      <div class="tl-content">
+        <h4>MVP-Schnitt</h4>
+        <p>Kleinster sinnvoller ANVIL: ein Coding-Workflow — Plan → Patch → Diff Gate → Artifact Gate → Mensch entscheidet → Commit oder Discard. Kein Temper, Kiln, LAN-Sync, Wisdom-Persistenz im MVP.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <span class="tl-badge tl-done">✓ Phase 4.2</span>
+      <div class="tl-content">
+        <h4>Gate-Plan</h4>
+        <p>Acceptance-Kriterien für alle MVP-Gates. Drei MVP-Gates: Plan Gate, Diff Gate, Artifact Gate. Kill-Kriterien definiert. Triade der Reject-Tests.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <span class="tl-badge tl-done">✓ Phase 3.4</span>
+      <div class="tl-content">
+        <h4>Knight / Editor-Core</h4>
+        <p>MVP-Stack entschieden: Okio + Unified Diff + diff-match-patch. Kein Tree-sitter (Phase 2). Kein Monaco/CodeMirror (JS-Engine-Konflikt). diff-match-patch Apache 2.0, 1 Java-Datei.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <span class="tl-badge tl-active">▶ KMP Bootstrap</span>
+      <div class="tl-content">
+        <h4>KMP-Monorepo aufbauen</h4>
+        <p>libs.versions.toml + settings.gradle.kts + build.gradle.kts. Gradle-Skeleton für alle Module. Erste Kotlin-Dateien: ModuleSlotContract + Domain-Typen.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <span class="tl-badge tl-pending">○ Phase 5.5</span>
+      <div class="tl-content">
+        <h4>DI-Entscheidung</h4>
+        <p>Koin vs. kotlin-inject. Beide KMP-kompatibel. Hilt disqualifiziert (Android-only). Entscheidung bei erster Implementierung.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <span class="tl-badge tl-pending">○ Phase 6–9</span>
+      <div class="tl-content">
+        <h4>Implementierung</h4>
+        <p>Alle Feature-Implementierungen (Forge, Warden, Wisdom, Commander). Werden bei Bedarf geplant — nicht vorab speckt.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 10. MVP -->
+  <h2 id="mvp">MVP-Schnitt</h2>
+
+  <p>Der kleinste sinnvolle ANVIL, der einem Entwickler echten Wert liefert:</p>
+
+  <table>
+    <tr><th>Feature</th><th>MVP</th><th>Phase 2+</th></tr>
+    <tr><td>Assisted Coding Workflow</td><td>✅ Plan → Patch → Gate → Commit</td><td>—</td></tr>
+    <tr><td>LLM-Routing</td><td>✅ Bellows (lokal + 1 Cloud-Provider)</td><td>Mehrere Provider, Quota-UI</td></tr>
+    <tr><td>Datei-I/O</td><td>✅ Knight (Okio + Unified Diff)</td><td>Tree-sitter, semantisch</td></tr>
+    <tr><td>UI</td><td>✅ Commander (Desktop, minimal)</td><td>Commander v2, Android Surface</td></tr>
+    <tr><td>Persistence</td><td>✅ SQLDelight (Workspace, Run, Artifact)</td><td>Wisdom (Memory-Persistence)</td></tr>
+    <tr><td>Build-Optimierung</td><td>❌ — Standard Gradle</td><td>kekegdsz/smart-build Pattern</td></tr>
+    <tr><td>LAN-Sync</td><td>❌</td><td>Phase 3.5 (Moshi/KMP-Socket)</td></tr>
+    <tr><td>Temper (Code-Analyse)</td><td>❌</td><td>Phase 2</td></tr>
+    <tr><td>Kiln (Build-Trigger)</td><td>❌</td><td>Phase 2</td></tr>
+    <tr><td>iOS</td><td>❌ — Explizit kein Scope</td><td>Nie im aktuellen Plan</td></tr>
+  </table>
+
+  <!-- 11. GATES -->
+  <h2 id="gates">Gate-Überblick</h2>
+
+  <h3>A-Series (abgeschlossen — JS/Pake-Ära)</h3>
+  <table>
+    <tr><th>Gate</th><th>Name</th><th>Status</th></tr>
+    <tr><td>A1</td><td>Repo Access Proof</td><td><span class="gate-done">done</span></td></tr>
+    <tr><td>A2</td><td>Naming & Concept Contract</td><td><span class="gate-done">done</span></td></tr>
+    <tr><td>A3</td><td>Shell & Surface</td><td><span class="gate-done">done</span></td></tr>
+    <tr><td>A4</td><td>Workspace Model</td><td><span class="gate-done">done</span></td></tr>
+    <tr><td>A5</td><td>Module Slot Contract</td><td><span class="gate-done">done</span></td></tr>
+    <tr><td>A6–A11</td><td>Forge, Artifact, Blueprint, Provider, …</td><td><span class="gate-done">done</span></td></tr>
+    <tr><td>A12–A19</td><td>Prompt Pack, Token Manager, Sync, …</td><td><span class="gate-done">done / partial</span></td></tr>
+    <tr><td>A21–A24</td><td>APK-Builder, Marketplace, …</td><td><span class="gate-deferred">deferred</span></td></tr>
+    <tr><td>AX</td><td>Repo Reality Lock</td><td><span class="gate-done">done</span></td></tr>
+  </table>
+
+  <h3>AT-Series (Transplant Prep — abgeschlossen)</h3>
+  <table>
+    <tr><th>Gate</th><th>Name</th><th>Ergebnis</th></tr>
+    <tr><td>AT1</td><td>Source License & Provenance Lock</td><td><span class="gate-done">done</span> — MIT-kompatibel</td></tr>
+    <tr><td>AT2</td><td>Donor Codebase Inventory</td><td><span class="gate-done">done</span> — 22 Abschnitte, ~21K Zeilen</td></tr>
+    <tr><td>AT3</td><td>Transplant Map: Keep/Rewrite/Drop</td><td><span class="gate-done">done</span> — 0 Keep, 27 Rewrite, 18 Drop</td></tr>
+    <tr><td>AT4</td><td>Execution Core Skeleton</td><td><span class="gate-done">done</span> — <code>src/core/</code> angelegt</td></tr>
+  </table>
+
+  <h3>B-Series (KMP — offen)</h3>
+  <table>
+    <tr><th>Gate</th><th>Name</th><th>Status</th></tr>
+    <tr><td>B1</td><td>KMP Bootstrap (Gradle, libs.versions.toml)</td><td><span class="gate-todo">offen → nächste</span></td></tr>
+    <tr><td>B2</td><td>:core:contracts — ModuleSlotContract, BellowsContract</td><td><span class="gate-todo">offen</span></td></tr>
+    <tr><td>B3</td><td>:core:domain — Workspace, Run, Artifact, Snapshot, Memory</td><td><span class="gate-todo">offen</span></td></tr>
+    <tr><td>B4</td><td>:core:pipeline — RunStep sealed, RunResult sealed</td><td><span class="gate-todo">offen</span></td></tr>
+    <tr><td>B5</td><td>:core:quality — QualityState, QualityGuard</td><td><span class="gate-todo">offen</span></td></tr>
+    <tr><td>B6</td><td>:modules:forge:knight — Okio + Diff</td><td><span class="gate-todo">offen</span></td></tr>
+    <tr><td>B7</td><td>:modules:bellows — BellowsRouter + 1 Provider</td><td><span class="gate-todo">offen</span></td></tr>
+    <tr><td>B8</td><td>:surfaces:commander — Compose Desktop Shell</td><td><span class="gate-todo">offen</span></td></tr>
+    <tr><td>B9</td><td>MVP-Integration — Plan → Patch → Gate → Artifact</td><td><span class="gate-todo">offen</span></td></tr>
+  </table>
+
+  <!-- 12. KILL-KRITERIEN -->
+  <h2 id="kill">Kill-Kriterien</h2>
+
+  <div class="kill-box">
+    <h4>Harte Kill-Kriterien (sofort FAILED)</h4>
+    <ul>
+      <li>Änderung außerhalb <code>Workspace.rootPath</code> — immer Exception, nie silent</li>
+      <li><code>PrivacyMode.LOCAL_ONLY</code> + Cloud-Request — sofort <code>BellowsExhaustedException</code></li>
+      <li>Modul ohne <code>ModuleSlotContract</code>-Implementierung</li>
+      <li>Zirkuläre Modul-Abhängigkeit (z.B. <code>:core</code> importiert <code>:modules</code>)</li>
+      <li>Donor-Code ohne Mapping in Transplant Map in aktive Pfade kopiert</li>
+    </ul>
+  </div>
+
+  <div class="kill-box">
+    <h4>Prozess-Kill-Kriterien (Gate nicht passierbar)</h4>
+    <ul>
+      <li>Commit ohne Gate-Referenz</li>
+      <li>PR ohne Definition-of-Done-Check</li>
+      <li><code>allWarningsAsErrors = true</code> verletzt — kein Suppression erlaubt</li>
+      <li>Raw String als ID statt <code>@JvmInline value class</code></li>
+      <li>Neues Modul ohne <code>qualityState()</code>-Implementierung</li>
+    </ul>
+  </div>
+
+  <!-- 13. NAMING -->
+  <h2 id="naming">Kanonisches Naming</h2>
+
+  <table>
+    <tr><th>Konzept</th><th>Kanonischer Name</th><th>Verbotene Alternativen</th></tr>
+    <tr><td>LLM-Routing-Layer</td><td><strong>Bellows</strong> / <code>BellowsContract</code></td><td><del>Provider Hub, AI Layer, OPENDORK</del></td></tr>
+    <tr><td>Datei-I/O + Diff</td><td><strong>Knight</strong></td><td><del>FileHandler, DiffEngine</del></td></tr>
+    <tr><td>Modul-Launchpad</td><td><strong>The Forge</strong></td><td><del>Module Store, App Launcher, Dashboard</del></td></tr>
+    <tr><td>Sicherheits-Guard</td><td><strong>Warden</strong></td><td><del>Safety Engine, CATALON-GUARD</del></td></tr>
+    <tr><td>LLM-Anfrage</td><td><code>ModelRequest</code></td><td><del>AIRequest, LLMRequest</del></td></tr>
+    <tr><td>Datenschutz-Modus</td><td><code>PrivacyMode.LOCAL_ONLY</code></td><td><del>offlineMode, localMode</del></td></tr>
+    <tr><td>Lauf-Pipeline</td><td><code>RunStep</code>, <code>RunResult</code></td><td><del>TaskStep, ExecutionResult</del></td></tr>
+    <tr><td>Modul-Schnittstelle</td><td><code>ModuleSlotContract</code></td><td><del>ModuleInterface, Plugin</del></td></tr>
+  </table>
+
+  <!-- 14. DONOR -->
+  <h2 id="donor">Donor-Disziplin</h2>
+
+  <p>ANVIL nutzt externe Repos als <strong>Pattern-Donor</strong>, nicht als Code-Donor.</p>
+
+  <table>
+    <tr><th>Donor-Repo</th><th>Pattern</th><th>Was übernommen wird</th><th>Was nicht</th></tr>
+    <tr>
+      <td><a href="https://github.com/kekegdsz/android-gradle-smart-build" style="color:var(--accent2)">kekegdsz/android-gradle-smart-build</a></td>
+      <td>Git-Diff → Module-Map → BFS → TaskGraph-Pruning</td>
+      <td>Algorithmus-Logik, KMP-Adaptation</td>
+      <td>Groovy-Script direkt, Android-only Plugin-Detection</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/nickel-lang/diff-match-patch" style="color:var(--accent2)">google/diff-match-patch</a></td>
+      <td>Diff-Berechnung + Patch-Anzeige</td>
+      <td>1 Java-Datei (Apache 2.0), vendor-bar</td>
+      <td>—</td>
+    </tr>
+  </table>
+
+  <div class="info-box">
+    <strong>Donor-Disziplin-Regeln:</strong><br>
+    Kein blinder Code-Import. Kein Identity-Takeover (fremde Namen übernehmen). Pattern-Adoption only. Jeder Donor-Code braucht einen Eintrag in <code>docs/provenance/</code>.
+  </div>
+
+  <!-- FOOTER -->
+  <div style="margin-top:80px; padding-top:24px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; font-family:var(--mono);">
+    ANVIL Gesamtplan · Stand 2026-05-20 · KMP Bootstrap Phase
+  </div>
+
+</main>
+</div>
+
+<script>
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('h2[id]');
+  const navLinks = document.querySelectorAll('nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const link = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -60% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

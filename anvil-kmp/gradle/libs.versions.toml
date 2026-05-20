@@ -1,0 +1,71 @@
+# ANVIL KMP — Version Catalog
+# Stand: 2026-05-20
+# Vor dem ersten Build alle Versionen auf aktuellen Stable prüfen.
+# Referenz: https://kotlinlang.org/docs/releases.html
+
+[versions]
+
+# ── Core ─────────────────────────────────────────────────────────────────────
+kotlin                  = "2.0.21"          # kotlinlang.org/docs/releases
+agp                     = "8.7.3"           # developer.android.com/build/releases
+compose-multiplatform   = "1.7.3"           # github.com/JetBrains/compose-multiplatform
+
+# ── KotlinX ──────────────────────────────────────────────────────────────────
+kotlinx-coroutines      = "1.9.0"
+kotlinx-serialization   = "1.7.3"
+
+# ── Storage ──────────────────────────────────────────────────────────────────
+sqldelight              = "2.0.2"           # github.com/cashapp/sqldelight
+okio                    = "3.9.0"           # square.github.io/okio
+
+# ── Network / HTTP (Bellows cloud adapters) ───────────────────────────────────
+ktor                    = "3.0.3"           # ktor.io
+
+# ── Diff (Knight — Unified Diff display) ─────────────────────────────────────
+# diff-match-patch: single Java file, Apache 2.0
+# Wird direkt als src/commonMain vendored — keine externe Dep nötig.
+
+# ── DI (deferred — Phase 5.5) ─────────────────────────────────────────────────
+# koin                  = "4.0.0"           # Kandidat A
+# kotlin-inject         = "0.7.2"           # Kandidat B
+
+# ── Android ──────────────────────────────────────────────────────────────────
+android-compileSdk     = "35"
+android-minSdk         = "26"              # Android 8+
+android-targetSdk      = "35"
+
+
+[libraries]
+
+# KotlinX
+kotlinx-coroutines-core     = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core",     version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-android  = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android",  version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json  = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json",  version.ref = "kotlinx-serialization" }
+
+# Okio (Knight — File I/O)
+okio                        = { group = "com.squareup.okio",      name = "okio",                        version.ref = "okio" }
+
+# SQLDelight (Warden — persistence)
+sqldelight-runtime          = { group = "app.cash.sqldelight",    name = "runtime",                     version.ref = "sqldelight" }
+sqldelight-coroutines       = { group = "app.cash.sqldelight",    name = "coroutines-extensions",       version.ref = "sqldelight" }
+sqldelight-android          = { group = "app.cash.sqldelight",    name = "android-driver",              version.ref = "sqldelight" }
+sqldelight-jvm              = { group = "app.cash.sqldelight",    name = "sqlite-driver",               version.ref = "sqldelight" }
+
+# Ktor (Bellows — Cloud Provider Adapters)
+ktor-client-core            = { group = "io.ktor",                name = "ktor-client-core",            version.ref = "ktor" }
+ktor-client-okhttp          = { group = "io.ktor",                name = "ktor-client-okhttp",          version.ref = "ktor" }   # android
+ktor-client-java            = { group = "io.ktor",                name = "ktor-client-java",            version.ref = "ktor" }   # jvm/desktop
+ktor-client-content-neg    = { group = "io.ktor",                name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-json     = { group = "io.ktor",                name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
+
+[plugins]
+
+kotlin-multiplatform        = { id = "org.jetbrains.kotlin.multiplatform",       version.ref = "kotlin" }
+kotlin-android              = { id = "org.jetbrains.kotlin.android",              version.ref = "kotlin" }
+kotlin-serialization        = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+compose-multiplatform       = { id = "org.jetbrains.compose",                    version.ref = "compose-multiplatform" }
+compose-compiler            = { id = "org.jetbrains.kotlin.plugin.compose",      version.ref = "kotlin" }
+android-application         = { id = "com.android.application",                  version.ref = "agp" }
+android-library             = { id = "com.android.library",                      version.ref = "agp" }
+sqldelight                  = { id = "app.cash.sqldelight",                      version.ref = "sqldelight" }
