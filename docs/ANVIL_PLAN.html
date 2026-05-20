@@ -1,935 +1,1360 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="warm-paper">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ANVIL — Gesamtplan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:wght@300;400;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --bg:       #0e0e0f;
-    --bg2:      #141416;
-    --bg3:      #1c1c1f;
-    --border:   #2a2a2e;
-    --text:     #e8e8ec;
-    --muted:    #888;
-    --accent:   #e8a030;       /* Amboss-Gold */
-    --accent2:  #5c9cf5;       /* Blau */
-    --stable:   #3cb36a;
-    --degraded: #5c9cf5;
-    --blocked:  #e8a030;
-    --failed:   #e05555;
-    --mono:     'IBM Plex Mono', monospace;
-    --sans:     'IBM Plex Sans', sans-serif;
-  }
+/* ── IIG Design Tokens ───────────────────────────────────── */
+:root {
+  /* Palette */
+  --iig-cream-white:   #F6F2EB;
+  --iig-warm-paper:    #F4F0EA;
+  --iig-soft-sand:     #E8DFD0;
+  --iig-warm-ink:      #2A2A2A;
+  --iig-anthracite:    #3B3B3B;
+  --iig-charcoal-bg:   #1A1D21;
+  --iig-oxide-red:     #8F1D1D;
+  --iig-oxide-lifted:  #B4362E;
+  --iig-warm-amber:    #C89A3C;
+  --iig-line-warm:     #D7CAB8;
+  --iig-soft-iron:     #6B6560;
 
-  html { scroll-behavior: smooth; }
+  /* Semantic (light default) */
+  --bg-primary:   var(--iig-cream-white);
+  --bg-secondary: var(--iig-warm-paper);
+  --bg-surface:   var(--iig-soft-sand);
+  --text-primary: var(--iig-warm-ink);
+  --text-secondary: var(--iig-soft-iron);
+  --accent:       var(--iig-oxide-red);
+  --accent-2:     var(--iig-warm-amber);
+  --border:       var(--iig-line-warm);
+  --border-strong: var(--iig-warm-ink);
+  --code-bg:      #EDE8E0;
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 15px;
-    line-height: 1.7;
-  }
+  /* State colors */
+  --stable:   #2D7A4F;
+  --degraded: #2563A8;
+  --blocked:  #B07A10;
+  --failed:   #8F1D1D;
 
-  /* ── Layout ─────────────────────────────────────────────── */
-  .layout {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    min-height: 100vh;
-  }
+  /* Typography */
+  --font-display: "Bebas Neue", Georgia, serif;
+  --font-body:    "Source Sans 3", system-ui, sans-serif;
+  --font-utility: "Merriweather", Georgia, serif;
+  --font-mono:    "Courier New", Courier, monospace;
 
-  nav {
-    background: var(--bg2);
-    border-right: 1px solid var(--border);
-    padding: 32px 0;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
-    flex-shrink: 0;
-  }
+  /* Motion */
+  --motion-hover:       160ms ease-out;
+  --motion-materialize: 520ms cubic-bezier(.16, 1, .3, 1);
 
-  .nav-logo {
-    padding: 0 20px 28px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 16px;
-  }
+  /* Layout */
+  --nav-width: 230px;
+}
 
-  .nav-logo h2 {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--accent);
-    letter-spacing: 0.05em;
-  }
+[data-theme="charcoal-room"] {
+  --bg-primary:   #1A1D21;
+  --bg-secondary: #141619;
+  --bg-surface:   var(--iig-warm-ink);
+  --text-primary: var(--iig-cream-white);
+  --text-secondary: var(--iig-line-warm);
+  --accent:       var(--iig-oxide-lifted);
+  --accent-2:     #D4AA52;
+  --border:       var(--iig-anthracite);
+  --border-strong: var(--iig-line-warm);
+  --code-bg:      #25292E;
+  --stable:   #3CB36A;
+  --degraded: #5C9CF5;
+  --blocked:  #E8A030;
+  --failed:   #E05555;
+}
 
-  .nav-logo p {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 4px;
-    font-family: var(--mono);
-  }
+html { scroll-behavior: smooth; }
 
-  nav a {
-    display: block;
-    padding: 7px 20px;
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 13px;
-    transition: color 0.15s, background 0.15s;
-    border-left: 2px solid transparent;
-  }
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.75;
+  transition: background var(--motion-materialize), color var(--motion-materialize);
+}
 
-  nav a:hover, nav a.active {
-    color: var(--text);
-    background: var(--bg3);
-    border-left-color: var(--accent);
-  }
+/* ── Layout ──────────────────────────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: var(--nav-width) 1fr;
+  min-height: 100vh;
+}
 
-  nav .nav-section {
-    padding: 16px 20px 6px;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--muted);
-    font-weight: 600;
-  }
+/* ── Sidebar Nav ─────────────────────────────────────────── */
+nav {
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  padding: 28px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  transition: background var(--motion-materialize), border-color var(--motion-materialize);
+}
 
-  main {
-    padding: 60px 72px;
-    max-width: 960px;
-  }
+nav::-webkit-scrollbar { width: 4px; }
+nav::-webkit-scrollbar-track { background: transparent; }
+nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  /* ── Typography ─────────────────────────────────────────── */
-  h1 {
-    font-size: 40px;
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-    margin-bottom: 12px;
-  }
+.nav-logo {
+  padding: 0 20px 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+  transition: border-color var(--motion-materialize);
+}
 
-  h1 span { color: var(--accent); }
+.nav-logo .wordmark {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  line-height: 1;
+  transition: color var(--motion-materialize);
+}
 
-  .hero-sub {
-    font-size: 16px;
-    color: var(--muted);
-    margin-bottom: 48px;
-    font-weight: 300;
-  }
+.nav-logo .tagline {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  margin-top: 4px;
+  letter-spacing: 0.06em;
+  transition: color var(--motion-materialize);
+}
 
-  h2 {
-    font-size: 24px;
-    font-weight: 600;
-    margin: 60px 0 20px;
-    padding-top: 60px;
-    border-top: 1px solid var(--border);
-    color: var(--text);
-    letter-spacing: -0.01em;
-  }
+.nav-section-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding: 16px 20px 6px;
+  font-family: var(--font-body);
+  transition: color var(--motion-materialize);
+}
 
-  h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+nav a {
+  display: block;
+  padding: 7px 20px;
+  font-size: 0.825rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: color var(--motion-hover), border-color var(--motion-hover), background var(--motion-hover);
+}
 
-  h3 {
-    font-size: 16px;
-    font-weight: 600;
-    margin: 28px 0 12px;
-    color: var(--accent);
-    font-family: var(--mono);
-  }
+nav a:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border-left-color: var(--border);
+}
 
-  p { margin-bottom: 16px; color: #ccc; }
+nav a.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  font-weight: 600;
+  background: var(--bg-surface);
+}
 
-  strong { color: var(--text); font-weight: 600; }
+/* ── Theme Toggle ─────────────────────────────────────────── */
+.theme-toggle {
+  margin: 20px 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 12px 6px 8px;
+  transition: background var(--motion-hover), border-color var(--motion-hover);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  width: calc(100% - 40px);
+  justify-content: center;
+}
 
-  /* ── Badges ─────────────────────────────────────────────── */
-  .badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+.theme-toggle:hover {
+  background: var(--border);
+  color: var(--text-primary);
+}
 
-  .badge {
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-weight: 500;
-    letter-spacing: 0.03em;
-  }
+.toggle-icon {
+  font-size: 0.9rem;
+  transition: transform var(--motion-materialize);
+}
 
-  .badge-accent   { background: rgba(232,160,48,0.15); color: var(--accent); border: 1px solid rgba(232,160,48,0.3); }
-  .badge-blue     { background: rgba(92,156,245,0.12); color: var(--accent2); border: 1px solid rgba(92,156,245,0.25); }
-  .badge-stable   { background: rgba(60,179,106,0.12); color: var(--stable); border: 1px solid rgba(60,179,106,0.25); }
-  .badge-muted    { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
+[data-theme="charcoal-room"] .toggle-icon { transform: rotate(180deg); }
 
-  /* ── Code blocks ─────────────────────────────────────────── */
-  pre {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px 24px;
-    overflow-x: auto;
-    margin: 16px 0 24px;
-    font-family: var(--mono);
-    font-size: 13px;
-    line-height: 1.6;
-  }
+/* ── Main Content ─────────────────────────────────────────── */
+main {
+  max-width: 860px;
+  padding: 60px 56px;
+}
 
-  code {
-    font-family: var(--mono);
-    font-size: 12px;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    padding: 2px 6px;
-    border-radius: 3px;
-    color: var(--accent);
-  }
+/* ── Sections ─────────────────────────────────────────────── */
+.section {
+  margin-bottom: 72px;
+  padding-bottom: 72px;
+  border-bottom: 1px solid var(--border);
+  transition: border-color var(--motion-materialize);
+}
 
-  pre code {
-    background: none;
-    border: none;
-    padding: 0;
-    font-size: inherit;
-    color: #c9d1d9;
-  }
+.section:last-child {
+  border-bottom: none;
+}
 
-  /* Syntax-ish coloring */
-  .kw { color: #ff79c6; }
-  .ty { color: #8be9fd; }
-  .fn { color: #50fa7b; }
-  .st { color: #f1fa8c; }
-  .cm { color: #6272a4; font-style: italic; }
-  .nm { color: var(--accent); }
+.section-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-family: var(--font-body);
+  margin-bottom: 8px;
+  transition: color var(--motion-materialize);
+}
 
-  /* ── Tables ─────────────────────────────────────────────── */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 16px 0 24px;
-    font-size: 13.5px;
-  }
+h1, h2 {
+  font-family: var(--font-display);
+  letter-spacing: 0.03em;
+  line-height: 1.05;
+}
 
-  th {
-    background: var(--bg3);
-    color: var(--muted);
-    font-weight: 600;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 10px 14px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-  }
+h1 {
+  font-size: clamp(2.8rem, 5vw, 4.2rem);
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  transition: color var(--motion-materialize);
+}
 
-  td {
-    padding: 10px 14px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-  }
+h1 span.accent { color: var(--accent); }
 
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(255,255,255,0.02); }
+h2 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  transition: color var(--motion-materialize);
+}
 
-  /* ── State pills ─────────────────────────────────────────── */
-  .s-stable   { color: var(--stable);   font-weight: 600; font-family: var(--mono); font-size: 12px; }
-  .s-degraded { color: var(--degraded); font-weight: 600; font-family: var(--mono); font-size: 12px; }
-  .s-blocked  { color: var(--blocked);  font-weight: 600; font-family: var(--mono); font-size: 12px; }
-  .s-failed   { color: var(--failed);   font-weight: 600; font-family: var(--mono); font-size: 12px; }
+h3 {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin: 28px 0 10px;
+  transition: color var(--motion-materialize);
+}
 
-  /* Gate pills */
-  .gate-done    { display: inline-block; background: rgba(60,179,106,0.12); color: var(--stable); border: 1px solid rgba(60,179,106,0.25); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: var(--mono); }
-  .gate-partial { display: inline-block; background: rgba(232,160,48,0.12); color: var(--blocked); border: 1px solid rgba(232,160,48,0.25); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: var(--mono); }
-  .gate-deferred{ display: inline-block; background: var(--bg3); color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: var(--mono); }
-  .gate-todo    { display: inline-block; background: rgba(92,156,245,0.10); color: var(--accent2); border: 1px solid rgba(92,156,245,0.2); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: var(--mono); }
+p {
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  transition: color var(--motion-materialize);
+}
 
-  /* ── Module cards ─────────────────────────────────────────── */
-  .module-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin: 20px 0;
-  }
+p strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
 
-  .module-card {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-    transition: border-color 0.15s;
-  }
+/* ── Hero ─────────────────────────────────────────────────── */
+.hero-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
 
-  .module-card:hover { border-color: var(--accent); }
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 3px;
+  font-family: var(--font-body);
+}
 
-  .module-card .card-id {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
+.badge-red    { background: var(--accent); color: #fff; }
+.badge-amber  { background: var(--accent-2); color: #fff; }
+.badge-outline { border: 1.5px solid var(--border-strong); color: var(--text-primary); }
 
-  .module-card .card-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 8px;
-  }
+/* ── Lead / Callout ───────────────────────────────────────── */
+.lead {
+  font-family: var(--font-utility);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  font-style: italic;
+  transition: color var(--motion-materialize);
+}
 
-  .module-card .card-desc {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.5;
-  }
+.callout {
+  background: var(--bg-surface);
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px;
+  margin: 24px 0;
+  border-radius: 0 4px 4px 0;
+  transition: background var(--motion-materialize), border-color var(--motion-materialize);
+}
 
-  .module-card .card-libs {
-    margin-top: 12px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
+.callout p { margin: 0; }
 
-  .lib-tag {
-    font-family: var(--mono);
-    font-size: 10px;
-    padding: 2px 7px;
-    border-radius: 3px;
-    background: rgba(232,160,48,0.1);
-    color: var(--accent);
-    border: 1px solid rgba(232,160,48,0.2);
-  }
+.callout-amber {
+  border-left-color: var(--accent-2);
+}
 
-  /* ── Pipeline ─────────────────────────────────────────────── */
-  .pipeline {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    margin: 20px 0;
-    overflow-x: auto;
-  }
+/* ── Tables ───────────────────────────────────────────────── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 20px 0;
+}
 
-  .pipe-step {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 12px 18px;
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
 
-  .pipe-step.gate-step { border-color: var(--accent); color: var(--accent); }
-  .pipe-step.human-step { border-color: var(--accent2); color: var(--accent2); }
+th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  border-bottom: 1.5px solid var(--border-strong);
+  font-family: var(--font-body);
+  transition: color var(--motion-materialize), border-color var(--motion-materialize);
+}
 
-  .pipe-arrow {
-    color: var(--muted);
-    padding: 0 8px;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  vertical-align: top;
+  transition: color var(--motion-materialize), border-color var(--motion-materialize);
+}
 
-  /* ── Phase timeline ───────────────────────────────────────── */
-  .timeline { margin: 24px 0; }
+td:first-child { color: var(--text-primary); font-weight: 600; }
+tr:last-child td { border-bottom: none; }
 
-  .tl-item {
-    display: flex;
-    gap: 20px;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--border);
-    align-items: flex-start;
-  }
+tr:hover td { background: var(--bg-surface); }
 
-  .tl-item:last-child { border-bottom: none; }
+/* ── Code ─────────────────────────────────────────────────── */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  background: var(--code-bg);
+  color: var(--accent);
+  padding: 1px 5px;
+  border-radius: 3px;
+  transition: background var(--motion-materialize), color var(--motion-materialize);
+}
 
-  .tl-badge {
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 4px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    min-width: 80px;
-    text-align: center;
-  }
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px;
+  overflow-x: auto;
+  margin: 16px 0;
+  transition: background var(--motion-materialize), border-color var(--motion-materialize);
+}
 
-  .tl-done    { background: rgba(60,179,106,0.12); color: var(--stable); border: 1px solid rgba(60,179,106,0.25); }
-  .tl-active  { background: rgba(232,160,48,0.12); color: var(--blocked); border: 1px solid rgba(232,160,48,0.25); }
-  .tl-pending { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
+pre code {
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.825rem;
+  line-height: 1.6;
+  padding: 0;
+  border-radius: 0;
+}
 
-  .tl-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-  .tl-content p  { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+/* ── State Pills ──────────────────────────────────────────── */
+.state-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
 
-  /* ── Kill criteria ─────────────────────────────────────────── */
-  .kill-box {
-    background: rgba(224,85,85,0.07);
-    border: 1px solid rgba(224,85,85,0.25);
-    border-radius: 8px;
-    padding: 18px 20px;
-    margin: 16px 0;
-  }
+.state-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 16px;
+  transition: background var(--motion-materialize), border-color var(--motion-materialize);
+}
 
-  .kill-box h4 {
-    color: var(--failed);
-    font-family: var(--mono);
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 10px;
-  }
+.state-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
 
-  .kill-box ul { list-style: none; }
-  .kill-box li {
-    font-size: 13px;
-    color: #ccc;
-    padding: 4px 0;
-    padding-left: 20px;
-    position: relative;
-  }
+.state-name {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: color var(--motion-materialize);
+}
 
-  .kill-box li::before {
-    content: "✕";
-    position: absolute;
-    left: 0;
-    color: var(--failed);
-    font-weight: 600;
-  }
+.state-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  transition: color var(--motion-materialize);
+}
 
-  /* ── Info box ─────────────────────────────────────────────── */
-  .info-box {
-    background: rgba(92,156,245,0.07);
-    border: 1px solid rgba(92,156,245,0.2);
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin: 16px 0;
-    font-size: 13.5px;
-    color: #c5d0e0;
-  }
+/* ── Module Map ───────────────────────────────────────────── */
+.module-tree {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.8;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px;
+  color: var(--text-primary);
+  overflow-x: auto;
+  transition: background var(--motion-materialize), border-color var(--motion-materialize);
+}
 
-  .info-box strong { color: var(--accent2); }
+.module-tree .mod-name { color: var(--accent); font-weight: 600; }
+.module-tree .mod-label { color: var(--text-secondary); }
+.module-tree .mod-contract { color: var(--accent-2); }
 
-  /* ── Scrollbar ────────────────────────────────────────────── */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg2); }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+/* ── Gate Cards ───────────────────────────────────────────── */
+.gate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
 
-  /* ── Responsive ───────────────────────────────────────────── */
-  @media (max-width: 900px) {
-    .layout { grid-template-columns: 1fr; }
-    nav { position: static; height: auto; }
-    main { padding: 32px 24px; }
-    .module-grid { grid-template-columns: 1fr; }
-  }
+.gate-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  transition: background var(--motion-hover), border-color var(--motion-hover), transform var(--motion-hover);
+}
+
+.gate-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.gate-id {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  margin-bottom: 4px;
+  transition: color var(--motion-materialize);
+}
+
+.gate-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  transition: color var(--motion-materialize);
+}
+
+.gate-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  transition: color var(--motion-materialize);
+}
+
+.gate-status {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 3px;
+  margin-top: 10px;
+}
+
+.status-done   { background: var(--stable);   color: #fff; }
+.status-open   { background: var(--accent);   color: #fff; }
+.status-next   { background: var(--accent-2); color: #fff; }
+.status-deferred { background: var(--border);  color: var(--text-secondary); }
+
+/* ── Dependency Arrow ─────────────────────────────────────── */
+.dep-chain {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 2.2;
+  padding: 20px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  text-align: center;
+  transition: background var(--motion-materialize), border-color var(--motion-materialize);
+}
+
+.dep-chain .dep-arrow { color: var(--text-secondary); display: block; line-height: 1.4; }
+.dep-chain .dep-module { color: var(--accent); font-weight: 600; }
+
+/* ── Pipeline ─────────────────────────────────────────────── */
+.pipeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 24px 0;
+}
+
+.pipe-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.pipe-node {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
+  white-space: nowrap;
+  transition: background var(--motion-materialize), border-color var(--motion-materialize), color var(--motion-materialize);
+}
+
+.pipe-node.highlight {
+  border-color: var(--accent-2);
+  background: var(--bg-secondary);
+  color: var(--accent-2);
+}
+
+.pipe-sub {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  margin-top: 5px;
+  font-family: var(--font-body);
+  letter-spacing: 0.06em;
+  text-align: center;
+  transition: color var(--motion-materialize);
+}
+
+.pipe-arrow {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  padding: 0 6px;
+  flex-shrink: 0;
+}
+
+/* ── Kill Criteria ────────────────────────────────────────── */
+.kill-list {
+  list-style: none;
+  margin: 16px 0;
+}
+
+.kill-list li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 14px;
+  border-left: 2px solid var(--failed);
+  background: var(--bg-surface);
+  margin-bottom: 8px;
+  border-radius: 0 4px 4px 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  transition: background var(--motion-materialize), color var(--motion-materialize);
+}
+
+.kill-list li::before {
+  content: "✕";
+  color: var(--failed);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Naming Canon ─────────────────────────────────────────── */
+.canon-row { display: flex; gap: 16px; margin-bottom: 12px; align-items: baseline; }
+.canon-name {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  min-width: 200px;
+  transition: color var(--motion-materialize);
+}
+.canon-forbidden {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* ── Divider ──────────────────────────────────────────────── */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+  transition: border-color var(--motion-materialize);
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+.doc-footer {
+  padding: 32px 56px 48px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  border-top: 1px solid var(--border);
+  transition: color var(--motion-materialize), border-color var(--motion-materialize);
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+  nav { position: static; height: auto; }
+  main { padding: 36px 24px; }
+}
 </style>
 </head>
 <body>
 <div class="layout">
 
-<!-- ── NAV ─────────────────────────────────────────────────── -->
-<nav>
+<!-- ── Sidebar ──────────────────────────────────────────── -->
+<nav id="sidebar">
   <div class="nav-logo">
-    <h2>⚒ ANVIL</h2>
-    <p>Gesamtplan · Stand 2026-05-20</p>
+    <div class="wordmark">ANVIL</div>
+    <div class="tagline">KI-native Werkbank · KMP</div>
   </div>
 
-  <div class="nav-section">Übersicht</div>
-  <a href="#was-ist-anvil">Was ist Anvil?</a>
-  <a href="#stack">Stack</a>
-  <a href="#architektur">Architektur</a>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+    <span class="toggle-icon">☀</span>
+    <span id="toggleLabel">Light Mode</span>
+  </button>
 
-  <div class="nav-section">Design</div>
-  <a href="#module">Module</a>
+  <div class="nav-section-label">Überblick</div>
+  <a href="#vision">Vision</a>
+  <a href="#stack">Stack</a>
   <a href="#pipeline">Run-Pipeline</a>
+
+  <div class="nav-section-label">Architektur</div>
+  <a href="#module-map">Modul-Map</a>
+  <a href="#dependencies">Abhängigkeiten</a>
+  <a href="#contracts">Contracts</a>
+
+  <div class="nav-section-label">Core Layer</div>
+  <a href="#domain">Domain</a>
+  <a href="#quality">Quality</a>
   <a href="#bellows">Bellows</a>
   <a href="#knight">Knight</a>
-  <a href="#qualitaet">Quality Guard</a>
 
-  <div class="nav-section">Plan</div>
-  <a href="#phasen">Phasen</a>
-  <a href="#mvp">MVP-Schnitt</a>
-  <a href="#gates">Gates</a>
+  <div class="nav-section-label">Gates</div>
+  <a href="#gates-a">Gate-Serie A</a>
+  <a href="#gates-b">Gate-Serie B (KMP)</a>
 
-  <div class="nav-section">Governance</div>
+  <div class="nav-section-label">Regeln</div>
+  <a href="#naming">Naming Canon</a>
   <a href="#kill">Kill-Kriterien</a>
-  <a href="#naming">Naming</a>
-  <a href="#donor">Donor-Disziplin</a>
+  <a href="#agents">Agenten-Regeln</a>
 </nav>
 
-<!-- ── MAIN ─────────────────────────────────────────────────── -->
+<!-- ── Main ─────────────────────────────────────────────── -->
+<div>
 <main>
 
-  <!-- HERO -->
-  <h1>⚒ <span>ANVIL</span> — Gesamtplan</h1>
-  <p class="hero-sub">KI-native agentische IDE · Kotlin Multiplatform · Gate-getriebene Entwicklung</p>
-
-  <div class="badges">
-    <span class="badge badge-accent">KMP + Compose</span>
-    <span class="badge badge-blue">Android + JVM Desktop</span>
-    <span class="badge badge-stable">Stand: 2026-05-20</span>
-    <span class="badge badge-muted">Phase: KMP Bootstrap</span>
+<!-- Hero ──────────────────────────────────────────────────── -->
+<section class="section" id="vision">
+  <div class="section-eyebrow">Gesamtplan · Stand 2026-05-20</div>
+  <h1>⚒ <span class="accent">ANVIL</span><br>Werkbank</h1>
+  <p class="lead">Eine KI-native agentische IDE für Android &amp; Desktop. Werkbank, nicht Showroom. Zustand zuerst, dann UI.</p>
+  <div class="hero-meta">
+    <span class="badge badge-red">Kotlin Multiplatform</span>
+    <span class="badge badge-amber">Compose Multiplatform</span>
+    <span class="badge badge-outline">Gate-getrieben</span>
+    <span class="badge badge-outline">Phase: KMP Bootstrap</span>
   </div>
 
-  <!-- 1. WAS IST ANVIL -->
-  <h2 id="was-ist-anvil">Was ist Anvil?</h2>
+  <hr>
 
-  <p>Anvil ist eine <strong>KI-native, agentische IDE</strong> — eine Werkbank für einen Entwickler (Christian Amine). Kein Showroom, kein Dashboard, kein App Store. Alles, was Anvil produziert, hat eine ID und eine Provenienz.</p>
+  <h3>Was Anvil ist</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>✅ Ist</th><th>❌ Ist nicht</th></tr></thead>
+      <tbody>
+        <tr><td>Eine <strong>Werkbank</strong> — Workspaces mit Modulen</td><td>Kein App Store</td></tr>
+        <tr><td>Ein <strong>Launchpad</strong> (The Forge)</td><td>Kein Dashboard</td></tr>
+        <tr><td>Ein <strong>Output-System</strong> — alles mit ID &amp; Provenienz</td><td>Kein Framework / Library</td></tr>
+        <tr><td>Ein <strong>KMP-Monorepo</strong> mit stabilen Contracts</td><td>Kein Mono-Lith</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
-  <table>
-    <tr><th>✅ Ist</th><th>❌ Ist nicht</th></tr>
-    <tr><td>Eine <strong>Werkbank</strong> — Workspaces mit Modulen</td><td>Kein App Store</td></tr>
-    <tr><td>Ein <strong>Launchpad</strong> (<em>The Forge</em>)</td><td>Kein Dashboard</td></tr>
-    <tr><td>Ein <strong>Output-System</strong> — alles mit ID</td><td>Kein Framework / Library</td></tr>
-    <tr><td>Ein <strong>KMP-Monorepo</strong> mit stabilen Contracts</td><td>Kein Mono-Lith</td></tr>
-  </table>
+<!-- Stack ─────────────────────────────────────────────────── -->
+<section class="section" id="stack">
+  <div class="section-eyebrow">Technologie</div>
+  <h2>Stack</h2>
+  <p>Kotlin Multiplatform + Compose Multiplatform bilden das Fundament. Ein einziges Codebase für Android und JVM-Desktop — kein iOS-Target im MVP.</p>
 
-  <h3>Zustands-Grammatik</h3>
-  <p>Vier kanonische Zustände gelten für <em>alles</em>: Workspaces, Module, Runs, Artifacts.</p>
-  <table>
-    <tr><th>Zustand</th><th>Bedeutung</th><th>Farb-Intent</th></tr>
-    <tr><td><span class="s-stable">STABLE</span></td><td>Alles in Ordnung, kein Handlungsbedarf</td><td>Grün</td></tr>
-    <tr><td><span class="s-degraded">DEGRADED</span></td><td>Eingeschränkt funktionsfähig</td><td>Blau</td></tr>
-    <tr><td><span class="s-blocked">BLOCKED</span></td><td>Wartet auf Bedingung</td><td>Orange</td></tr>
-    <tr><td><span class="s-failed">FAILED</span></td><td>Fehler, Eingriff nötig</td><td>Rot</td></tr>
-  </table>
-
-  <!-- 2. STACK -->
-  <h2 id="stack">Stack</h2>
-
-  <table>
-    <tr><th>Layer</th><th>Technologie</th><th>Warum</th></tr>
-    <tr><td>Sprache</td><td><strong>Kotlin Multiplatform (KMP)</strong></td><td>Einmal schreiben, Android + Desktop</td></tr>
-    <tr><td>UI</td><td><strong>Compose Multiplatform</strong> (Desktop) + <strong>Jetpack Compose</strong> (Android)</td><td>Native UI, kein JS-Engine-Overhead</td></tr>
-    <tr><td>Serialization</td><td><strong>kotlinx.serialization</strong></td><td>JSON-as-source-of-truth, @Serializable</td></tr>
-    <tr><td>Async</td><td><strong>kotlinx.coroutines</strong></td><td>Structured concurrency, suspend-Funktionen</td></tr>
-    <tr><td>File I/O</td><td><strong>Okio</strong> (Square)</td><td>KMP-kompatibel, Kotlin-nativ</td></tr>
-    <tr><td>Persistence</td><td><strong>SQLDelight</strong></td><td>Typsichere SQL-Queries, KMP-kompatibel</td></tr>
-    <tr><td>HTTP (Cloud LLM)</td><td><strong>Ktor Client</strong></td><td>KMP-kompatibel, async</td></tr>
-    <tr><td>Diff-Anzeige</td><td><strong>diff-match-patch</strong> (Apache 2.0)</td><td>1 Java-Datei, vendor-bar, kein JS</td></tr>
-    <tr><td>Build</td><td><strong>Gradle KTS</strong> + Version Catalog</td><td>Typsicher, maintainbar</td></tr>
-    <tr><td>DI</td><td>Koin oder kotlin-inject <em>(Phase 5.5 — offen)</em></td><td>KMP-kompatibel (Hilt disqualifiziert)</td></tr>
-  </table>
-
-  <!-- 3. ARCHITEKTUR -->
-  <h2 id="architektur">Architektur</h2>
-
-  <pre>
-<span class="cm">// Modul-Abhängigkeits-Richtung (nie umkehren)</span>
-<span class="ty">:core:contracts</span>
-    ↑
-<span class="ty">:core:domain</span>  <span class="ty">:core:pipeline</span>  <span class="ty">:core:quality</span>
-    ↑
-<span class="ty">:modules:forge:knight</span>  <span class="ty">:modules:bellows</span>
-    ↑
-<span class="ty">:surfaces:commander</span>
-    ↑
-<span class="ty">:app:android</span>  <span class="ty">:app:desktop</span></pre>
-
-  <pre>
-anvil-kmp/
-├── core/
-│   ├── contracts/      <span class="cm">← ModuleSlotContract, BellowsContract, CheckpointCapable</span>
-│   ├── domain/         <span class="cm">← Workspace, Run, Artifact, Snapshot, MemoryEntry</span>
-│   ├── pipeline/       <span class="cm">← RunStep sealed, RunResult sealed, StepRecord</span>
-│   └── quality/        <span class="cm">← QualityState, QualityGuard, QualityReport</span>
-├── modules/
-│   ├── forge/
-│   │   └── knight/     <span class="cm">← Okio, Unified Diff, diff-match-patch</span>
-│   └── bellows/        <span class="cm">← BellowsRouter, Provider-Adapters, LocalModelBridge</span>
-├── surfaces/
-│   └── commander/      <span class="cm">← Compose Desktop Shell (Workspace-Browser, Diff-Viewer)</span>
-└── app/
-    ├── android/         <span class="cm">← Compose Android Entry Point</span>
-    └── desktop/         <span class="cm">← Compose Desktop Entry Point (JVM)</span></pre>
-
-  <!-- 4. MODULE -->
-  <h2 id="module">Module im Detail</h2>
-
-  <div class="module-grid">
-
-    <div class="module-card">
-      <div class="card-id">:core:contracts</div>
-      <div class="card-name">Contracts</div>
-      <div class="card-desc">Stabile Interfaces. Jedes Modul implementiert <code>ModuleSlotContract</code>. Kein Code, nur Verträge.</div>
-      <div class="card-libs">
-        <span class="lib-tag">kotlinx.serialization</span>
-        <span class="lib-tag">coroutines</span>
-      </div>
-    </div>
-
-    <div class="module-card">
-      <div class="card-id">:core:domain</div>
-      <div class="card-name">Domain</div>
-      <div class="card-desc">Alle Domain-Typen als <code>@Serializable data class</code>. JSON-as-source-of-truth. IDs als <code>@JvmInline value class</code>.</div>
-      <div class="card-libs">
-        <span class="lib-tag">@Serializable</span>
-        <span class="lib-tag">ISO-8601</span>
-      </div>
-    </div>
-
-    <div class="module-card">
-      <div class="card-id">:core:pipeline</div>
-      <div class="card-name">Pipeline</div>
-      <div class="card-desc">Run-Ablauf als sealed types: <code>PLAN → PATCH → DIFF → GATE → BUILD → TEST → ARTIFACT</code>. <code>RunResult</code> als Success / DegradedAtStep / BlockedAtGate / ModuleFailure.</div>
-      <div class="card-libs">
-        <span class="lib-tag">sealed class</span>
-      </div>
-    </div>
-
-    <div class="module-card">
-      <div class="card-id">:core:quality</div>
-      <div class="card-name">Quality Guard</div>
-      <div class="card-desc">QualityState-Enforcement. PR-Safety: Änderungen außerhalb <code>Workspace.rootPath</code> → FAILED. Triade: Quality Guard + FLUBBER + Räumliche Ordnung.</div>
-      <div class="card-libs">
-        <span class="lib-tag">STABLE</span>
-        <span class="lib-tag">DEGRADED</span>
-        <span class="lib-tag">BLOCKED</span>
-        <span class="lib-tag">FAILED</span>
-      </div>
-    </div>
-
-    <div class="module-card">
-      <div class="card-id">:modules:forge:knight</div>
-      <div class="card-name">Knight — Datei-I/O</div>
-      <div class="card-desc">Datei-Lesen/-Schreiben über Okio. Unified Diff Format. diff-match-patch für Diff-Berechnung und -Anzeige. Kein Tree-sitter im MVP.</div>
-      <div class="card-libs">
-        <span class="lib-tag">Okio 3.9</span>
-        <span class="lib-tag">diff-match-patch</span>
-        <span class="lib-tag">Unified Diff</span>
-      </div>
-    </div>
-
-    <div class="module-card">
-      <div class="card-id">:modules:bellows</div>
-      <div class="card-name">Bellows — LLM-Routing</div>
-      <div class="card-desc">LLM-Routing-Layer. BellowsRouter → ProviderRegistry → QuotaManager. PrivacyMode.LOCAL_ONLY ist hartes Enforcement. Einziger KMP-Split im gesamten System.</div>
-      <div class="card-libs">
-        <span class="lib-tag">Ktor</span>
-        <span class="lib-tag">LiteRT (Android)</span>
-        <span class="lib-tag">llama.cpp JNI (JVM)</span>
-      </div>
-    </div>
-
+  <h3>Kernversionen</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Komponente</th><th>Version</th><th>Rolle</th></tr></thead>
+      <tbody>
+        <tr><td>Kotlin Multiplatform</td><td>2.0.21</td><td>Shared Business Logic</td></tr>
+        <tr><td>Compose Multiplatform</td><td>1.7.3</td><td>UI — Android + Desktop</td></tr>
+        <tr><td>Android Gradle Plugin</td><td>8.7.3</td><td>Android-Build</td></tr>
+        <tr><td>kotlinx.coroutines</td><td>1.9.0</td><td>Async / Flow</td></tr>
+        <tr><td>kotlinx.serialization</td><td>1.7.3</td><td>JSON, alle Domain-Typen</td></tr>
+        <tr><td>SQLDelight</td><td>2.0.2</td><td>Typsichere SQL-Persistenz</td></tr>
+        <tr><td>Okio</td><td>3.9.0</td><td>File I/O in commonMain</td></tr>
+        <tr><td>Ktor Client</td><td>3.0.3</td><td>Cloud-API (CLOUD_ALLOWED)</td></tr>
+        <tr><td>compileSdk / minSdk</td><td>35 / 26</td><td>Android-Zielversionen</td></tr>
+      </tbody>
+    </table>
   </div>
 
-  <!-- 5. PIPELINE -->
-  <h2 id="pipeline">Run-Pipeline (MVP)</h2>
+  <div class="callout">
+    <p><strong>Qualitätspflicht:</strong> <code>allWarningsAsErrors = true</code> für alle Subprojekte. <code>@Suppress("all")</code> ist verboten. Warnungen werden behoben, nicht versteckt.</p>
+  </div>
+</section>
+
+<!-- Pipeline ──────────────────────────────────────────────── -->
+<section class="section" id="pipeline">
+  <div class="section-eyebrow">Execution</div>
+  <h2>Run-Pipeline</h2>
+  <p>Jeder Run durchläuft eine streng geordnete Pipeline. Der Mensch entscheidet am Diff-Gate, bevor Änderungen committet werden.</p>
 
   <div class="pipeline">
-    <div class="pipe-step">PLAN</div>
+    <div class="pipe-step">
+      <div class="pipe-node">PLAN</div>
+      <div class="pipe-sub">Aufgabe analysieren</div>
+    </div>
     <div class="pipe-arrow">→</div>
-    <div class="pipe-step">PATCH</div>
+    <div class="pipe-step">
+      <div class="pipe-node">PATCH</div>
+      <div class="pipe-sub">Änderung vorbereiten</div>
+    </div>
     <div class="pipe-arrow">→</div>
-    <div class="pipe-step">DIFF</div>
+    <div class="pipe-step">
+      <div class="pipe-node highlight">DIFF</div>
+      <div class="pipe-sub">Mensch entscheidet</div>
+    </div>
     <div class="pipe-arrow">→</div>
-    <div class="pipe-step gate-step">GATE</div>
+    <div class="pipe-step">
+      <div class="pipe-node">GATE</div>
+      <div class="pipe-sub">Qualitäts-Check</div>
+    </div>
     <div class="pipe-arrow">→</div>
-    <div class="pipe-step human-step">Mensch</div>
+    <div class="pipe-step">
+      <div class="pipe-node">BUILD</div>
+      <div class="pipe-sub">Kompilieren</div>
+    </div>
     <div class="pipe-arrow">→</div>
-    <div class="pipe-step">ARTIFACT</div>
+    <div class="pipe-step">
+      <div class="pipe-node">TEST</div>
+      <div class="pipe-sub">Verifikation</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <div class="pipe-node">ARTIFACT</div>
+      <div class="pipe-sub">Output exportieren</div>
+    </div>
   </div>
 
-  <table>
-    <tr><th>Gate</th><th>Prüfung</th><th>Kill-Bedingung</th></tr>
-    <tr><td><strong>Plan Gate</strong></td><td>Sind die geplanten Änderungen sinnvoll? Keine Wildcard-Pfade?</td><td>Änderungen außerhalb <code>rootPath</code></td></tr>
-    <tr><td><strong>Diff Gate</strong></td><td>Ist der Patch korrekt? Compiliert der Code? Gibt es Regressionen?</td><td>Compilation-Fehler, fehlende Tests</td></tr>
-    <tr><td><strong>Artifact Gate</strong></td><td>Ist der Output exportierbar? Hat er Provenance-Metadaten?</td><td>Kein Manifest, keine ID</td></tr>
-  </table>
+  <h3>RunResult — versiegelte Antworten</h3>
+  <pre><code>sealed class RunResult {
+    data class Success(val artifacts: List&lt;Artifact&gt;) : RunResult()
+    data class DegradedAtStep(val step: RunStep, val reason: String) : RunResult()
+    data class BlockedAtGate(val gate: String, val condition: String) : RunResult()
+    data class ModuleFailure(val moduleId: String, val cause: Throwable) : RunResult()
+}</code></pre>
 
-  <!-- 6. BELLOWS -->
-  <h2 id="bellows">Bellows — LLM-Routing-Layer</h2>
+  <h3>Zustands-Grammatik</h3>
+  <div class="state-grid">
+    <div class="state-card">
+      <div><span class="state-dot" style="background:var(--stable)"></span><span class="state-name">STABLE</span></div>
+      <div class="state-desc">Vollständig funktionsfähig. Alle Checks grün.</div>
+    </div>
+    <div class="state-card">
+      <div><span class="state-dot" style="background:var(--degraded)"></span><span class="state-name">DEGRADED</span></div>
+      <div class="state-desc">Eingeschränkt. Läuft, aber nicht voll — z.B. kein Cloud-Zugang.</div>
+    </div>
+    <div class="state-card">
+      <div><span class="state-dot" style="background:var(--blocked)"></span><span class="state-name">BLOCKED</span></div>
+      <div class="state-desc">Wartet auf Bedingung. Gate nicht erfüllt.</div>
+    </div>
+    <div class="state-card">
+      <div><span class="state-dot" style="background:var(--failed)"></span><span class="state-name">FAILED</span></div>
+      <div class="state-desc">Harter Fehler. Eingriff nötig. Kill-Kriterium ausgelöst.</div>
+    </div>
+  </div>
+</section>
 
-  <pre>
-<span class="kw">interface</span> <span class="ty">BellowsContract</span> : <span class="ty">ModuleSlotContract</span> {
-    <span class="kw">suspend fun</span> <span class="fn">route</span>(request: <span class="ty">ModelRequest</span>): <span class="ty">ModelResponse</span>
-    <span class="kw">fun</span> <span class="fn">estimateCost</span>(request: <span class="ty">ModelRequest</span>): <span class="ty">CostEstimate</span>
-    <span class="kw">fun</span> <span class="fn">localAvailable</span>(): <span class="ty">Boolean</span>
+<!-- Module Map ────────────────────────────────────────────── -->
+<section class="section" id="module-map">
+  <div class="section-eyebrow">Struktur</div>
+  <h2>Modul-Map</h2>
+  <p>Das KMP-Monorepo lebt ausschließlich in <code>anvil-kmp/</code>. <code>app/</code> und <code>src/core/</code> sind historisch eingefroren.</p>
+
+  <div class="module-tree">
+<span class="mod-name">anvil-kmp/</span>
+├── core/
+│   ├── <span class="mod-name">contracts/</span>   <span class="mod-label">:core:contracts</span>   <span class="mod-contract">← ModuleSlotContract, BellowsContract</span>
+│   ├── <span class="mod-name">domain/</span>      <span class="mod-label">:core:domain</span>      <span class="mod-contract">← Workspace, Run, Artifact, Snapshot, Memory</span>
+│   ├── <span class="mod-name">pipeline/</span>    <span class="mod-label">:core:pipeline</span>    <span class="mod-contract">← RunStep sealed, RunResult sealed</span>
+│   └── <span class="mod-name">quality/</span>     <span class="mod-label">:core:quality</span>     <span class="mod-contract">← QualityState, QualityGuard</span>
+├── modules/
+│   ├── forge/
+│   │   └── <span class="mod-name">knight/</span>  <span class="mod-label">:modules:forge:knight</span>  <span class="mod-contract">← Okio, Unified Diff, diff-match-patch</span>
+│   └── <span class="mod-name">bellows/</span>     <span class="mod-label">:modules:bellows</span>       <span class="mod-contract">← LLM-Router, Provider-Adapters</span>
+├── surfaces/
+│   └── <span class="mod-name">commander/</span>   <span class="mod-label">:surfaces:commander</span>    <span class="mod-contract">← Compose Desktop Shell</span>
+└── app/
+    ├── <span class="mod-name">android/</span>     <span class="mod-label">:app:android</span>           <span class="mod-contract">← Compose Android Entry Point</span>
+    └── <span class="mod-name">desktop/</span>     <span class="mod-label">:app:desktop</span>           <span class="mod-contract">← Compose Desktop Entry Point (JVM)</span>
+  </div>
+
+  <div class="table-wrap" style="margin-top:24px">
+    <table>
+      <thead><tr><th>Verzeichnis</th><th>Status</th><th>Aktion</th></tr></thead>
+      <tbody>
+        <tr><td>anvil-kmp/</td><td><span class="badge badge-red">Aktiv</span></td><td>Hier wird entwickelt</td></tr>
+        <tr><td>src/core/</td><td><span class="badge badge-outline">Docs-Skeleton</span></td><td>Nur lesen, nie Code hinzufügen</td></tr>
+        <tr><td>app/</td><td><span class="badge badge-outline">Historisch (JS/Pake)</span></td><td>Nicht anfassen</td></tr>
+        <tr><td>modules/</td><td><span class="badge badge-outline">Historisch (JS)</span></td><td>Nicht anfassen</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Dependencies ──────────────────────────────────────────── -->
+<section class="section" id="dependencies">
+  <div class="section-eyebrow">Architektur</div>
+  <h2>Abhängigkeits-Richtung</h2>
+  <p>Die Abhängigkeitsrichtung ist <strong>nie umkehrbar</strong>. <code>core</code> darf nie <code>modules</code> importieren. Zirkuläre Abhängigkeiten sind ein Build-Fehler.</p>
+
+  <div class="dep-chain">
+    <div><span class="dep-module">:core:contracts</span></div>
+    <div class="dep-arrow">↑</div>
+    <div><span class="dep-module">:core:domain &nbsp; :core:pipeline &nbsp; :core:quality</span></div>
+    <div class="dep-arrow">↑</div>
+    <div><span class="dep-module">:modules:forge:knight &nbsp; :modules:bellows</span></div>
+    <div class="dep-arrow">↑</div>
+    <div><span class="dep-module">:surfaces:commander</span></div>
+    <div class="dep-arrow">↑</div>
+    <div><span class="dep-module">:app:android &nbsp; :app:desktop</span></div>
+  </div>
+
+  <h3>KMP Target-Split</h3>
+  <p>Der einzige legale <code>expect/actual</code>-Split ist <code>LocalModelBridge</code> in <code>:modules:bellows</code>. Alles andere bleibt in <code>commonMain</code>.</p>
+  <pre><code>// commonMain
+expect class LocalModelBridge {
+    suspend fun complete(request: ModelRequest): ModelResponse
 }
 
-<span class="kw">enum class</span> <span class="ty">PrivacyMode</span> {
-    <span class="nm">LOCAL_ONLY</span>,    <span class="cm">// Hartes Enforcement — nie Cloud-Fallback</span>
-    <span class="nm">CLOUD_ALLOWED</span>
+// androidMain
+actual class LocalModelBridge : ... { /* LiteRTModelBridge */ }
+
+// jvmMain (Desktop)
+actual class LocalModelBridge : ... { /* LlamaCppModelBridge via JNI */ }</code></pre>
+</section>
+
+<!-- Contracts ─────────────────────────────────────────────── -->
+<section class="section" id="contracts">
+  <div class="section-eyebrow">:core:contracts</div>
+  <h2>Core Contracts</h2>
+  <p><code>:core:contracts</code> hat <strong>keine Dependencies</strong> außer Kotlin stdlib + kotlinx.serialization. Jedes Modul, das in Anvil läuft, implementiert <code>ModuleSlotContract</code>.</p>
+
+  <h3>ModuleSlotContract — 7 Felder</h3>
+  <pre><code>interface ModuleSlotContract {
+    val id:           ModuleId
+    val version:      String                      // SemVer "1.0.0"
+    val capabilities: List&lt;ModuleCapability&gt;
+    val requires:     List&lt;ModuleCapability&gt;       // Abhängige Capabilities
+
+    suspend fun boot(ctx: ModuleContext): BootResult
+    suspend fun handle(step: RunStep):   StepResult
+    fun qualityState(): QualityState              // nie fake-STABLE!
+}</code></pre>
+
+  <h3>BellowsContract — LLM-Routing</h3>
+  <pre><code>interface BellowsContract {
+    suspend fun route(request: ModelRequest): ModelResponse
+    fun availableProviders(): List&lt;ProviderInfo&gt;
 }
 
-<span class="kw">enum class</span> <span class="ty">ModelCapability</span> {
-    <span class="nm">REASONING</span>, <span class="nm">CODE_PATCH</span>, <span class="nm">SUMMARIZATION</span>, <span class="nm">EMBEDDING</span>, <span class="nm">FUNCTION_CALL</span>
-}</pre>
+// ModelRequest — immer mit explizitem PrivacyMode
+val request = ModelRequest(
+    capability  = ModelCapability.CODE_PATCH,
+    messages    = listOf(ChatMessage("user", "...")),
+    privacyMode = PrivacyMode.LOCAL_ONLY,    // niemals Cloud-Fallback
+    costCapUsd  = 0.05f,
+    priority    = RequestPriority.INTERACTIVE
+)</code></pre>
 
-  <p>Der einzige legale <code>expect/actual</code>-Split im gesamten System:</p>
+  <div class="callout callout-amber">
+    <p><strong>Serialisierungsregel:</strong> Alle Domain-Typen sind <code>@Serializable</code>. IDs sind immer <code>@JvmInline value class</code> mit <code>String</code>-Backing. Timestamps: ISO-8601 String, nie Long.</p>
+  </div>
+</section>
 
-  <table>
-    <tr><th>Target</th><th>Bridge</th><th>Technologie</th></tr>
-    <tr><td><code>commonMain</code></td><td><code>expect class LocalModelBridge</code></td><td>Interface only</td></tr>
-    <tr><td><code>androidMain</code></td><td><code>LiteRTModelBridge</code></td><td>Google LiteRT (TFLite successor)</td></tr>
-    <tr><td><code>jvmMain</code></td><td><code>LlamaCppModelBridge</code></td><td>llama.cpp via JNI</td></tr>
-  </table>
+<!-- Domain ────────────────────────────────────────────────── -->
+<section class="section" id="domain">
+  <div class="section-eyebrow">:core:domain</div>
+  <h2>Domain-Modell</h2>
+  <p>Das Domain-Modell folgt streng der Kette <strong>Workspace → Run → Artifact</strong>. Jede Entität hat eine typsichere ID und ISO-8601-Timestamps.</p>
 
-  <!-- 7. KNIGHT -->
-  <h2 id="knight">Knight — Datei-I/O & Diff</h2>
+  <pre><code>@Serializable
+data class Workspace(
+    val id:        WorkspaceId,
+    val name:      String,
+    val rootPath:  String,           // KILL: Änderungen außerhalb → FAILED
+    val createdAt: String,           // ISO-8601 "2026-05-20T09:00:00Z"
+    val state:     QualityState
+)
 
-  <table>
-    <tr><th>Komponente</th><th>Bibliothek</th><th>Lizenz</th><th>Warum</th></tr>
-    <tr><td>Datei-I/O</td><td>Okio (Square)</td><td>Apache 2.0</td><td>KMP-kompatibel, bewährt</td></tr>
-    <tr><td>Diff-Format</td><td>Unified Diff</td><td>Standard</td><td>Lesbar für Menschen + LLMs</td></tr>
-    <tr><td>Diff-Engine</td><td>diff-match-patch (Google)</td><td>Apache 2.0</td><td>1 Java-Datei, vendor-bar, JetBrains/VSCode nutzen es</td></tr>
-  </table>
+@JvmInline @Serializable
+value class WorkspaceId(val value: String)
 
-  <div class="info-box">
-    <strong>Kein Tree-sitter im MVP.</strong> Tree-sitter kommt in Phase 2 (Syntax-Highlighting, semantisches Diff). Im MVP genügt Unified Diff + diff-match-patch für alle Anzeige-Anforderungen.<br><br>
-    <strong>Kein Monaco / CodeMirror.</strong> Beide benötigen einen JS-Engine — inkompatibel mit Compose Multiplatform.
+@Serializable
+data class Run(
+    val id:          RunId,
+    val workspaceId: WorkspaceId,
+    val steps:       List&lt;RunStep&gt;,
+    val result:      RunResult?,
+    val createdAt:   String
+)
+
+@Serializable
+data class Artifact(
+    val id:          ArtifactId,
+    val runId:       RunId,
+    val type:        ArtifactType,
+    val path:        String,         // relativ zu Workspace.rootPath
+    val provenance:  String,         // Gate-Referenz, z.B. "Gate B3"
+    val createdAt:   String
+)</code></pre>
+
+  <h3>SQLDelight-Konvention</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Feldtyp</th><th>SQLDelight-Umsetzung</th></tr></thead>
+      <tbody>
+        <tr><td>Skalare (String, Int, Boolean)</td><td>Echte Spalten</td></tr>
+        <tr><td>Listen, Maps, verschachtelte Objekte</td><td>JSON-Blob (TEXT)</td></tr>
+        <tr><td>IDs</td><td>TEXT mit Adapter für value class</td></tr>
+        <tr><td>Timestamps</td><td>TEXT, ISO-8601</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Quality ───────────────────────────────────────────────── -->
+<section class="section" id="quality">
+  <div class="section-eyebrow">:core:quality</div>
+  <h2>Quality Guard</h2>
+  <p>Jedes Modul muss <code>qualityState()</code> korrekt implementieren. <code>STABLE</code> darf nur zurückgegeben werden, wenn tatsächlich geprüft wurde.</p>
+
+  <pre><code>// RICHTIG:
+override fun qualityState(): QualityState =
+    if (isHealthy()) QualityState.STABLE else QualityState.DEGRADED
+
+// FALSCH (nie tun — Kill-Kriterium):
+override fun qualityState(): QualityState = QualityState.STABLE</code></pre>
+
+  <h3>Workspace-Safety — härtestes Kill-Kriterium</h3>
+  <div class="callout">
+    <p><strong>Jede Änderung außerhalb <code>Workspace.rootPath</code> → <code>QualityState.FAILED</code></strong> — kein Silent-Fail, immer Exception. Dieses Kriterium schützt das Dateisystem des Nutzers.</p>
+  </div>
+</section>
+
+<!-- Bellows ───────────────────────────────────────────────── -->
+<section class="section" id="bellows">
+  <div class="section-eyebrow">:modules:bellows</div>
+  <h2>Bellows — LLM-Router</h2>
+  <p>Bellows ist der einzige Einstiegspunkt für alle LLM-Anfragen. Es verwaltet Provider-Ketten und erzwingt Privacy-Regeln.</p>
+
+  <h3>Privacy — LOCAL_ONLY ist hart</h3>
+  <pre><code>// In BellowsRouter: LOCAL_ONLY blockiert Cloud-Provider
+if (request.privacyMode == PrivacyMode.LOCAL_ONLY && !adapter.isLocal) continue
+
+// Wenn kein lokales Modell verfügbar:
+throw BellowsExhaustedException("No local provider available")
+// Nie: null, leerer String, oder Cloud-Fallback!</code></pre>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>PrivacyMode</th><th>Verhalten</th></tr></thead>
+      <tbody>
+        <tr><td><code>LOCAL_ONLY</code></td><td>Nur lokale Modelle. Cloud ist verboten. Kein Fallback.</td></tr>
+        <tr><td><code>CLOUD_ALLOWED</code></td><td>Lokale Modelle bevorzugt, Cloud als Fallback erlaubt.</td></tr>
+      </tbody>
+    </table>
   </div>
 
-  <!-- 8. QUALITY GUARD -->
-  <h2 id="qualitaet">Quality Guard</h2>
+  <h3>LocalModelBridge — KMP-Split</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Target</th><th>Implementierung</th><th>Technologie</th></tr></thead>
+      <tbody>
+        <tr><td><code>androidMain</code></td><td><code>LiteRTModelBridge</code></td><td>Google LiteRT (ehem. TFLite)</td></tr>
+        <tr><td><code>jvmMain</code></td><td><code>LlamaCppModelBridge</code></td><td>llama.cpp via JNI</td></tr>
+        <tr><td><code>commonMain</code></td><td><code>BellowsContract</code></td><td>Interface only — kein Code</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
-  <pre>
-<span class="kw">interface</span> <span class="ty">ModuleSlotContract</span> {
-    <span class="kw">val</span> id: <span class="ty">ModuleId</span>
-    <span class="kw">val</span> version: <span class="ty">SemVer</span>
-    <span class="kw">val</span> capabilities: <span class="ty">Set</span>&lt;<span class="ty">Capability</span>&gt;
-    <span class="kw">val</span> requires: <span class="ty">Set</span>&lt;<span class="ty">Capability</span>&gt;
-    <span class="kw">suspend fun</span> <span class="fn">boot</span>(ctx: <span class="ty">ModuleContext</span>): <span class="ty">BootResult</span>
-    <span class="kw">suspend fun</span> <span class="fn">handle</span>(step: <span class="ty">RunStep</span>): <span class="ty">StepResult</span>
-    <span class="kw">fun</span> <span class="fn">qualityState</span>(): <span class="ty">QualityState</span>   <span class="cm">// Pflicht — nie hardcode STABLE</span>
-}</pre>
+<!-- Knight ────────────────────────────────────────────────── -->
+<section class="section" id="knight">
+  <div class="section-eyebrow">:modules:forge:knight</div>
+  <h2>Knight — Datei-I/O</h2>
+  <p>Knight ist der exklusive File-I/O-Layer in Anvil. Kein <code>java.io.File</code> in <code>commonMain</code> — nur Okio.</p>
 
-  <p><strong>Triade der Reject-Tests</strong> (alle drei müssen bestehen):</p>
-  <ol style="padding-left:20px; color:#ccc; font-size:14px; line-height:2;">
-    <li><strong>Quality Guard</strong> — QualityState ≥ DEGRADED für alle Module</li>
-    <li><strong>FLUBBER Acceptance Test</strong> — Output ist vom Mensch abnehmbar</li>
-    <li><strong>Räumliche Ordnung</strong> — Alle Dateien liegen im erwarteten Pfad</li>
-  </ol>
+  <pre><code>// RICHTIG — Okio in commonMain:
+val source: Source = FileSystem.SYSTEM.source(path)
 
-  <!-- 9. PHASEN -->
-  <h2 id="phasen">Planungsphasen</h2>
+// FALSCH — verboten in commonMain:
+val f = java.io.File(path)  // Android-only, nicht KMP-kompatibel</code></pre>
 
-  <div class="timeline">
-
-    <div class="tl-item">
-      <span class="tl-badge tl-done">✓ Phase 5.1</span>
-      <div class="tl-content">
-        <h4>Architektur-Skelett</h4>
-        <p>Gradle-Module, Modul-Slot-Contract (7 Felder), Run-Pipeline als sealed types, Plugin-Loader-Konzept. Vollständig entschieden.</p>
-      </div>
-    </div>
-
-    <div class="tl-item">
-      <span class="tl-badge tl-done">✓ Phase 5.2</span>
-      <div class="tl-content">
-        <h4>Datenmodell</h4>
-        <p>Workspace, Run, Artifact, Snapshot, MemoryEntry als JSON-as-source-of-truth. SQLDelight-Schema. ContentRef sealed class. Alle Typen @Serializable.</p>
-      </div>
-    </div>
-
-    <div class="tl-item">
-      <span class="tl-badge tl-done">✓ Phase 5.3</span>
-      <div class="tl-content">
-        <h4>Bellows — LLM-Routing</h4>
-        <p>BellowsContract, BellowsRouter, RoutingPolicy, QuotaManager, ProviderRegistry. PrivacyMode als hartes Enforcement. LocalModelBridge als einziger KMP-Split. BellowsExhaustedException statt Silent-Fail.</p>
-      </div>
-    </div>
-
-    <div class="tl-item">
-      <span class="tl-badge tl-done">✓ Phase 10.2</span>
-      <div class="tl-content">
-        <h4>MVP-Schnitt</h4>
-        <p>Kleinster sinnvoller ANVIL: ein Coding-Workflow — Plan → Patch → Diff Gate → Artifact Gate → Mensch entscheidet → Commit oder Discard. Kein Temper, Kiln, LAN-Sync, Wisdom-Persistenz im MVP.</p>
-      </div>
-    </div>
-
-    <div class="tl-item">
-      <span class="tl-badge tl-done">✓ Phase 4.2</span>
-      <div class="tl-content">
-        <h4>Gate-Plan</h4>
-        <p>Acceptance-Kriterien für alle MVP-Gates. Drei MVP-Gates: Plan Gate, Diff Gate, Artifact Gate. Kill-Kriterien definiert. Triade der Reject-Tests.</p>
-      </div>
-    </div>
-
-    <div class="tl-item">
-      <span class="tl-badge tl-done">✓ Phase 3.4</span>
-      <div class="tl-content">
-        <h4>Knight / Editor-Core</h4>
-        <p>MVP-Stack entschieden: Okio + Unified Diff + diff-match-patch. Kein Tree-sitter (Phase 2). Kein Monaco/CodeMirror (JS-Engine-Konflikt). diff-match-patch Apache 2.0, 1 Java-Datei.</p>
-      </div>
-    </div>
-
-    <div class="tl-item">
-      <span class="tl-badge tl-active">▶ KMP Bootstrap</span>
-      <div class="tl-content">
-        <h4>KMP-Monorepo aufbauen</h4>
-        <p>libs.versions.toml + settings.gradle.kts + build.gradle.kts. Gradle-Skeleton für alle Module. Erste Kotlin-Dateien: ModuleSlotContract + Domain-Typen.</p>
-      </div>
-    </div>
-
-    <div class="tl-item">
-      <span class="tl-badge tl-pending">○ Phase 5.5</span>
-      <div class="tl-content">
-        <h4>DI-Entscheidung</h4>
-        <p>Koin vs. kotlin-inject. Beide KMP-kompatibel. Hilt disqualifiziert (Android-only). Entscheidung bei erster Implementierung.</p>
-      </div>
-    </div>
-
-    <div class="tl-item">
-      <span class="tl-badge tl-pending">○ Phase 6–9</span>
-      <div class="tl-content">
-        <h4>Implementierung</h4>
-        <p>Alle Feature-Implementierungen (Forge, Warden, Wisdom, Commander). Werden bei Bedarf geplant — nicht vorab speckt.</p>
-      </div>
-    </div>
-
+  <h3>Diff-Strategie</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Komponente</th><th>Zweck</th><th>Lizenz</th></tr></thead>
+      <tbody>
+        <tr><td>Okio</td><td>File-I/O in commonMain</td><td>Apache 2.0</td></tr>
+        <tr><td>diff-match-patch</td><td>Unified Diff Berechnung + Anzeige</td><td>Apache 2.0</td></tr>
+        <tr><td>Unified Diff Format</td><td>Standard-Ausgabeformat für Patches</td><td>—</td></tr>
+      </tbody>
+    </table>
   </div>
 
-  <!-- 10. MVP -->
-  <h2 id="mvp">MVP-Schnitt</h2>
+  <div class="callout callout-amber">
+    <p><strong>MVP-Entscheidungen:</strong> Kein Tree-sitter (keine native Binary im KMP-MVP). Kein Monaco / CodeMirror (JS-Engine, inkompatibel mit Compose).</p>
+  </div>
+</section>
 
-  <p>Der kleinste sinnvolle ANVIL, der einem Entwickler echten Wert liefert:</p>
+<!-- Gates A ───────────────────────────────────────────────── -->
+<section class="section" id="gates-a">
+  <div class="section-eyebrow">Gate-Historie</div>
+  <h2>Gate-Serie A — Abgeschlossen</h2>
+  <p>Die A-Serie etablierte das Fundament: Konzept-Contract, Modul-Vertrag, Architektur-Prinzipien, Donor-Analyse und Output-System.</p>
 
-  <table>
-    <tr><th>Feature</th><th>MVP</th><th>Phase 2+</th></tr>
-    <tr><td>Assisted Coding Workflow</td><td>✅ Plan → Patch → Gate → Commit</td><td>—</td></tr>
-    <tr><td>LLM-Routing</td><td>✅ Bellows (lokal + 1 Cloud-Provider)</td><td>Mehrere Provider, Quota-UI</td></tr>
-    <tr><td>Datei-I/O</td><td>✅ Knight (Okio + Unified Diff)</td><td>Tree-sitter, semantisch</td></tr>
-    <tr><td>UI</td><td>✅ Commander (Desktop, minimal)</td><td>Commander v2, Android Surface</td></tr>
-    <tr><td>Persistence</td><td>✅ SQLDelight (Workspace, Run, Artifact)</td><td>Wisdom (Memory-Persistence)</td></tr>
-    <tr><td>Build-Optimierung</td><td>❌ — Standard Gradle</td><td>kekegdsz/smart-build Pattern</td></tr>
-    <tr><td>LAN-Sync</td><td>❌</td><td>Phase 3.5 (Moshi/KMP-Socket)</td></tr>
-    <tr><td>Temper (Code-Analyse)</td><td>❌</td><td>Phase 2</td></tr>
-    <tr><td>Kiln (Build-Trigger)</td><td>❌</td><td>Phase 2</td></tr>
-    <tr><td>iOS</td><td>❌ — Explizit kein Scope</td><td>Nie im aktuellen Plan</td></tr>
-  </table>
+  <div class="gate-grid">
+    <div class="gate-card">
+      <div class="gate-id">A1</div>
+      <div class="gate-title">Concept Contract</div>
+      <div class="gate-desc">Kanonische Begriffe definiert. Forge, Bellows, Knight, Warden.</div>
+      <div><span class="gate-status status-done">Done</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">A2</div>
+      <div class="gate-title">Module Contract</div>
+      <div class="gate-desc">ModuleSlotContract mit 7 Feldern. Jedes Modul folgt diesem Vertrag.</div>
+      <div><span class="gate-status status-done">Done</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">A3</div>
+      <div class="gate-title">Workspace Model</div>
+      <div class="gate-desc">Workspace → Run → Artifact Kette. rootPath-Safety definiert.</div>
+      <div><span class="gate-status status-done">Done</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">A4</div>
+      <div class="gate-title">Execution Core Architecture</div>
+      <div class="gate-desc">Schicht-Modell: contracts → domain → pipeline → quality → modules.</div>
+      <div><span class="gate-status status-done">Done</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">A5–A11</div>
+      <div class="gate-title">Prinzipien &amp; Anti-Patterns</div>
+      <div class="gate-desc">Anti-Dashboard, State-First, Quality-Guard, Privacy-Modell.</div>
+      <div><span class="gate-status status-done">Done</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">AT1–AT4</div>
+      <div class="gate-title">Donor-Analyse</div>
+      <div class="gate-desc">~12.850 Go-Zeilen + ~8.570 Web-Zeilen inventarisiert. Pattern adoptiert, kein Blind-Import.</div>
+      <div><span class="gate-status status-done">Done</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">AX</div>
+      <div class="gate-title">Artifact Output Layer</div>
+      <div class="gate-desc">ARTIFACT_OUTPUT_LAYER.md — jeder Output hat ID und Provenienz.</div>
+      <div><span class="gate-status status-done">Done</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">A21–A24</div>
+      <div class="gate-title">DI / Erweiterungen</div>
+      <div class="gate-desc">Dependency-Injection-Entscheidung. Explizit deferred — kein Hilt (Android-only).</div>
+      <div><span class="gate-status status-deferred">Deferred</span></div>
+    </div>
+  </div>
+</section>
 
-  <!-- 11. GATES -->
-  <h2 id="gates">Gate-Überblick</h2>
+<!-- Gates B ───────────────────────────────────────────────── -->
+<section class="section" id="gates-b">
+  <div class="section-eyebrow">KMP-Bootstrap</div>
+  <h2>Gate-Serie B — KMP-Aufbau</h2>
+  <p>Die B-Serie baut das KMP-Monorepo Schicht für Schicht auf. Jede Gate hat eine klare Definition of Done und ein Kill-Kriterium.</p>
 
-  <h3>A-Series (abgeschlossen — JS/Pake-Ära)</h3>
-  <table>
-    <tr><th>Gate</th><th>Name</th><th>Status</th></tr>
-    <tr><td>A1</td><td>Repo Access Proof</td><td><span class="gate-done">done</span></td></tr>
-    <tr><td>A2</td><td>Naming & Concept Contract</td><td><span class="gate-done">done</span></td></tr>
-    <tr><td>A3</td><td>Shell & Surface</td><td><span class="gate-done">done</span></td></tr>
-    <tr><td>A4</td><td>Workspace Model</td><td><span class="gate-done">done</span></td></tr>
-    <tr><td>A5</td><td>Module Slot Contract</td><td><span class="gate-done">done</span></td></tr>
-    <tr><td>A6–A11</td><td>Forge, Artifact, Blueprint, Provider, …</td><td><span class="gate-done">done</span></td></tr>
-    <tr><td>A12–A19</td><td>Prompt Pack, Token Manager, Sync, …</td><td><span class="gate-done">done / partial</span></td></tr>
-    <tr><td>A21–A24</td><td>APK-Builder, Marketplace, …</td><td><span class="gate-deferred">deferred</span></td></tr>
-    <tr><td>AX</td><td>Repo Reality Lock</td><td><span class="gate-done">done</span></td></tr>
-  </table>
-
-  <h3>AT-Series (Transplant Prep — abgeschlossen)</h3>
-  <table>
-    <tr><th>Gate</th><th>Name</th><th>Ergebnis</th></tr>
-    <tr><td>AT1</td><td>Source License & Provenance Lock</td><td><span class="gate-done">done</span> — MIT-kompatibel</td></tr>
-    <tr><td>AT2</td><td>Donor Codebase Inventory</td><td><span class="gate-done">done</span> — 22 Abschnitte, ~21K Zeilen</td></tr>
-    <tr><td>AT3</td><td>Transplant Map: Keep/Rewrite/Drop</td><td><span class="gate-done">done</span> — 0 Keep, 27 Rewrite, 18 Drop</td></tr>
-    <tr><td>AT4</td><td>Execution Core Skeleton</td><td><span class="gate-done">done</span> — <code>src/core/</code> angelegt</td></tr>
-  </table>
-
-  <h3>B-Series (KMP — offen)</h3>
-  <table>
-    <tr><th>Gate</th><th>Name</th><th>Status</th></tr>
-    <tr><td>B1</td><td>KMP Bootstrap (Gradle, libs.versions.toml)</td><td><span class="gate-todo">offen → nächste</span></td></tr>
-    <tr><td>B2</td><td>:core:contracts — ModuleSlotContract, BellowsContract</td><td><span class="gate-todo">offen</span></td></tr>
-    <tr><td>B3</td><td>:core:domain — Workspace, Run, Artifact, Snapshot, Memory</td><td><span class="gate-todo">offen</span></td></tr>
-    <tr><td>B4</td><td>:core:pipeline — RunStep sealed, RunResult sealed</td><td><span class="gate-todo">offen</span></td></tr>
-    <tr><td>B5</td><td>:core:quality — QualityState, QualityGuard</td><td><span class="gate-todo">offen</span></td></tr>
-    <tr><td>B6</td><td>:modules:forge:knight — Okio + Diff</td><td><span class="gate-todo">offen</span></td></tr>
-    <tr><td>B7</td><td>:modules:bellows — BellowsRouter + 1 Provider</td><td><span class="gate-todo">offen</span></td></tr>
-    <tr><td>B8</td><td>:surfaces:commander — Compose Desktop Shell</td><td><span class="gate-todo">offen</span></td></tr>
-    <tr><td>B9</td><td>MVP-Integration — Plan → Patch → Gate → Artifact</td><td><span class="gate-todo">offen</span></td></tr>
-  </table>
-
-  <!-- 12. KILL-KRITERIEN -->
-  <h2 id="kill">Kill-Kriterien</h2>
-
-  <div class="kill-box">
-    <h4>Harte Kill-Kriterien (sofort FAILED)</h4>
-    <ul>
-      <li>Änderung außerhalb <code>Workspace.rootPath</code> — immer Exception, nie silent</li>
-      <li><code>PrivacyMode.LOCAL_ONLY</code> + Cloud-Request — sofort <code>BellowsExhaustedException</code></li>
-      <li>Modul ohne <code>ModuleSlotContract</code>-Implementierung</li>
-      <li>Zirkuläre Modul-Abhängigkeit (z.B. <code>:core</code> importiert <code>:modules</code>)</li>
-      <li>Donor-Code ohne Mapping in Transplant Map in aktive Pfade kopiert</li>
-    </ul>
+  <div class="gate-grid">
+    <div class="gate-card">
+      <div class="gate-id">B1</div>
+      <div class="gate-title">Gradle Bootstrap</div>
+      <div class="gate-desc">libs.versions.toml, settings.gradle.kts, build.gradle.kts. Alle Submodule deklariert. allWarningsAsErrors aktiv.</div>
+      <div><span class="gate-status status-done">Done ✓</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">B2</div>
+      <div class="gate-title">:core:contracts</div>
+      <div class="gate-desc">ModuleSlotContract, BellowsContract, CheckpointCapable. Keine Deps außer stdlib + serialization.</div>
+      <div><span class="gate-status status-open">Offen</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">B3</div>
+      <div class="gate-title">:core:domain</div>
+      <div class="gate-desc">Workspace, Run, Artifact, Snapshot, MemoryEntry. Alle @Serializable. IDs als @JvmInline value class.</div>
+      <div><span class="gate-status status-next">Nächste</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">B4</div>
+      <div class="gate-title">:core:pipeline</div>
+      <div class="gate-desc">RunStep sealed class. RunResult sealed class. Keine UI-Deps.</div>
+      <div><span class="gate-status status-next">Nächste</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">B5</div>
+      <div class="gate-title">:core:quality</div>
+      <div class="gate-desc">QualityState enum, QualityGuard, Workspace-Safety-Enforcement.</div>
+      <div><span class="gate-status status-next">Nächste</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">B6</div>
+      <div class="gate-title">:modules:bellows</div>
+      <div class="gate-desc">BellowsRouter, LocalModelBridge expect/actual, BellowsExhaustedException. Privacy-Enforcement.</div>
+      <div><span class="gate-status status-deferred">Geplant</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">B7</div>
+      <div class="gate-title">:modules:forge:knight</div>
+      <div class="gate-desc">Okio-File-I/O, Unified Diff, diff-match-patch Integration.</div>
+      <div><span class="gate-status status-deferred">Geplant</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">B8</div>
+      <div class="gate-title">:surfaces:commander</div>
+      <div class="gate-desc">Compose Desktop Shell. State-First UI. Vier-Zustandsanzeige.</div>
+      <div><span class="gate-status status-deferred">Geplant</span></div>
+    </div>
+    <div class="gate-card">
+      <div class="gate-id">B9</div>
+      <div class="gate-title">:app:android + :app:desktop</div>
+      <div class="gate-desc">Entry Points für Android und JVM-Desktop. Gemeinsam erster Smoke-Test.</div>
+      <div><span class="gate-status status-deferred">Geplant</span></div>
+    </div>
   </div>
 
-  <div class="kill-box">
-    <h4>Prozess-Kill-Kriterien (Gate nicht passierbar)</h4>
-    <ul>
-      <li>Commit ohne Gate-Referenz</li>
-      <li>PR ohne Definition-of-Done-Check</li>
-      <li><code>allWarningsAsErrors = true</code> verletzt — kein Suppression erlaubt</li>
-      <li>Raw String als ID statt <code>@JvmInline value class</code></li>
-      <li>Neues Modul ohne <code>qualityState()</code>-Implementierung</li>
-    </ul>
+  <h3>Commit-Konvention (B-Serie)</h3>
+  <pre><code>Gate B1: anvil-kmp Gradle Bootstrap (settings + build + libs.versions.toml)
+Gate B2: :core:contracts — ModuleSlotContract, BellowsContract
+Gate B3: :core:domain — Workspace, Run, Artifact, Snapshot, MemoryEntry</code></pre>
+</section>
+
+<!-- Naming Canon ──────────────────────────────────────────── -->
+<section class="section" id="naming">
+  <div class="section-eyebrow">Kanonische Begriffe</div>
+  <h2>Naming Canon</h2>
+  <p>Falsche Namen führen zu falschem Code. Diese Begriffe sind bindend für alle Agenten und Entwickler.</p>
+
+  <div style="margin: 24px 0">
+    <div class="canon-row">
+      <div class="canon-name">Bellows</div>
+      <div>LLM-Routing-Layer · <code>BellowsContract</code><br><span class="canon-forbidden">Provider Hub, AI Layer</span></div>
+    </div>
+    <div class="canon-row">
+      <div class="canon-name">Knight</div>
+      <div>Datei-I/O + Diff-Engine · Okio-basiert<br><span class="canon-forbidden">FileHandler, DiffEngine</span></div>
+    </div>
+    <div class="canon-row">
+      <div class="canon-name">The Forge</div>
+      <div>Modul-Launchpad · kein Dashboard<br><span class="canon-forbidden">Module Store, Dashboard</span></div>
+    </div>
+    <div class="canon-row">
+      <div class="canon-name">Warden</div>
+      <div>Sicherheits-Guard · in <code>:core:quality</code><br><span class="canon-forbidden">Safety Engine</span></div>
+    </div>
+    <div class="canon-row">
+      <div class="canon-name">Commander</div>
+      <div>Compose Desktop Shell · <code>:surfaces:commander</code><br><span class="canon-forbidden">MainWindow, AppShell</span></div>
+    </div>
+    <div class="canon-row">
+      <div class="canon-name">ModelRequest</div>
+      <div>LLM-Anfrage-Typ · immer mit PrivacyMode<br><span class="canon-forbidden">AIRequest, LLMRequest</span></div>
+    </div>
+    <div class="canon-row">
+      <div class="canon-name">PrivacyMode</div>
+      <div><code>.LOCAL_ONLY</code> / <code>.CLOUD_ALLOWED</code><br><span class="canon-forbidden">offlineMode, onlineMode</span></div>
+    </div>
   </div>
 
-  <!-- 13. NAMING -->
-  <h2 id="naming">Kanonisches Naming</h2>
+  <h3>Historische Namen → Canon-Mapping</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Historisch (JS-Ära)</th><th>Canon (KMP)</th></tr></thead>
+      <tbody>
+        <tr><td>OPENDORK</td><td><code>Bellows</code> / Provider-Layer</td></tr>
+        <tr><td>CATALON</td><td>Pipeline / planning + runs</td></tr>
+        <tr><td>CATALON-GUARD</td><td><code>Warden</code> / <code>:core:quality</code></td></tr>
+        <tr><td>DEAFPIPER</td><td><code>Knight</code> / <code>:modules:forge:knight</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
-  <table>
-    <tr><th>Konzept</th><th>Kanonischer Name</th><th>Verbotene Alternativen</th></tr>
-    <tr><td>LLM-Routing-Layer</td><td><strong>Bellows</strong> / <code>BellowsContract</code></td><td><del>Provider Hub, AI Layer, OPENDORK</del></td></tr>
-    <tr><td>Datei-I/O + Diff</td><td><strong>Knight</strong></td><td><del>FileHandler, DiffEngine</del></td></tr>
-    <tr><td>Modul-Launchpad</td><td><strong>The Forge</strong></td><td><del>Module Store, App Launcher, Dashboard</del></td></tr>
-    <tr><td>Sicherheits-Guard</td><td><strong>Warden</strong></td><td><del>Safety Engine, CATALON-GUARD</del></td></tr>
-    <tr><td>LLM-Anfrage</td><td><code>ModelRequest</code></td><td><del>AIRequest, LLMRequest</del></td></tr>
-    <tr><td>Datenschutz-Modus</td><td><code>PrivacyMode.LOCAL_ONLY</code></td><td><del>offlineMode, localMode</del></td></tr>
-    <tr><td>Lauf-Pipeline</td><td><code>RunStep</code>, <code>RunResult</code></td><td><del>TaskStep, ExecutionResult</del></td></tr>
-    <tr><td>Modul-Schnittstelle</td><td><code>ModuleSlotContract</code></td><td><del>ModuleInterface, Plugin</del></td></tr>
-  </table>
+<!-- Kill Criteria ─────────────────────────────────────────── -->
+<section class="section" id="kill">
+  <div class="section-eyebrow">Qualitätssicherung</div>
+  <h2>Kill-Kriterien</h2>
+  <p>Diese Kriterien lösen sofort <code>QualityState.FAILED</code> aus. Kein Modul darf diese Grenzen still überschreiten.</p>
 
-  <!-- 14. DONOR -->
-  <h2 id="donor">Donor-Disziplin</h2>
+  <ul class="kill-list">
+    <li>Änderung außerhalb <code>Workspace.rootPath</code> — schützt das Dateisystem des Nutzers</li>
+    <li><code>PrivacyMode.LOCAL_ONLY</code> + Cloud-Request — Privacy-Versprechen gebrochen</li>
+    <li>Modul ohne <code>ModuleSlotContract</code> — kein unkontrolliertes Modul in Anvil</li>
+    <li>Commit ohne Gate-Referenz — Prozess-Kill (nicht Code-Kill)</li>
+    <li><code>@Suppress("all")</code> oder Unterdrücken von Compiler-Warnungen</li>
+    <li>Roher String als ID (statt <code>@JvmInline value class</code>)</li>
+    <li>iOS-Target hinzufügen — explizit kein MVP-Scope</li>
+    <li>Hilt für DI einführen — Android-only, KMP-inkompatibel</li>
+    <li>Zirkuläre Abhängigkeiten zwischen Modulen</li>
+  </ul>
 
-  <p>ANVIL nutzt externe Repos als <strong>Pattern-Donor</strong>, nicht als Code-Donor.</p>
+  <div class="callout">
+    <p><strong>Regel:</strong> Bei Unsicherheit — stoppen, nicht raten. <code>docs/KNOWN_DRIFT_RISKS.md</code> lesen, Gate pausieren, Mensch fragen.</p>
+  </div>
+</section>
 
-  <table>
-    <tr><th>Donor-Repo</th><th>Pattern</th><th>Was übernommen wird</th><th>Was nicht</th></tr>
-    <tr>
-      <td><a href="https://github.com/kekegdsz/android-gradle-smart-build" style="color:var(--accent2)">kekegdsz/android-gradle-smart-build</a></td>
-      <td>Git-Diff → Module-Map → BFS → TaskGraph-Pruning</td>
-      <td>Algorithmus-Logik, KMP-Adaptation</td>
-      <td>Groovy-Script direkt, Android-only Plugin-Detection</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/nickel-lang/diff-match-patch" style="color:var(--accent2)">google/diff-match-patch</a></td>
-      <td>Diff-Berechnung + Patch-Anzeige</td>
-      <td>1 Java-Datei (Apache 2.0), vendor-bar</td>
-      <td>—</td>
-    </tr>
-  </table>
+<!-- Agents ────────────────────────────────────────────────── -->
+<section class="section" id="agents">
+  <div class="section-eyebrow">Governance</div>
+  <h2>Agenten-Regeln</h2>
 
-  <div class="info-box">
-    <strong>Donor-Disziplin-Regeln:</strong><br>
-    Kein blinder Code-Import. Kein Identity-Takeover (fremde Namen übernehmen). Pattern-Adoption only. Jeder Donor-Code braucht einen Eintrag in <code>docs/provenance/</code>.
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Agent</th><th>Darf</th><th>Darf nicht</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Claude / Hyperagent</td>
+          <td>Gates implementieren, PRs erstellen, Gradle-Dateien anlegen, Kotlin-Code für genehmigte Gates schreiben</td>
+          <td>Eigene Gates definieren, Architektur-Entscheidungen treffen, Module ohne Contract anlegen</td>
+        </tr>
+        <tr>
+          <td>Codex / Copilot</td>
+          <td>Code-Reviews, Refactoring innerhalb Gate-Scope, Bugfixes</td>
+          <td>Gate-Reihenfolge ändern, neue Abhängigkeiten ohne Gate hinzufügen</td>
+        </tr>
+        <tr>
+          <td>Mensch (Christian)</td>
+          <td>Alles</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <!-- FOOTER -->
-  <div style="margin-top:80px; padding-top:24px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; font-family:var(--mono);">
-    ANVIL Gesamtplan · Stand 2026-05-20 · KMP Bootstrap Phase
-  </div>
+  <h3>Pflichtregeln für alle Agenten</h3>
+  <ul class="kill-list" style="--border-fail: var(--accent-2)">
+    <li style="border-left-color: var(--accent-2)">Kein Commit ohne Gate-Referenz — Präfix: <code>Gate XY: beschreibung</code></li>
+    <li style="border-left-color: var(--accent-2)">Kein Modul ohne Contract — <code>ModuleSlotContract</code> muss implementiert sein</li>
+    <li style="border-left-color: var(--accent-2)">Definition of Done prüfen — vor dem PR alle DoD-Punkte der Gate durchgehen</li>
+    <li style="border-left-color: var(--accent-2)">Tests oder Proof — jede Gate hat mindestens eine Verifikation</li>
+    <li style="border-left-color: var(--accent-2)">Aktive Dateien kennen — <code>anvil-kmp/</code> ist der einzige Arbeitsbereich für Code</li>
+  </ul>
+</section>
 
 </main>
+
+<div class="doc-footer">
+  ANVIL · Gate B1 abgeschlossen · Stand 2026-05-20<br>
+  Nächste Gate: B2 — :core:contracts
 </div>
+</div><!-- /layout right col -->
+
+</div><!-- /layout -->
 
 <script>
-  // Active nav link on scroll
-  const sections = document.querySelectorAll('h2[id]');
-  const navLinks = document.querySelectorAll('nav a');
+  // ── Theme Toggle ────────────────────────────────────────
+  const html = document.documentElement;
+  const icon  = document.querySelector('.toggle-icon');
+  const label = document.getElementById('toggleLabel');
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        navLinks.forEach(l => l.classList.remove('active'));
-        const link = document.querySelector(`nav a[href="#${entry.target.id}"]`);
-        if (link) link.classList.add('active');
-      }
+  // Persist preference
+  const saved = localStorage.getItem('anvil-theme');
+  if (saved) setTheme(saved);
+
+  function setTheme(theme) {
+    html.dataset.theme = theme;
+    localStorage.setItem('anvil-theme', theme);
+    if (theme === 'charcoal-room') {
+      icon.textContent  = '☾';
+      label.textContent = 'Dark Mode';
+    } else {
+      icon.textContent  = '☀';
+      label.textContent = 'Light Mode';
+    }
+  }
+
+  function toggleTheme() {
+    const current = html.dataset.theme;
+    setTheme(current === 'charcoal-room' ? 'warm-paper' : 'charcoal-room');
+  }
+
+  // ── Scroll Spy ──────────────────────────────────────────
+  const sections = document.querySelectorAll('.section[id]');
+  const navLinks = document.querySelectorAll('nav a[href^="#"]');
+
+  function onScroll() {
+    let current = '';
+    sections.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
     });
-  }, { rootMargin: '-20% 0px -60% 0px' });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  }
 
-  sections.forEach(s => observer.observe(s));
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 </script>
 </body>
 </html>
