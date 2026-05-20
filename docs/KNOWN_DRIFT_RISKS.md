@@ -73,8 +73,9 @@ State Surface: Zustand zuerst, nicht Menüs.
 - B7 ✅ kotlinx-datetime — currentTimestamp() Stub ersetzt (Clock.System.now())
 - B8 ✅ Plan + Task Domain Models (`core/domain/`) — PlanLifecycle, TaskStatus, RiskLevel, dependsOn-DAG
 - B9 ✅ Warden (`core/quality/`) — CommandGuard + CommandPolicy (Safety Policy §1)
-- B10 ✅ RunContext + RunEngine Interface (`core/pipeline/`)  
-**Verbleibend:** Konkrete RunEngine-Implementierung `:modules:forge:runner` (B11), konkrete Provider-Adapter mit Ktor, Artifact-Engine.
+- B10 ✅ RunContext + RunEngine Interface (`core/pipeline/`)
+- B11 ✅ ForgeRunner (`modules/forge/runner/`) — step/run-Dispatch, CommandGuard, BellowsContract-Routing  
+**Verbleibend:** Ktor-basierte Provider-Adapter (B12+), Artifact-Engine, Branch/PR-Engine.
 
 ### 11. Docs-vs-Code-Drift ⚠️ TEILWEISE BEHOBEN
 **Risiko:** Docs beschreiben Features, die nicht existieren, als ob sie vorhanden wären.  

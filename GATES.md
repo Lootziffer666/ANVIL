@@ -102,6 +102,7 @@
 | B8 | Plan + Task Domain Models | `done` | `anvil-kmp/core/domain/` | B3 |
 | B9 | Warden (CommandGuard) | `done` | `anvil-kmp/core/quality/` | B1 |
 | B10 | RunContext + RunEngine Interface | `done` | `anvil-kmp/core/pipeline/` | B4, B8 |
+| B11 | ForgeRunner (RunEngine-Impl) | `done` | `anvil-kmp/modules/forge/runner/` | B9, B10 |
 
 ### Gate B1 — Safety Policy
 - **Ziel:** Bindende Regeln für alle Execution-Code-Implementierungen
@@ -148,6 +149,12 @@
 - **Ergebnis:** `RunContext` (WorkspaceId+PlanId+TaskId+RunId+rootPath) + `RunEngine` Interface (step/run)
 - **Besonders:** Konkrete Impl kommt in `:modules:forge:runner` (B11) — kein Scope Creep in `:core:*`
 - **Kill:** Modul-Imports (Knight, Bellows) in `:core:pipeline`
+
+### Gate B11 — ForgeRunner (RunEngine-Implementierung)
+- **Ziel:** Erste lauffähige RunEngine, die Plan/Execute/Review/Finish-Schritte verarbeitet
+- **Ergebnis:** `ForgeRunner(bellows: BellowsContract)` in `:modules:forge:runner`
+- **Besonders:** Execute → CommandGuard.require() (Safety §1); Plan → bellows.route(); kein `:modules:*`-Import (CLAUDE.md §3)
+- **Kill:** Modul-Abhängigkeit auf `:modules:bellows` oder `:modules:forge:knight` direkt
 
 ---
 
@@ -217,5 +224,6 @@
 | 2026-05-20 | Gate B8: Plan + Task Domain Models (PlanLifecycle, TaskStatus, RiskLevel, dependsOn-DAG) |
 | 2026-05-20 | Gate B9: Warden — CommandGuard + CommandPolicy (Safety Policy §1) |
 | 2026-05-20 | Gate B10: RunContext + RunEngine Interface in :core:pipeline |
+| 2026-05-20 | Gate B11: ForgeRunner — konkrete RunEngine-Impl in :modules:forge:runner |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.
