@@ -34,6 +34,7 @@ include(":modules:forge:knight")    // Datei-I/O (Okio), Unified Diff, ScopeGuar
 include(":modules:forge:runner")         // RunEngine-Implementierung (ForgeRunner)
 include(":modules:bellows")              // LLM-Routing: BellowsRouter + LocalEchoAdapter
 include(":modules:providers:anthropic")  // Anthropic Messages API via Ktor
+include(":modules:artifacts")            // ArtifactEngine: Manifest + Disk-Persistierung
 
 // ── Surfaces ──────────────────────────────────────────────────────────────────
 // Compose Multiplatform UI
