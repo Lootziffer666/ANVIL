@@ -24,7 +24,7 @@ dependencyResolutionManagement {
 // Interfaces, Domain-Typen, Pipeline-Sealed-Types, QualityState
 // Keine Abhängigkeiten untereinander außer: domain ← contracts
 include(":core:contracts")   // ModuleSlotContract, BellowsContract, CheckpointCapable
-include(":core:domain")      // Workspace, Run, Artifact, Snapshot, MemoryEntry
+include(":core:domain")      // Workspace, Run, Artifact, Snapshot, MemoryEntry, Plan, Task
 include(":core:pipeline")    // RunStep sealed, RunResult sealed, StepRecord
 include(":core:quality")     // QualityState, QualityGuard, QualityReport
 

@@ -69,8 +69,12 @@ State Surface: Zustand zuerst, nicht Menüs.
 - B3 ✅ KMP Core Domain (`core/domain/`) — Workspace, Run, Artifact, Snapshot, MemoryEntry + alle Domain-IDs
 - B4 ✅ KMP Core Pipeline (`core/pipeline/`) — RunStep, RunResult, StepRecord
 - B5 ✅ KMP Bellows (`modules/bellows/`) — BellowsRouter, ProviderAdapter, LOCAL_ONLY-Enforcement
-- B6 ✅ KMP Knight (`modules/forge/knight/`) — KnightReader, KnightWriter, KnightDiff, Knight-Facade, ScopeGuard  
-**Verbleibend:** Runs/Artifacts/Safety-Engines, kotlinx-datetime Timestamp, konkrete Provider-Adapter mit Ktor (B7+).
+- B6 ✅ KMP Knight (`modules/forge/knight/`) — KnightReader, KnightWriter, KnightDiff, Knight-Facade, ScopeGuard
+- B7 ✅ kotlinx-datetime — currentTimestamp() Stub ersetzt (Clock.System.now())
+- B8 ✅ Plan + Task Domain Models (`core/domain/`) — PlanLifecycle, TaskStatus, RiskLevel, dependsOn-DAG
+- B9 ✅ Warden (`core/quality/`) — CommandGuard + CommandPolicy (Safety Policy §1)
+- B10 ✅ RunContext + RunEngine Interface (`core/pipeline/`)  
+**Verbleibend:** Konkrete RunEngine-Implementierung `:modules:forge:runner` (B11), konkrete Provider-Adapter mit Ktor, Artifact-Engine.
 
 ### 11. Docs-vs-Code-Drift ⚠️ TEILWEISE BEHOBEN
 **Risiko:** Docs beschreiben Features, die nicht existieren, als ob sie vorhanden wären.  

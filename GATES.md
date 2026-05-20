@@ -98,6 +98,10 @@
 | B4 | KMP Core Pipeline | `done` | `anvil-kmp/core/pipeline/` | B3 |
 | B5 | KMP Bellows (LLM-Routing) | `done` | `anvil-kmp/modules/bellows/` | B2 |
 | B6 | KMP Knight (Datei-I/O) | `done` | `anvil-kmp/modules/forge/knight/` | B3 |
+| B7 | kotlinx-datetime Timestamp | `done` | `gradle/libs.versions.toml`, `ScopeGuard.kt` | B6 |
+| B8 | Plan + Task Domain Models | `done` | `anvil-kmp/core/domain/` | B3 |
+| B9 | Warden (CommandGuard) | `done` | `anvil-kmp/core/quality/` | B1 |
+| B10 | RunContext + RunEngine Interface | `done` | `anvil-kmp/core/pipeline/` | B4, B8 |
 
 ### Gate B1 — Safety Policy
 - **Ziel:** Bindende Regeln für alle Execution-Code-Implementierungen
@@ -121,6 +125,29 @@
 - **Ergebnis:** `Knight` + `KnightReader` + `KnightWriter` + `KnightDiff` + `ScopeGuard`
 - **Besonders:** `requireInScope()` erzwingt `Workspace.rootPath`-Beschränkung (Safety Policy §2); pure-Kotlin Diff ohne externe Deps
 - **Kill:** Datei-Mutation außerhalb `rootPath`; externes diff-Vendor in commonMain
+
+### Gate B7 — kotlinx-datetime Timestamp
+- **Ziel:** `currentTimestamp()` Stub durch echten ISO-8601-Timestamp ersetzen
+- **Ergebnis:** `kotlinx-datetime 0.6.0` in Catalog + `Clock.System.now().toString()` in `ScopeGuard.kt`
+- **Kill:** Nicht-KMP-kompatibler Timestamp (JVM-only API in commonMain)
+
+### Gate B8 — Plan + Task Domain Models
+- **Ziel:** Vollständiges Domain-Modell in `:core:domain` — Plan-Lifecycle + Task-Graph
+- **Ergebnis:** `Plan` (PlanLifecycle: DRAFT→KILLED, killCriteria, forbiddenFiles) + `Task` (TaskStatus, RiskLevel, dependsOn-DAG)
+- **Quellen:** `INTERNAL_EXECUTION_PLAN.md`, `TASK_GRAPH_MODEL.md`
+- **Kill:** Donor-Schema ohne Umbenennung übernommen
+
+### Gate B9 — Warden (CommandGuard)
+- **Ziel:** Safety Policy §1 implementieren — Allowlist/Blocklist für Shell-Kommandos
+- **Ergebnis:** `CommandPolicy` (Allowlist + Blocklist) + `CommandGuard` (validate/require/qualityState)
+- **Besonders:** `qualityState()` gibt `FAILED` zurück, nie Exception suppressed; kein Silent-Fail
+- **Kill:** `rm`, `curl`, `sh -c` ohne Blocklist-Eintrag passierbar
+
+### Gate B10 — RunContext + RunEngine Interface
+- **Ziel:** Ausführungskontext und Engine-Schnittstelle in `:core:pipeline` — ohne Modul-Abhängigkeiten
+- **Ergebnis:** `RunContext` (WorkspaceId+PlanId+TaskId+RunId+rootPath) + `RunEngine` Interface (step/run)
+- **Besonders:** Konkrete Impl kommt in `:modules:forge:runner` (B11) — kein Scope Creep in `:core:*`
+- **Kill:** Modul-Imports (Knight, Bellows) in `:core:pipeline`
 
 ---
 
@@ -186,5 +213,9 @@
 | 2026-05-20 | Gate B4: KMP Core Pipeline (RunStep sealed, RunResult sealed, StepRecord) |
 | 2026-05-20 | Gate B5: KMP Bellows (BellowsRouter + ProviderAdapter — LLM-Routing mit LOCAL_ONLY-Enforcement) |
 | 2026-05-20 | Gate B6: KMP Knight (KnightReader, KnightWriter, KnightDiff, Knight-Facade, ScopeGuard — Datei-I/O) |
+| 2026-05-20 | Gate B7: kotlinx-datetime — currentTimestamp() Stub ersetzt (Clock.System.now()) |
+| 2026-05-20 | Gate B8: Plan + Task Domain Models (PlanLifecycle, TaskStatus, RiskLevel, dependsOn-DAG) |
+| 2026-05-20 | Gate B9: Warden — CommandGuard + CommandPolicy (Safety Policy §1) |
+| 2026-05-20 | Gate B10: RunContext + RunEngine Interface in :core:pipeline |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.
