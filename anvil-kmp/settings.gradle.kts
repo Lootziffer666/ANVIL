@@ -31,8 +31,9 @@ include(":core:quality")     // QualityState, QualityGuard, QualityReport
 // ── Feature Modules ───────────────────────────────────────────────────────────
 // Implementierungen der Core-Contracts
 include(":modules:forge:knight")    // Datei-I/O (Okio), Unified Diff, ScopeGuard
-include(":modules:forge:runner")    // RunEngine-Implementierung (ForgeRunner)
-include(":modules:bellows")         // LLM-Routing: BellowsRouter + Provider-Adapters
+include(":modules:forge:runner")         // RunEngine-Implementierung (ForgeRunner)
+include(":modules:bellows")              // LLM-Routing: BellowsRouter + LocalEchoAdapter
+include(":modules:providers:anthropic")  // Anthropic Messages API via Ktor
 
 // ── Surfaces ──────────────────────────────────────────────────────────────────
 // Compose Multiplatform UI
