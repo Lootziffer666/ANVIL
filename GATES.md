@@ -1,7 +1,7 @@
 # 🚪 GATES — ANVIL
 
 > Statusklassen: `done` · `prototype` · `docs-only` · `partial` · `blocked` · `superseded`  
-> Letzte Reconciliation: 2026-05-09 (Gate AX) · Letzte Aktualisierung: 2026-05-20 (Gate B7)
+> Letzte Reconciliation: 2026-05-09 (Gate AX) · Letzte Aktualisierung: 2026-05-20 (Gate B8)
 > Vollständige Analyse: [`docs/GATE_RECONCILIATION.md`](docs/GATE_RECONCILIATION.md)
 
 ---
@@ -99,6 +99,7 @@
 | B5 | KMP Bellows (LLM-Routing) | `done` | `anvil-kmp/modules/bellows/` (ProviderAdapter, BellowsRouter, BellowsLegacyClient, AnvilBellowsBridgeAdapter) | B2 |
 | B6 | KMP Knight (Datei-I/O) | `done` | `anvil-kmp/modules/forge/knight/` (Knight, FileDiff, UnifiedDiff, module.json, README) | B3 |
 | B7 | KMP Knight (Contract) | `done` | `anvil-kmp/modules/forge/knight/` (KnightContract, FileContent, WriteResult, UnifiedDiff, PatchResult, DiffEngine, PatchApplier) | B6 |
+| B8 | Compose Commander Shell | `done` | `anvil-kmp/surfaces/commander/` (CommanderState, CommanderEvent, CommanderViewModel, CommanderApp, WorkspaceBrowser, DiffViewer, RunLog, QualityBadge) | B7 |
 
 ### Gate B1 — Safety Policy
 - **Ziel:** Bindende Regeln für alle Execution-Code-Implementierungen
@@ -150,7 +151,6 @@
   - `checkpoint()` / `restore()` serialisieren `KnightState` (workspaceId, rootPath, qualityState)
   - `KnightScopeViolation` + `QualityState.FAILED` bei Pfad außerhalb `workspace.rootPath`
 - **Besonders:** `FileSystem` wird injiziert — `FileSystem.SYSTEM` in Produktion, `FakeFileSystem` in Tests
-- **diff-match-patch:** nicht gevendert (Java in commonMain nicht kompilierbar); ersetzt durch reinen Kotlin-LCS
 - **Kill:** Donor-Code importiert, Mutations ohne Scope-Prüfung, Silent-Fail auf Scope-Verletzung
 
 ### Gate B7 — KMP Knight (Contract)
@@ -166,6 +166,20 @@
 - **Besonders:** `applyPatch` lokalisiert Hunks via kontextbasierter Suche (radiale Expansion um Hint). Partial-Apply möglich: `PatchResult.rejectedHunks > 0` → `QualityState.DEGRADED`.
 - **diff-match-patch:** Java-only, nicht KMP-kompatibel. Reiner Kotlin LCS + Patch-Applicator deckt Unified-Diff vollständig ab.
 - **Kill:** Donor-Code importiert, applyPatch ohne Scope-Prüfung, Silent-Fail auf Rejection
+
+### Gate B8 — Compose Commander Shell
+- **Ziel:** State-First Compose UI — drei Panels: Workspace-Browser, Diff-Viewer, Run-Log
+- **Ergebnis:**
+  - `CommanderState` (workspace, files, selectedFile, activeDiff, runLog, knightQuality, bellowsQuality, isLoading, error) — Single Source of Truth
+  - `CommanderEvent` sealed: OpenWorkspace, LoadFiles, SelectFile, WriteFile, ApplyPatch, DismissError
+  - `CommanderViewModel` — coroutine-basierter State-Holder, `StateFlow<CommanderState>`, delegiert I/O an `KnightContract`
+  - `CommanderApp` — Composable: `Row(WorkspaceBrowser 25% | DiffViewer 50% | QualityBadge+RunLog 25%)`
+  - `WorkspaceBrowser` — Workspace-Name + `LazyColumn` der Dateinamen, klickbar
+  - `DiffViewer` — Diff-Text (Priorität) oder Dateiinhalt in Monospace + Scroll
+  - `RunLog` — `LazyColumn` der Log-Einträge
+  - `QualityBadge` — farbige Surface-Chips für Knight + Bellows (4 Zustände)
+- **Besonders:** `LoadFiles` Event entkoppelt Verzeichnis-Listing vom Surface — App-Layer (B9) fütter die Dateiliste. `bellowsQuality` initial STABLE; B9 koppelt BellowsRouter ein.
+- **Kill:** Donor-Code importiert, Seiteneffekte in Composables, State nicht durch ViewModel zentralisiert
 
 ---
 
@@ -232,5 +246,6 @@
 | 2026-05-20 | Gate B4: KMP Core Pipeline — RunStep sealed, RunResult sealed, StepRecord (Recovery-Push) |
 | 2026-05-20 | Gate B6: KMP Knight — Knight (read/write/delete/diff), FileDiff, UnifiedDiff (LCS), CheckpointCapable (Recovery-Push) |
 | 2026-05-20 | Gate B7: KMP Knight Contract — KnightContract, FileContent, WriteResult, UnifiedDiff (data class), PatchResult, DiffEngine, PatchApplier (applyPatch) |
+| 2026-05-20 | Gate B8: Compose Commander Shell — CommanderState, CommanderEvent, CommanderViewModel, CommanderApp, WorkspaceBrowser, DiffViewer, RunLog, QualityBadge |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.
