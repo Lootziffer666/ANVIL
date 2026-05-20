@@ -2,7 +2,7 @@
 
 **Gate:** A9 — Tasker/App-Factory Blueprint Track
 **Stand:** 2026-05-08
-**Status:** Verbindlich
+**Status:** docs-only
 
 ---
 
@@ -67,7 +67,7 @@ Ein Blueprint ist eine **gespeicherte Konfiguration**, die beschreibt:
 
 | Target | Beschreibung | Status |
 |--------|-------------|--------|
-| `android-blueprint` | Tasker/App-Factory Export | ✅ Aktiv |
+| `android-blueprint` | Tasker/App-Factory Export | docs-only — kein `modules/android-blueprint/` vorhanden |
 | `android-apk` | Nativer APK Build | 🔜 Geplant |
 | `android-aab` | App Bundle (Store) | 🔜 Geplant |
 

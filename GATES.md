@@ -1,7 +1,7 @@
 # 🚪 GATES — ANVIL
 
 > Statusklassen: `done` · `prototype` · `docs-only` · `partial` · `blocked` · `superseded`  
-> Letzte Reconciliation: 2026-05-09 (Gate AX)  
+> Letzte Reconciliation: 2026-05-09 (Gate AX) · Letzte Aktualisierung: 2026-05-20 (Gates B1–B2)  
 > Vollständige Analyse: [`docs/GATE_RECONCILIATION.md`](docs/GATE_RECONCILIATION.md)
 
 ---
@@ -85,6 +85,33 @@
 
 ---
 
+## 🏗️ B-Gates — Execution Core Foundation (KMP)
+
+> Diese Gates implementieren den Execution Core in `anvil-kmp/`.  
+> Abhängigkeitskette: B1 → B2 → B3 → B4 → ...
+
+| Gate | Name | Status | Dateien | Abhängig von |
+|------|------|--------|---------|-------------|
+| B1 | Safety Policy | `done` | `docs/SAFETY_POLICY.md` | — |
+| B2 | KMP Core Contracts | `done` | `anvil-kmp/core/contracts/`, `anvil-kmp/core/quality/` | B1 |
+| B3 | KMP Core Domain | `geplant` | `anvil-kmp/core/domain/` | B2 |
+| B4 | KMP Core Pipeline | `geplant` | `anvil-kmp/core/pipeline/` | B3 |
+| B5 | KMP Bellows (LLM-Routing) | `geplant` | `anvil-kmp/modules/bellows/` | B2 |
+| B6 | KMP Knight (Datei-I/O) | `geplant` | `anvil-kmp/modules/forge/knight/` | B3 |
+
+### Gate B1 — Safety Policy
+- **Ziel:** Bindende Regeln für alle Execution-Code-Implementierungen
+- **Ergebnis:** `docs/SAFETY_POLICY.md` — Command Guard Allowlist, Scope-Beschränkung, Credential-Policy, Privacy-Mode, Transplant-Checklist
+- **Kill:** Execution-Code vor Existenz dieser Policy
+
+### Gate B2 — KMP Core Contracts
+- **Ziel:** Erste Kotlin-Quellen — Interfaces und Contracts ohne Seiteneffekte
+- **Ergebnis:** `ModuleSlotContract`, `BellowsContract`, `CredentialVaultContract`, `QualityState`, `QualityGuard`, `QualityReport`
+- **Besonders:** `CredentialVaultContract` adressiert Risk 5 (Token Manager Plaintext) für alle künftigen Implementierungen
+- **Kill:** Donor-Code importiert, Execution-Code geschrieben (nur Interfaces!)
+
+---
+
 ## 🔜 Deferred Gates (warten auf Execution Core)
 
 > A21–A24 können nicht sinnvoll implementiert werden, bevor der Execution Core existiert.
@@ -140,5 +167,8 @@
 | 2026-05-09 | Gate AX: Reconciliation — Status korrigiert, Statusklassen eingeführt |
 | 2026-05-10 | Gates AT1–AT4: Donor-Codebase Transplant Preparation angelegt |
 | 2026-05-10 | Gates A21–A24 als "deferred until Execution Core exists" markiert |
+| 2026-05-20 | Drift-Bereinigung: Risk 7 (Status-Inflation) ✅, Risk 9 (Permission-Drift) ✅; storage.local in MODULE_CONTRACT.md ergänzt; ANDROID_BLUEPRINT_TRACK Status auf docs-only gesetzt; GATE_RECONCILIATION A18 Pake-Name-Befund aktualisiert; ogcode-Compliance verifiziert |
+| 2026-05-20 | Gate B1: Safety Policy (docs/SAFETY_POLICY.md) — Risk 14 behoben |
+| 2026-05-20 | Gate B2: KMP Core Contracts (core/contracts + core/quality) — Risk 10 teilweise, Risk 5 adressiert |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.

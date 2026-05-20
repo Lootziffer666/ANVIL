@@ -117,6 +117,25 @@ No donor structure may become active Anvil runtime before its target path and st
 
 ---
 
+---
+
+## KMP-Native-Implementierungen (Gate B2+)
+
+> Diese Einträge dokumentieren Anvil-native KMP-Module, die **kein Donor-Pattern** verwenden.
+> NATIVE = von Grund auf neu für Kotlin/KMP geschrieben; kein Go-Code transplantiert.
+
+| Bereich | Zielpfad | Entscheidung | Begründung | Gate |
+|---------|----------|-------------|------------|------|
+| `core/contracts` — Interfaces | `anvil-kmp/core/contracts/` | **NATIVE** | Kotlin-Interface-Layer; inkompatibles Ökosystem zum Go-Donor | B2 |
+| `core/quality` — QualityGuard | `anvil-kmp/core/quality/` | **NATIVE** | Kein Gegenstück im Donor; Anvil-spezifische QualityState-Engine | B2 |
+
+**Compliance-Prüfung B2 (2026-05-20):**
+- `grep -r "ogcode\|Striker\|ogden" anvil-kmp/core/` → 0 Treffer ✅
+- Anvil-Terminologie verwendet: `ModuleSlotContract`, `BellowsContract`, `CredentialVaultContract` ✅
+- Kein Donor-Code importiert ✅
+
+---
+
 ## Cross-References
 
 - [`OGCODE_CODEBASE_INVENTORY.md`](OGCODE_CODEBASE_INVENTORY.md) — What each area contains

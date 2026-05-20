@@ -1,7 +1,7 @@
 # Gate Reconciliation — A1 bis A20
 
 **Gate:** AX — Repo Reality Lock  
-**Stand:** 2026-05-09  
+**Stand:** 2026-05-09 (rev. 2026-05-20)  
 **Agent:** Viktor (getviktor.com)  
 **Methode:** Jede Gate gegen tatsächlich vorhandenen Code, Dateien und Funktionalität geprüft.
 
@@ -220,7 +220,7 @@
 | **Dateien** | `pake.config.json`, `docs/PAKE_DESKTOP_SHELL.md` |
 | **Beweis** | Config-Datei vorhanden. Docs beschreiben Build-Befehle für Windows/macOS/Linux. |
 | **Lücken** | **Kein tatsächlicher Build.** Kein `assets/`-Ordner mit Icons. Keine CI/CD Pipeline. Pake-CLI nicht integriert. Config referenziert `assets/anvil-icon` — Datei existiert nicht. |
-| **Pake-Name-Problem** | Config und Docs verwenden `"Anvil Bellows"` — laut ANVIL_CONCEPT_CONTRACT.md ist "Anvil-Bellows" ein **eigenständiges IIG-Projekt** (ehem. CATALON-GUARD). Der Desktop-Build von Anvil-IDE sollte einfach "Anvil" heißen, nicht "Anvil Bellows". |
+| **Pake-Name** | ✅ Behoben — war `"Anvil Bellows"`, korrigiert zu `"Anvil"` in `pake.config.json` und `docs/PAKE_DESKTOP_SHELL.md` (2026-05-10, Drift-Risk 8). |
 
 ---
 
@@ -260,7 +260,7 @@ superseded: —                                                             (0/2
 
 ### Kritische Befunde
 
-1. **Pake-Name:** `"Anvil Bellows"` in `pake.config.json` und `docs/PAKE_DESKTOP_SHELL.md` widerspricht dem Concept Contract. Muss zu `"Anvil"` korrigiert werden.
+1. **Pake-Name:** ✅ Behoben — korrigiert zu `"Anvil"` (2026-05-10).
 2. **Token Manager:** `_key` im Klartext. Muss als Prototype markiert sein, nicht als "done".
 3. **Execution Core:** Existiert nicht. Kein Code, der Module tatsächlich ausführt, Outputs erzeugt oder eine Build-Pipeline anstößt. Das ist die größte Lücke zwischen Behauptung und Realität.
 4. **"A1–A20 done":** Die pauschale Behauptung in Root-GATES.md ist falsch. 5 von 20 Gates sind nicht `done`.

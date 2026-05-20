@@ -48,6 +48,7 @@ network.api          — Externe APIs aufrufen
 network.build-server — Build-Server kontaktieren
 camera               — Kamerazugriff
 clipboard            — Zwischenablage
+storage.local        — Browser-Lokal-Speicher (localStorage / IndexedDB)
 ```
 
 Neue Permissions müssen hier dokumentiert werden, bevor ein Modul sie nutzen darf.
