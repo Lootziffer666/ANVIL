@@ -5,31 +5,30 @@
 
 [versions]
 
-# ── Core ─────────────────────────────────────────────────────────────────────
+# ── Core ──────────────────────────────────────────────────────────────────────────────
 kotlin                  = "2.0.21"          # kotlinlang.org/docs/releases
 agp                     = "8.7.3"           # developer.android.com/build/releases
 compose-multiplatform   = "1.7.3"           # github.com/JetBrains/compose-multiplatform
 
-# ── KotlinX ──────────────────────────────────────────────────────────────────
+# ── KotlinX ────────────────────────────────────────────────────────────────────────
 kotlinx-coroutines      = "1.9.0"
 kotlinx-serialization   = "1.7.3"
 
-# ── Storage ──────────────────────────────────────────────────────────────────
+# ── Storage ──────────────────────────────────────────────────────────────────────
 sqldelight              = "2.0.2"           # github.com/cashapp/sqldelight
 okio                    = "3.9.0"           # square.github.io/okio
 
-# ── Network / HTTP (Bellows cloud adapters) ───────────────────────────────────
+# ── Network / HTTP (Bellows cloud adapters) ─────────────────────────────────
 ktor                    = "3.0.3"           # ktor.io
 
-# ── Diff (Knight — Unified Diff display) ─────────────────────────────────────
-# diff-match-patch: single Java file, Apache 2.0
-# Wird direkt als src/commonMain vendored — keine externe Dep nötig.
+# ── Diff (Knight — Unified Diff) ───────────────────────────────────────────
+# Pure Kotlin LCS — kein externes Tool. Implementierung: modules/forge/knight/diff/UnifiedDiff.kt
 
-# ── DI (deferred — Phase 5.5) ─────────────────────────────────────────────────
+# ── DI (deferred — Phase 5.5) ────────────────────────────────────────────────────
 # koin                  = "4.0.0"           # Kandidat A
 # kotlin-inject         = "0.7.2"           # Kandidat B
 
-# ── Android ──────────────────────────────────────────────────────────────────
+# ── Android ──────────────────────────────────────────────────────────────────────
 android-compileSdk     = "35"
 android-minSdk         = "26"              # Android 8+
 android-targetSdk      = "35"
