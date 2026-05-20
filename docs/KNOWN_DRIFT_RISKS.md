@@ -63,10 +63,12 @@ State Surface: Zustand zuerst, nicht Menüs.
 ### 10. Execution-Gap ⚠️ TEILWEISE BEHOBEN
 **Risiko:** Anvil hat kein Execution Core. Module werden definiert, aber nie ausgeführt.  
 **Folge:** Die gesamte Pipeline (Module → Artifact → Output → Registry) existiert nur als Spec.  
-**Stand 2026-05-20:** B-Gate-Serie gestartet:
+**Stand 2026-05-20:** B-Gate-Serie läuft:
 - B1 ✅ Safety Policy (`docs/SAFETY_POLICY.md`) — Execution-Regeln verbindlich
-- B2 ✅ KMP Core Contracts (`anvil-kmp/core/contracts/`, `anvil-kmp/core/quality/`) — Interfaces für alle Module  
-**Verbleibend:** Domain (B3), Pipeline (B4), Bellows/Knight-Implementierungen (B5/B6), Runs/Artifacts/Safety-Engines.
+- B2 ✅ KMP Core Contracts (`core/contracts/`, `core/quality/`) — Interfaces
+- B3 ✅ KMP Core Domain (`core/domain/`) — Workspace, Run, Artifact, Snapshot, MemoryEntry + alle Domain-IDs
+- B4 ✅ KMP Core Pipeline (`core/pipeline/`) — RunStep, RunResult, StepRecord  
+**Verbleibend:** Bellows/Knight-Implementierungen (B5/B6), Runs/Artifacts/Safety-Engines (B7+).
 
 ### 11. Docs-vs-Code-Drift ⚠️ TEILWEISE BEHOBEN
 **Risiko:** Docs beschreiben Features, die nicht existieren, als ob sie vorhanden wären.  
