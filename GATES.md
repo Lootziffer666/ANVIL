@@ -1,7 +1,7 @@
 # 🚪 GATES — ANVIL
 
 > Statusklassen: `done` · `prototype` · `docs-only` · `partial` · `blocked` · `superseded`  
-> Letzte Reconciliation: 2026-05-09 (Gate AX) · Letzte Aktualisierung: 2026-05-20 (Gates B3–B4)
+> Letzte Reconciliation: 2026-05-09 (Gate AX) · Letzte Aktualisierung: 2026-05-20 (Gate B6)
 > Vollständige Analyse: [`docs/GATE_RECONCILIATION.md`](docs/GATE_RECONCILIATION.md)
 
 ---
@@ -97,7 +97,7 @@
 | B3 | KMP Core Domain | `done` | `anvil-kmp/core/domain/` (Workspace, Run, Artifact, Snapshot, MemoryEntry) | B2 |
 | B4 | KMP Core Pipeline | `done` | `anvil-kmp/core/pipeline/` (RunStep, RunResult, StepRecord) | B3 |
 | B5 | KMP Bellows (LLM-Routing) | `done` | `anvil-kmp/modules/bellows/` (ProviderAdapter, BellowsRouter, BellowsLegacyClient, AnvilBellowsBridgeAdapter) | B2 |
-| B6 | KMP Knight (Datei-I/O) | `geplant` | `anvil-kmp/modules/forge/knight/` | B3 |
+| B6 | KMP Knight (Datei-I/O) | `done` | `anvil-kmp/modules/forge/knight/` (Knight, FileDiff, UnifiedDiff, module.json, README) | B3 |
 
 ### Gate B1 — Safety Policy
 - **Ziel:** Bindende Regeln für alle Execution-Code-Implementierungen
@@ -136,9 +136,21 @@
   - `commonMain`: `ProviderAdapter` (pluggable adapter interface), `BellowsRouter` (implements `BellowsContract`)
   - `androidMain`: `BellowsLegacyClient` (fun interface), `AnvilBellowsBridgeAdapter` (delegates to ANVIL-BELLOWS)
 - **Wiring in `:app:android`:** `BellowsRouter(listOf(AnvilBellowsBridgeAdapter(legacyClient)))`
-- **Privacy-Mode:** `LOCAL_ONLY` wirft `BellowsExhaustedException` — kein Cloud-Fallback. `AnvilBellowsBridgeAdapter.isLocal = false` → wird bei `LOCAL_ONLY` korrekt ausgeschlossen.
+- **Privacy-Mode:** `LOCAL_ONLY` wirft `BellowsExhaustedException` — kein Cloud-Fallback
 - **Nächste Gate (Bellows-KMP-Migration):** ANVIL-BELLOWS Internals nach KMP portieren, Bridge entfernt
 - **Kill:** Donor-Code importiert, Credentials im Klartext, `LOCAL_ONLY` mit Cloud-Fallback
+
+### Gate B6 — KMP Knight (Datei-I/O)
+- **Ziel:** File-I/O- und Diff-Layer — `ModuleSlotContract` + `CheckpointCapable`-Implementierung
+- **Ergebnis:**
+  - `Knight(fileSystem, workspace)` — read/write/delete via injiziertem Okio `FileSystem`
+  - `write()` gibt `FileDiff(path, unified)` zurück — Diff old→new als Teil des Rückgabewerts
+  - `diff(original, modified)` — reiner Kotlin LCS Unified-Diff (kein diff-match-patch)
+  - `checkpoint()` / `restore()` serialisieren `KnightState` (workspaceId, rootPath, qualityState)
+  - `KnightScopeViolation` + `QualityState.FAILED` bei Pfad außerhalb `workspace.rootPath`
+- **Besonders:** `FileSystem` wird injiziert — `FileSystem.SYSTEM` in Produktion, `FakeFileSystem` in Tests
+- **diff-match-patch:** nicht gevendert (Java in commonMain nicht kompilierbar); ersetzt durch reinen Kotlin-LCS
+- **Kill:** Donor-Code importiert, Mutations ohne Scope-Prüfung, Silent-Fail auf Scope-Verletzung
 
 ---
 
@@ -203,5 +215,6 @@
 | 2026-05-20 | Gate B5: KMP Bellows — BellowsRouter + AnvilBellowsBridgeAdapter (Bridge zu ANVIL-BELLOWS) |
 | 2026-05-20 | Gate B3: KMP Core Domain — Workspace, Run, Artifact, Snapshot, MemoryEntry |
 | 2026-05-20 | Gate B4: KMP Core Pipeline — RunStep sealed, RunResult sealed, StepRecord |
+| 2026-05-20 | Gate B6: KMP Knight — Knight (read/write/delete/diff), FileDiff, UnifiedDiff (LCS), CheckpointCapable |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.
