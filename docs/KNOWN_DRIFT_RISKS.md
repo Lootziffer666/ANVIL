@@ -67,8 +67,10 @@ State Surface: Zustand zuerst, nicht Menüs.
 - B1 ✅ Safety Policy (`docs/SAFETY_POLICY.md`) — Execution-Regeln verbindlich
 - B2 ✅ KMP Core Contracts (`core/contracts/`, `core/quality/`) — Interfaces
 - B3 ✅ KMP Core Domain (`core/domain/`) — Workspace, Run, Artifact, Snapshot, MemoryEntry + alle Domain-IDs
-- B4 ✅ KMP Core Pipeline (`core/pipeline/`) — RunStep, RunResult, StepRecord  
-**Verbleibend:** Bellows/Knight-Implementierungen (B5/B6), Runs/Artifacts/Safety-Engines (B7+).
+- B4 ✅ KMP Core Pipeline (`core/pipeline/`) — RunStep, RunResult, StepRecord
+- B5 ✅ KMP Bellows (`modules/bellows/`) — BellowsRouter, ProviderAdapter, LOCAL_ONLY-Enforcement
+- B6 ✅ KMP Knight (`modules/forge/knight/`) — KnightReader, KnightWriter, KnightDiff, Knight-Facade, ScopeGuard  
+**Verbleibend:** Runs/Artifacts/Safety-Engines, kotlinx-datetime Timestamp, konkrete Provider-Adapter mit Ktor (B7+).
 
 ### 11. Docs-vs-Code-Drift ⚠️ TEILWEISE BEHOBEN
 **Risiko:** Docs beschreiben Features, die nicht existieren, als ob sie vorhanden wären.  

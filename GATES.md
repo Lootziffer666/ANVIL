@@ -96,8 +96,8 @@
 | B2 | KMP Core Contracts | `done` | `anvil-kmp/core/contracts/`, `anvil-kmp/core/quality/` | B1 |
 | B3 | KMP Core Domain | `done` | `anvil-kmp/core/domain/` | B2 |
 | B4 | KMP Core Pipeline | `done` | `anvil-kmp/core/pipeline/` | B3 |
-| B5 | KMP Bellows (LLM-Routing) | `geplant` | `anvil-kmp/modules/bellows/` | B2 |
-| B6 | KMP Knight (Datei-I/O) | `geplant` | `anvil-kmp/modules/forge/knight/` | B3 |
+| B5 | KMP Bellows (LLM-Routing) | `done` | `anvil-kmp/modules/bellows/` | B2 |
+| B6 | KMP Knight (Datei-I/O) | `done` | `anvil-kmp/modules/forge/knight/` | B3 |
 
 ### Gate B1 — Safety Policy
 - **Ziel:** Bindende Regeln für alle Execution-Code-Implementierungen
@@ -109,6 +109,18 @@
 - **Ergebnis:** `ModuleSlotContract`, `BellowsContract`, `CredentialVaultContract`, `QualityState`, `QualityGuard`, `QualityReport`
 - **Besonders:** `CredentialVaultContract` adressiert Risk 5 (Token Manager Plaintext) für alle künftigen Implementierungen
 - **Kill:** Donor-Code importiert, Execution-Code geschrieben (nur Interfaces!)
+
+### Gate B5 — KMP Bellows (LLM-Routing)
+- **Ziel:** `BellowsContract`-Implementierung mit `ProviderAdapter`-Interface für alle Provider
+- **Ergebnis:** `BellowsRouter` + `ProviderAdapter` — LOCAL_ONLY-Enforcement, `BellowsExhaustedException`
+- **Besonders:** Kein Ktor — HTTP-Engine kommt erst mit konkreten Cloud-Adaptern (Anti-Scope-Creep)
+- **Kill:** Cloud-Adapter ohne explizite Gate; Ktor ohne konkreten Adapter-Bedarf
+
+### Gate B6 — KMP Knight (Datei-I/O)
+- **Ziel:** Datei-I/O-Facade mit Scope-Guard, Diff-Tracking, `ChangedFile`-Rückgabe
+- **Ergebnis:** `Knight` + `KnightReader` + `KnightWriter` + `KnightDiff` + `ScopeGuard`
+- **Besonders:** `requireInScope()` erzwingt `Workspace.rootPath`-Beschränkung (Safety Policy §2); pure-Kotlin Diff ohne externe Deps
+- **Kill:** Datei-Mutation außerhalb `rootPath`; externes diff-Vendor in commonMain
 
 ---
 
@@ -172,5 +184,7 @@
 | 2026-05-20 | Gate B2: KMP Core Contracts (core/contracts + core/quality) — Risk 10 teilweise, Risk 5 adressiert |
 | 2026-05-20 | Gate B3: KMP Core Domain (Workspace, Run, Artifact, Snapshot, MemoryEntry + alle IDs) |
 | 2026-05-20 | Gate B4: KMP Core Pipeline (RunStep sealed, RunResult sealed, StepRecord) |
+| 2026-05-20 | Gate B5: KMP Bellows (BellowsRouter + ProviderAdapter — LLM-Routing mit LOCAL_ONLY-Enforcement) |
+| 2026-05-20 | Gate B6: KMP Knight (KnightReader, KnightWriter, KnightDiff, Knight-Facade, ScopeGuard — Datei-I/O) |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.
