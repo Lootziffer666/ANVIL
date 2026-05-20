@@ -30,7 +30,8 @@ include(":core:quality")     // QualityState, QualityGuard, QualityReport
 
 // ── Feature Modules ───────────────────────────────────────────────────────────
 // Implementierungen der Core-Contracts
-include(":modules:forge:knight")    // Datei-I/O (Okio), Unified Diff, diff-match-patch
+include(":modules:forge:knight")    // Datei-I/O (Okio), Unified Diff, ScopeGuard
+include(":modules:forge:runner")    // RunEngine-Implementierung (ForgeRunner)
 include(":modules:bellows")         // LLM-Routing: BellowsRouter + Provider-Adapters
 
 // ── Surfaces ──────────────────────────────────────────────────────────────────
