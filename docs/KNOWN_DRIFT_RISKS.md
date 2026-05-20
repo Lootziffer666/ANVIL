@@ -74,8 +74,12 @@ State Surface: Zustand zuerst, nicht Menüs.
 - B8 ✅ Plan + Task Domain Models (`core/domain/`) — PlanLifecycle, TaskStatus, RiskLevel, dependsOn-DAG
 - B9 ✅ Warden (`core/quality/`) — CommandGuard + CommandPolicy (Safety Policy §1)
 - B10 ✅ RunContext + RunEngine Interface (`core/pipeline/`)
-- B11 ✅ ForgeRunner (`modules/forge/runner/`) — step/run-Dispatch, CommandGuard, BellowsContract-Routing  
-**Verbleibend:** Ktor-basierte Provider-Adapter (B12+), Artifact-Engine, Branch/PR-Engine.
+- B11 ✅ ForgeRunner (`modules/forge/runner/`) — step/run-Dispatch, CommandGuard, BellowsContract-Routing
+- B12 ✅ Interface-Promotion — `ProviderAdapter` + `FileIoContract` nach `:core:contracts`; `LocalEchoAdapter`
+- B13 ✅ InMemoryVault (`core/quality/`) — erste `CredentialVaultContract`-Impl (RAM-only)
+- B14 ✅ AnthropicAdapter (`modules/providers/anthropic/`) — Anthropic Messages API via Ktor
+- B15 ✅ ArtifactEngine (`modules/artifacts/`) — Artifact + Manifest via `FileIoContract`  
+**Verbleibend:** Branch/PR-Engine, Run-Persistenz (SQLDelight), OpenAI-kompatibler Adapter.
 
 ### 11. Docs-vs-Code-Drift ⚠️ TEILWEISE BEHOBEN
 **Risiko:** Docs beschreiben Features, die nicht existieren, als ob sie vorhanden wären.  

@@ -103,6 +103,10 @@
 | B9 | Warden (CommandGuard) | `done` | `anvil-kmp/core/quality/` | B1 |
 | B10 | RunContext + RunEngine Interface | `done` | `anvil-kmp/core/pipeline/` | B4, B8 |
 | B11 | ForgeRunner (RunEngine-Impl) | `done` | `anvil-kmp/modules/forge/runner/` | B9, B10 |
+| B12 | Interface-Promotion + LocalEchoAdapter | `done` | `anvil-kmp/core/contracts/`, `anvil-kmp/modules/bellows/` | B5, B6 |
+| B13 | InMemoryVault | `done` | `anvil-kmp/core/quality/` | B2 |
+| B14 | AnthropicAdapter | `done` | `anvil-kmp/modules/providers/anthropic/` | B12, B13 |
+| B15 | ArtifactEngine | `done` | `anvil-kmp/modules/artifacts/` | B12 |
 
 ### Gate B1 — Safety Policy
 - **Ziel:** Bindende Regeln für alle Execution-Code-Implementierungen
@@ -149,6 +153,27 @@
 - **Ergebnis:** `RunContext` (WorkspaceId+PlanId+TaskId+RunId+rootPath) + `RunEngine` Interface (step/run)
 - **Besonders:** Konkrete Impl kommt in `:modules:forge:runner` (B11) — kein Scope Creep in `:core:*`
 - **Kill:** Modul-Imports (Knight, Bellows) in `:core:pipeline`
+
+### Gate B12 — Interface-Promotion + LocalEchoAdapter
+- **Ziel:** `ProviderAdapter` + `FileIoContract` nach `:core:contracts` — ermöglicht Adapter-Module ohne Cross-Dep
+- **Ergebnis:** `ProviderAdapter` aus `:modules:bellows` entfernt; `Knight` implementiert `FileIoContract`; `LocalEchoAdapter` (isLocal=true)
+- **Kill:** Adapter-Modul importiert `:modules:bellows`; `FileIoContract` gibt `ChangedFile` zurück (wäre `:core:domain`-Import in contracts)
+
+### Gate B13 — InMemoryVault
+- **Ziel:** Erste `CredentialVaultContract`-Implementierung — KMP-kompatibel, kein Klartext in Git
+- **Ergebnis:** `InMemoryVault` in `:core:quality`; Schlüssel nur zur Laufzeit im RAM
+- **Kill:** Key in Datei/Logfile geschrieben
+
+### Gate B14 — AnthropicAdapter
+- **Ziel:** Erster echter Cloud-Adapter via Anthropic Messages API + Ktor
+- **Ergebnis:** `AnthropicAdapter` in `:modules:providers:anthropic`; `isLocal=false`; Key via `CredentialVaultContract`
+- **Besonders:** Ktor-Engine per sourceSet: OkHttp (Android) / Java (JVM)
+- **Kill:** API-Key hardcoded; `isLocal=true`; Cloud-Call bei LOCAL_ONLY
+
+### Gate B15 — ArtifactEngine
+- **Ziel:** Artifacts mit Manifest auf Disk schreiben via `FileIoContract`
+- **Ergebnis:** `ArtifactEngine(fileIo: FileIoContract)` in `:modules:artifacts`; `store()` + `exists()`
+- **Kill:** Knight direkt importiert; kein Manifest geschrieben
 
 ### Gate B11 — ForgeRunner (RunEngine-Implementierung)
 - **Ziel:** Erste lauffähige RunEngine, die Plan/Execute/Review/Finish-Schritte verarbeitet
@@ -225,5 +250,9 @@
 | 2026-05-20 | Gate B9: Warden — CommandGuard + CommandPolicy (Safety Policy §1) |
 | 2026-05-20 | Gate B10: RunContext + RunEngine Interface in :core:pipeline |
 | 2026-05-20 | Gate B11: ForgeRunner — konkrete RunEngine-Impl in :modules:forge:runner |
+| 2026-05-20 | Gate B12: Interface-Promotion (ProviderAdapter + FileIoContract → :core:contracts) + LocalEchoAdapter |
+| 2026-05-20 | Gate B13: InMemoryVault — CredentialVaultContract-Impl in :core:quality (RAM-only, kein Plaintext) |
+| 2026-05-20 | Gate B14: AnthropicAdapter — Anthropic Messages API via Ktor in :modules:providers:anthropic |
+| 2026-05-20 | Gate B15: ArtifactEngine — Artifact + Manifest via FileIoContract in :modules:artifacts |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.
