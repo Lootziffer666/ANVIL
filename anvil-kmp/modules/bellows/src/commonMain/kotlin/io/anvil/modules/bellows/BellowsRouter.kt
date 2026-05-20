@@ -7,6 +7,7 @@ import io.anvil.core.contracts.ModelRequest
 import io.anvil.core.contracts.ModelResponse
 import io.anvil.core.contracts.ModuleSlotContract
 import io.anvil.core.contracts.PrivacyMode
+import io.anvil.core.contracts.ProviderAdapter
 import io.anvil.core.contracts.QualityState
 
 class BellowsRouter(
