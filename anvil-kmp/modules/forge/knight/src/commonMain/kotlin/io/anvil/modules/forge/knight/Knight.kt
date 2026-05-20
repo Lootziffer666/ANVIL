@@ -5,7 +5,8 @@ import io.anvil.core.contracts.CheckpointData
 import io.anvil.core.contracts.ModuleSlotContract
 import io.anvil.core.contracts.QualityState
 import io.anvil.core.domain.Workspace
-import io.anvil.modules.forge.knight.diff.UnifiedDiff
+import io.anvil.modules.forge.knight.diff.DiffEngine
+import io.anvil.modules.forge.knight.diff.PatchApplier
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okio.FileSystem
@@ -14,7 +15,7 @@ import okio.Path.Companion.toPath
 class Knight(
     private val fileSystem: FileSystem,
     private val workspace: Workspace,
-) : ModuleSlotContract, CheckpointCapable {
+) : KnightContract, ModuleSlotContract, CheckpointCapable {
 
     override val name = "Knight"
     override val purpose = "File I/O + Diff layer for Anvil"
@@ -23,17 +24,18 @@ class Knight(
 
     override fun qualityState(): QualityState = _quality
 
-    suspend fun read(path: String): String {
+    override suspend fun readFile(path: String): FileContent {
         requireInScope(path)
         return try {
-            fileSystem.read(path.toPath()) { readUtf8() }
-                .also { _quality = QualityState.STABLE }
+            val content = fileSystem.read(path.toPath()) { readUtf8() }
+            _quality = QualityState.STABLE
+            FileContent(path = path, content = content)
         } catch (e: Exception) {
             _quality = QualityState.DEGRADED; throw e
         }
     }
 
-    suspend fun write(path: String, content: String): FileDiff {
+    override suspend fun writeFile(path: String, content: String): WriteResult {
         requireInScope(path)
         return try {
             val okioPath = path.toPath()
@@ -41,7 +43,28 @@ class Knight(
                 fileSystem.read(okioPath) { readUtf8() } else ""
             fileSystem.write(okioPath) { writeUtf8(content) }
             _quality = QualityState.STABLE
-            FileDiff(path = path, unified = UnifiedDiff.compute(previous, content))
+            WriteResult(path = path, diff = DiffEngine.compute(previous, content))
+        } catch (e: Exception) {
+            _quality = QualityState.DEGRADED; throw e
+        }
+    }
+
+    override suspend fun diff(original: String, modified: String): UnifiedDiff =
+        DiffEngine.compute(original, modified)
+
+    override suspend fun applyPatch(path: String, diff: UnifiedDiff): PatchResult {
+        requireInScope(path)
+        return try {
+            val original = fileSystem.read(path.toPath()) { readUtf8() }
+            val result = PatchApplier.apply(original, diff)
+            fileSystem.write(path.toPath()) { writeUtf8(result.patched) }
+            _quality = if (result.rejectedHunks == 0) QualityState.STABLE else QualityState.DEGRADED
+            PatchResult(
+                path = path,
+                success = result.rejectedHunks == 0,
+                appliedHunks = result.appliedHunks,
+                rejectedHunks = result.rejectedHunks,
+            )
         } catch (e: Exception) {
             _quality = QualityState.DEGRADED; throw e
         }
@@ -56,9 +79,6 @@ class Knight(
             _quality = QualityState.DEGRADED; throw e
         }
     }
-
-    fun diff(original: String, modified: String): String =
-        UnifiedDiff.compute(original, modified)
 
     override suspend fun checkpoint(): CheckpointData {
         val payload = Json.encodeToString(

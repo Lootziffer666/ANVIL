@@ -1,7 +1,7 @@
 # 🚪 GATES — ANVIL
 
 > Statusklassen: `done` · `prototype` · `docs-only` · `partial` · `blocked` · `superseded`  
-> Letzte Reconciliation: 2026-05-09 (Gate AX) · Letzte Aktualisierung: 2026-05-20 (Gate B6)
+> Letzte Reconciliation: 2026-05-09 (Gate AX) · Letzte Aktualisierung: 2026-05-20 (Gate B7)
 > Vollständige Analyse: [`docs/GATE_RECONCILIATION.md`](docs/GATE_RECONCILIATION.md)
 
 ---
@@ -98,6 +98,7 @@
 | B4 | KMP Core Pipeline | `done` | `anvil-kmp/core/pipeline/` (RunStep, RunResult, StepRecord) | B3 |
 | B5 | KMP Bellows (LLM-Routing) | `done` | `anvil-kmp/modules/bellows/` (ProviderAdapter, BellowsRouter, BellowsLegacyClient, AnvilBellowsBridgeAdapter) | B2 |
 | B6 | KMP Knight (Datei-I/O) | `done` | `anvil-kmp/modules/forge/knight/` (Knight, FileDiff, UnifiedDiff, module.json, README) | B3 |
+| B7 | KMP Knight (Contract) | `done` | `anvil-kmp/modules/forge/knight/` (KnightContract, FileContent, WriteResult, UnifiedDiff, PatchResult, DiffEngine, PatchApplier) | B6 |
 
 ### Gate B1 — Safety Policy
 - **Ziel:** Bindende Regeln für alle Execution-Code-Implementierungen
@@ -151,6 +152,20 @@
 - **Besonders:** `FileSystem` wird injiziert — `FileSystem.SYSTEM` in Produktion, `FakeFileSystem` in Tests
 - **diff-match-patch:** nicht gevendert (Java in commonMain nicht kompilierbar); ersetzt durch reinen Kotlin-LCS
 - **Kill:** Donor-Code importiert, Mutations ohne Scope-Prüfung, Silent-Fail auf Scope-Verletzung
+
+### Gate B7 — KMP Knight (Contract)
+- **Ziel:** Knight-Modul formalisieren: typisierter `KnightContract` + `applyPatch()`
+- **Ergebnis:**
+  - `KnightContract` — Interface mit readFile / writeFile / diff / applyPatch / qualityState
+  - `FileContent(path, content)` — typisierter Rückgabewert für readFile
+  - `WriteResult(path, diff)` — typisierter Rückgabewert für writeFile
+  - `UnifiedDiff(text)` — typisiertes Diff-Objekt (data class, ersetzt raw String)
+  - `PatchResult(path, success, appliedHunks, rejectedHunks)` — Ergebnis von applyPatch
+  - `diff/DiffEngine` — LCS-Algorithmus (umbenannt von UnifiedDiff-Object); gibt `UnifiedDiff` zurück
+  - `diff/PatchApplier` — pure-Kotlin Unified-Diff Patch-Applicator mit radialer Kontext-Suche
+- **Besonders:** `applyPatch` lokalisiert Hunks via kontextbasierter Suche (radiale Expansion um Hint). Partial-Apply möglich: `PatchResult.rejectedHunks > 0` → `QualityState.DEGRADED`.
+- **diff-match-patch:** Java-only, nicht KMP-kompatibel. Reiner Kotlin LCS + Patch-Applicator deckt Unified-Diff vollständig ab.
+- **Kill:** Donor-Code importiert, applyPatch ohne Scope-Prüfung, Silent-Fail auf Rejection
 
 ---
 
@@ -208,7 +223,7 @@
 | 2026-05-08 | Gates A1–A20 initial erstellt und gepusht |
 | 2026-05-09 | Gate AX: Reconciliation — Status korrigiert, Statusklassen eingeführt |
 | 2026-05-10 | Gates AT1–AT4: Donor-Codebase Transplant Preparation angelegt |
-| 2026-05-10 | Gates A21–A24 als "deferred until Execution Core exists" markiert |
+| 2026-05-10 | Gates A21–A24 als „deferred until Execution Core exists“ markiert |
 | 2026-05-20 | Drift-Bereinigung: Risk 7 (Status-Inflation) ✅, Risk 9 (Permission-Drift) ✅; storage.local in MODULE_CONTRACT.md ergänzt; ANDROID_BLUEPRINT_TRACK Status auf docs-only gesetzt; GATE_RECONCILIATION A18 Pake-Name-Befund aktualisiert; ogcode-Compliance verifiziert |
 | 2026-05-20 | Gate B1: Safety Policy (docs/SAFETY_POLICY.md) — Risk 14 behoben |
 | 2026-05-20 | Gate B2: KMP Core Contracts (core/contracts + core/quality) — Risk 10 teilweise, Risk 5 adressiert |
@@ -216,5 +231,6 @@
 | 2026-05-20 | Gate B3: KMP Core Domain — Workspace, Run, Artifact, Snapshot, MemoryEntry (Recovery-Push) |
 | 2026-05-20 | Gate B4: KMP Core Pipeline — RunStep sealed, RunResult sealed, StepRecord (Recovery-Push) |
 | 2026-05-20 | Gate B6: KMP Knight — Knight (read/write/delete/diff), FileDiff, UnifiedDiff (LCS), CheckpointCapable (Recovery-Push) |
+| 2026-05-20 | Gate B7: KMP Knight Contract — KnightContract, FileContent, WriteResult, UnifiedDiff (data class), PatchResult, DiffEngine, PatchApplier (applyPatch) |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.

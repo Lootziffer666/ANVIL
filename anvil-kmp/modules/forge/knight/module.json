@@ -1,10 +1,12 @@
 {
   "name": "Knight",
+  "gate": "B7",
   "purpose": "File I/O + Diff layer for Anvil",
+  "contract": "KnightContract",
   "inputs": ["text/plain", "application/json", "text/markdown"],
   "outputs": ["text/plain", "text/diff"],
   "requiredPermissions": ["filesystem.read", "filesystem.write"],
   "canRunOffline": true,
   "canExport": true,
-  "failureBehavior": "KnightScopeViolation on out-of-scope paths (QualityState.FAILED). QualityState.DEGRADED on I/O errors. Never silently discards exceptions."
+  "failureBehavior": "KnightScopeViolation on out-of-scope paths (QualityState.FAILED). QualityState.DEGRADED on I/O errors or partial patch application. Never silently discards exceptions."
 }
