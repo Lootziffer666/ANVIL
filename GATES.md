@@ -1,7 +1,7 @@
 # 🚪 GATES — ANVIL
 
 > Statusklassen: `done` · `prototype` · `docs-only` · `partial` · `blocked` · `superseded`  
-> Letzte Reconciliation: 2026-05-09 (Gate AX) · Letzte Aktualisierung: 2026-05-20 (Gate B5)
+> Letzte Reconciliation: 2026-05-09 (Gate AX) · Letzte Aktualisierung: 2026-05-20 (Gates B3–B4)
 > Vollständige Analyse: [`docs/GATE_RECONCILIATION.md`](docs/GATE_RECONCILIATION.md)
 
 ---
@@ -94,8 +94,8 @@
 |------|------|--------|---------|-------------|
 | B1 | Safety Policy | `done` | `docs/SAFETY_POLICY.md` | — |
 | B2 | KMP Core Contracts | `done` | `anvil-kmp/core/contracts/`, `anvil-kmp/core/quality/` | B1 |
-| B3 | KMP Core Domain | `geplant` | `anvil-kmp/core/domain/` | B2 |
-| B4 | KMP Core Pipeline | `geplant` | `anvil-kmp/core/pipeline/` | B3 |
+| B3 | KMP Core Domain | `done` | `anvil-kmp/core/domain/` (Workspace, Run, Artifact, Snapshot, MemoryEntry) | B2 |
+| B4 | KMP Core Pipeline | `done` | `anvil-kmp/core/pipeline/` (RunStep, RunResult, StepRecord) | B3 |
 | B5 | KMP Bellows (LLM-Routing) | `done` | `anvil-kmp/modules/bellows/` (ProviderAdapter, BellowsRouter, BellowsLegacyClient, AnvilBellowsBridgeAdapter) | B2 |
 | B6 | KMP Knight (Datei-I/O) | `geplant` | `anvil-kmp/modules/forge/knight/` | B3 |
 
@@ -109,6 +109,26 @@
 - **Ergebnis:** `ModuleSlotContract`, `BellowsContract`, `CredentialVaultContract`, `QualityState`, `QualityGuard`, `QualityReport`
 - **Besonders:** `CredentialVaultContract` adressiert Risk 5 (Token Manager Plaintext) für alle künftigen Implementierungen
 - **Kill:** Donor-Code importiert, Execution-Code geschrieben (nur Interfaces!)
+
+### Gate B3 — KMP Core Domain
+- **Ziel:** Serialisierbare Datenmodelle für den Execution Core — kein Verhalten, nur Typen
+- **Ergebnis:**
+  - `Workspace` (id, name, description, rootPath, buildTarget, status, moduleIds)
+  - `Run` (runId, workspaceId, planId, taskId, status, artifacts, logs, humanReviewRequired=true)
+  - `Artifact` (id, runId, kind, path, sizeBytes, producedAt)
+  - `Snapshot` (id, workspaceId, runId?, takenAt, checkpoint: CheckpointData)
+  - `MemoryEntry` (id, workspaceId, runId?, content, kind, timestamp)
+- **Besonders:** `Workspace.rootPath` ist die Scope-Grenze für alle Datei-Mutationen (SAFETY_POLICY.md)
+- **Kill:** Donor-Code importiert, Verhalten implementiert (nur Datenmodelle!)
+
+### Gate B4 — KMP Core Pipeline
+- **Ziel:** Sealed-Hierarchien für Pipeline-Primitives — kein Verhalten, nur Typen
+- **Ergebnis:**
+  - `RunStep` sealed: ReadFile, WriteFile, PromptLlm, RunCommand, SaveCheckpoint
+  - `RunResult` sealed: FileRead, FileWritten, LlmResponse, CommandExecuted, CheckpointSaved, Failure
+  - `StepRecord` (step, result, durationMs, timestamp) — Audit-Log-Eintrag
+- **Besonders:** `RunStep.RunCommand` referenziert Command Guard Allowlist (SAFETY_POLICY.md). `RunStep.PromptLlm` nutzt `ModelRequest` aus `:core:contracts`.
+- **Kill:** Donor-Code importiert, Execution-Logik implementiert (nur sealed types!)
 
 ### Gate B5 — KMP Bellows (LLM-Routing)
 - **Ziel:** Erste Bellows-Implementierung als Bridge-Adapter zu ANVIL-BELLOWS (Android)
@@ -181,5 +201,7 @@
 | 2026-05-20 | Gate B1: Safety Policy (docs/SAFETY_POLICY.md) — Risk 14 behoben |
 | 2026-05-20 | Gate B2: KMP Core Contracts (core/contracts + core/quality) — Risk 10 teilweise, Risk 5 adressiert |
 | 2026-05-20 | Gate B5: KMP Bellows — BellowsRouter + AnvilBellowsBridgeAdapter (Bridge zu ANVIL-BELLOWS) |
+| 2026-05-20 | Gate B3: KMP Core Domain — Workspace, Run, Artifact, Snapshot, MemoryEntry |
+| 2026-05-20 | Gate B4: KMP Core Pipeline — RunStep sealed, RunResult sealed, StepRecord |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.
