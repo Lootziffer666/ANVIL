@@ -60,11 +60,13 @@ State Surface: Zustand zuerst, nicht Menüs.
 **Problem:** `storage.local` war nicht in der erlaubten Permission-Liste von MODULE_CONTRACT.md.  
 **Gegenmaßnahme:** `storage.local` in `docs/MODULE_CONTRACT.md` nachgetragen. Verifiziert 2026-05-20.
 
-### 10. Execution-Gap ⚠️ KRITISCH
+### 10. Execution-Gap ⚠️ TEILWEISE BEHOBEN
 **Risiko:** Anvil hat kein Execution Core. Module werden definiert, aber nie ausgeführt.  
 **Folge:** Die gesamte Pipeline (Module → Artifact → Output → Registry) existiert nur als Spec.  
-**Gegenmaßnahme:** Execution Core muss als eigene Gate priorisiert werden (vor A21–A24).  
-**Vorschlag:** Gate AX+1 oder Gate-Nummer reservieren.
+**Stand 2026-05-20:** B-Gate-Serie gestartet:
+- B1 ✅ Safety Policy (`docs/SAFETY_POLICY.md`) — Execution-Regeln verbindlich
+- B2 ✅ KMP Core Contracts (`anvil-kmp/core/contracts/`, `anvil-kmp/core/quality/`) — Interfaces für alle Module  
+**Verbleibend:** Domain (B3), Pipeline (B4), Bellows/Knight-Implementierungen (B5/B6), Runs/Artifacts/Safety-Engines.
 
 ### 11. Docs-vs-Code-Drift ⚠️ TEILWEISE BEHOBEN
 **Risiko:** Docs beschreiben Features, die nicht existieren, als ob sie vorhanden wären.  
@@ -83,7 +85,7 @@ State Surface: Zustand zuerst, nicht Menüs.
 
 ## Neue Risiken (Gates AT1–AT4 identifiziert)
 
-### 13. Donor-Codebase Assimilation Drift ⚠️ AKTIV
+### 13. Donor-Codebase Assimilation Drift ⚠️ AKTIV (kontrolliert)
 **Risiko:** Donor-Code wird unkontrolliert in aktive Anvil-Pfade kopiert, ohne Transplant Map, ohne Provenance, ohne Umbenennung.  
 **Folge:** Fremde Produktidentität im Anvil-Repo. Lizenz-Verletzungen. Architektur-Chaos.  
 **Gegenmaßnahmen:**
@@ -91,10 +93,11 @@ State Surface: Zustand zuerst, nicht Menüs.
 - `docs/provenance/TRANSPLANT_MAP.md` — jede Übernahme muss hier stehen
 - `docs/provenance/OGCODE_SOURCE_AUDIT.md` — Lizenz-Audit
 - Gates AT1–AT4 — vollständige Vorbereitungskette
+- `docs/SAFETY_POLICY.md` §6 — Transplant Execution Checklist (Gate B1)
 - Kein Code-Import ohne Map-Eintrag
-**Status:** Durch AT1–AT4 abgesichert. Risiko bleibt aktiv, solange Execution Core implementiert wird.
+**Status:** Kontrolliert. B2 verifiziert: 0 Donor-Code-Zeilen, Anvil-Terminologie, TRANSPLANT_MAP.md NATIVE-Eintrag gesetzt (2026-05-20). Einhaltung bei jeder B-Gate-Implementierung erneut prüfen.
 
-### 14. Premature Execution Core Implementation ⚠️ AKTIV
+### 14. Premature Execution Core Implementation ✅ BEHOBEN
 **Risiko:** Execution-Code wird implementiert, bevor Architektur und Transplant-Regeln stehen.  
 **Folge:** Code ohne Sicherheitskonzept (kein Command Guard, kein Review Gate). Rückbau teuer.  
 **Gegenmaßnahmen:**
@@ -102,7 +105,7 @@ State Surface: Zustand zuerst, nicht Menüs.
 - `docs/EXECUTION_CORE_ARCHITECTURE.md` definiert Regeln
 - A21–A24 als "deferred until Execution Core exists" markiert
 - Kein Execution-Runner, Provider-Call, Shell-Runner, Branch-Automation vor Safety-Policy
-**Status:** Aktiv. AT4 Skeleton steht, aber kein Code. Nächster Schritt: Safety Policy definieren.
+**Status:** ✅ Safety Policy verabschiedet (Gate B1, `docs/SAFETY_POLICY.md`, 2026-05-20). Command Guard Allowlist, Scope-Beschränkung, Credential-Policy, Privacy-Mode-Enforcement und Transplant-Checklist verbindlich. Gate B2 (KMP Contracts) konform mit dieser Policy implementiert.
 
 ### 15. ogcode Product Identity Leak ⚠️ AKTIV
 **Risiko:** Donor-Produktbegriffe ("ogcode", "Striker", "ogden") erscheinen in aktiven Anvil-Dateien.  
