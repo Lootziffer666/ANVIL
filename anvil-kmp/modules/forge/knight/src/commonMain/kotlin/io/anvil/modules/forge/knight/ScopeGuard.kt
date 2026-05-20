@@ -1,5 +1,7 @@
 package io.anvil.modules.forge.knight
 
+import kotlinx.datetime.Clock
+
 // Safety Policy §2: Keine Datei-Mutation außerhalb Workspace.rootPath.
 // Verletzung → IllegalArgumentException (kein Silent-Fail).
 internal fun requireInScope(absolutePath: String, rootPath: String) {
@@ -9,6 +11,4 @@ internal fun requireInScope(absolutePath: String, rootPath: String) {
     }
 }
 
-internal fun currentTimestamp(): String =
-    // TODO Gate B7: echten Timestamp via kotlinx-datetime ersetzen
-    "1970-01-01T00:00:00Z"
+internal fun currentTimestamp(): String = Clock.System.now().toString()
