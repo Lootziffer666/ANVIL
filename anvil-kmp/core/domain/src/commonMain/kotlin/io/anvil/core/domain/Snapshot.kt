@@ -8,6 +8,6 @@ data class Snapshot(
     val id: String,
     val workspaceId: String,
     val runId: String? = null,
-    val takenAt: String,
+    val takenAt: Long,
     val checkpoint: CheckpointData,
 )

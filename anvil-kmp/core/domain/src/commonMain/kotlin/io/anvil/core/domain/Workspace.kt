@@ -6,24 +6,12 @@ import kotlinx.serialization.Serializable
 data class Workspace(
     val id: String,
     val name: String,
-    val description: String,
-    // All file mutations during a Run must stay within this path (SAFETY_POLICY.md)
+    val description: String = "",
     val rootPath: String,
-    val buildTarget: BuildTarget,
-    val status: WorkspaceStatus,
+    val buildTarget: BuildTarget = BuildTarget.ANDROID,
+    val status: WorkspaceStatus = WorkspaceStatus.ACTIVE,
     val moduleIds: List<String> = emptyList(),
 )
 
-enum class BuildTarget {
-    ANDROID_APK,
-    DESKTOP_EXE,
-    EXPORT_JSON,
-    EXPORT_PDF,
-}
-
-enum class WorkspaceStatus {
-    STABLE,
-    ADAPTING,
-    ACT_NOW,
-    FAILED,
-}
+@Serializable enum class BuildTarget { ANDROID, JVM, KMP }
+@Serializable enum class WorkspaceStatus { ACTIVE, ARCHIVED }

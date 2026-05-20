@@ -8,13 +8,9 @@ data class Artifact(
     val runId: String,
     val kind: ArtifactKind,
     val path: String,
-    val sizeBytes: Long? = null,
-    val producedAt: String,
+    val sizeBytes: Long,
+    val producedAt: Long,
 )
 
-enum class ArtifactKind {
-    FILE,
-    DIFF,
-    LOG,
-    REPORT,
-}
+@Serializable
+enum class ArtifactKind { FILE, APK, ZIP, TEXT, JSON }

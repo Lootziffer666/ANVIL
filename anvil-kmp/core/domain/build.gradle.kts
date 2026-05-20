@@ -1,5 +1,4 @@
 // Gate B3 — KMP Core Domain
-// Deps: :core:contracts + kotlinx.serialization (CLAUDE.md §3)
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)

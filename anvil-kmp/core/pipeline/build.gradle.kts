@@ -1,5 +1,4 @@
 // Gate B4 — KMP Core Pipeline
-// Deps: :core:contracts, :core:domain, kotlinx.serialization
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)

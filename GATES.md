@@ -213,8 +213,8 @@
 | 2026-05-20 | Gate B1: Safety Policy (docs/SAFETY_POLICY.md) — Risk 14 behoben |
 | 2026-05-20 | Gate B2: KMP Core Contracts (core/contracts + core/quality) — Risk 10 teilweise, Risk 5 adressiert |
 | 2026-05-20 | Gate B5: KMP Bellows — BellowsRouter + AnvilBellowsBridgeAdapter (Bridge zu ANVIL-BELLOWS) |
-| 2026-05-20 | Gate B3: KMP Core Domain — Workspace, Run, Artifact, Snapshot, MemoryEntry |
-| 2026-05-20 | Gate B4: KMP Core Pipeline — RunStep sealed, RunResult sealed, StepRecord |
-| 2026-05-20 | Gate B6: KMP Knight — Knight (read/write/delete/diff), FileDiff, UnifiedDiff (LCS), CheckpointCapable |
+| 2026-05-20 | Gate B3: KMP Core Domain — Workspace, Run, Artifact, Snapshot, MemoryEntry (Recovery-Push) |
+| 2026-05-20 | Gate B4: KMP Core Pipeline — RunStep sealed, RunResult sealed, StepRecord (Recovery-Push) |
+| 2026-05-20 | Gate B6: KMP Knight — Knight (read/write/delete/diff), FileDiff, UnifiedDiff (LCS), CheckpointCapable (Recovery-Push) |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.

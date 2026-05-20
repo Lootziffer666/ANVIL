@@ -9,12 +9,8 @@ data class MemoryEntry(
     val runId: String? = null,
     val content: String,
     val kind: MemoryKind,
-    val timestamp: String,
+    val timestamp: Long,
 )
 
-enum class MemoryKind {
-    LOG,
-    OBSERVATION,
-    DECISION,
-    ERROR,
-}
+@Serializable
+enum class MemoryKind { OBSERVATION, DECISION, ERROR, NOTE }
