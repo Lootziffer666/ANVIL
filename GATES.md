@@ -1,7 +1,7 @@
 # 🚪 GATES — ANVIL
 
 > Statusklassen: `done` · `prototype` · `docs-only` · `partial` · `blocked` · `superseded`  
-> Letzte Reconciliation: 2026-05-09 (Gate AX) · Letzte Aktualisierung: 2026-05-20 (Gate B5)
+> Letzte Reconciliation: 2026-05-09 (Gate AX) · Letzte Aktualisierung: 2026-05-20 (Gate B8)
 > Vollständige Analyse: [`docs/GATE_RECONCILIATION.md`](docs/GATE_RECONCILIATION.md)
 
 ---
@@ -94,10 +94,12 @@
 |------|------|--------|---------|-------------|
 | B1 | Safety Policy | `done` | `docs/SAFETY_POLICY.md` | — |
 | B2 | KMP Core Contracts | `done` | `anvil-kmp/core/contracts/`, `anvil-kmp/core/quality/` | B1 |
-| B3 | KMP Core Domain | `geplant` | `anvil-kmp/core/domain/` | B2 |
-| B4 | KMP Core Pipeline | `geplant` | `anvil-kmp/core/pipeline/` | B3 |
+| B3 | KMP Core Domain | `done` | `anvil-kmp/core/domain/` (Workspace, Run, Artifact, Snapshot, MemoryEntry) | B2 |
+| B4 | KMP Core Pipeline | `done` | `anvil-kmp/core/pipeline/` (RunStep, RunResult, StepRecord) | B3 |
 | B5 | KMP Bellows (LLM-Routing) | `done` | `anvil-kmp/modules/bellows/` (ProviderAdapter, BellowsRouter, BellowsLegacyClient, AnvilBellowsBridgeAdapter) | B2 |
-| B6 | KMP Knight (Datei-I/O) | `geplant` | `anvil-kmp/modules/forge/knight/` | B3 |
+| B6 | KMP Knight (Datei-I/O) | `done` | `anvil-kmp/modules/forge/knight/` (Knight, FileDiff, UnifiedDiff, module.json, README) | B3 |
+| B7 | KMP Knight (Contract) | `done` | `anvil-kmp/modules/forge/knight/` (KnightContract, FileContent, WriteResult, UnifiedDiff, PatchResult, DiffEngine, PatchApplier) | B6 |
+| B8 | Compose Commander Shell | `done` | `anvil-kmp/surfaces/commander/` (CommanderState, CommanderEvent, CommanderViewModel, CommanderApp, WorkspaceBrowser, DiffViewer, RunLog, QualityBadge) | B7 |
 
 ### Gate B1 — Safety Policy
 - **Ziel:** Bindende Regeln für alle Execution-Code-Implementierungen
@@ -110,15 +112,74 @@
 - **Besonders:** `CredentialVaultContract` adressiert Risk 5 (Token Manager Plaintext) für alle künftigen Implementierungen
 - **Kill:** Donor-Code importiert, Execution-Code geschrieben (nur Interfaces!)
 
+### Gate B3 — KMP Core Domain
+- **Ziel:** Serialisierbare Datenmodelle für den Execution Core — kein Verhalten, nur Typen
+- **Ergebnis:**
+  - `Workspace` (id, name, description, rootPath, buildTarget, status, moduleIds)
+  - `Run` (runId, workspaceId, planId, taskId, status, artifacts, logs, humanReviewRequired=true)
+  - `Artifact` (id, runId, kind, path, sizeBytes, producedAt)
+  - `Snapshot` (id, workspaceId, runId?, takenAt, checkpoint: CheckpointData)
+  - `MemoryEntry` (id, workspaceId, runId?, content, kind, timestamp)
+- **Besonders:** `Workspace.rootPath` ist die Scope-Grenze für alle Datei-Mutationen (SAFETY_POLICY.md)
+- **Kill:** Donor-Code importiert, Verhalten implementiert (nur Datenmodelle!)
+
+### Gate B4 — KMP Core Pipeline
+- **Ziel:** Sealed-Hierarchien für Pipeline-Primitives — kein Verhalten, nur Typen
+- **Ergebnis:**
+  - `RunStep` sealed: ReadFile, WriteFile, PromptLlm, RunCommand, SaveCheckpoint
+  - `RunResult` sealed: FileRead, FileWritten, LlmResponse, CommandExecuted, CheckpointSaved, Failure
+  - `StepRecord` (step, result, durationMs, timestamp) — Audit-Log-Eintrag
+- **Besonders:** `RunStep.RunCommand` referenziert Command Guard Allowlist (SAFETY_POLICY.md). `RunStep.PromptLlm` nutzt `ModelRequest` aus `:core:contracts`.
+- **Kill:** Donor-Code importiert, Execution-Logik implementiert (nur sealed types!)
+
 ### Gate B5 — KMP Bellows (LLM-Routing)
 - **Ziel:** Erste Bellows-Implementierung als Bridge-Adapter zu ANVIL-BELLOWS (Android)
 - **Ergebnis:**
   - `commonMain`: `ProviderAdapter` (pluggable adapter interface), `BellowsRouter` (implements `BellowsContract`)
   - `androidMain`: `BellowsLegacyClient` (fun interface), `AnvilBellowsBridgeAdapter` (delegates to ANVIL-BELLOWS)
 - **Wiring in `:app:android`:** `BellowsRouter(listOf(AnvilBellowsBridgeAdapter(legacyClient)))`
-- **Privacy-Mode:** `LOCAL_ONLY` wirft `BellowsExhaustedException` — kein Cloud-Fallback. `AnvilBellowsBridgeAdapter.isLocal = false` → wird bei `LOCAL_ONLY` korrekt ausgeschlossen.
+- **Privacy-Mode:** `LOCAL_ONLY` wirft `BellowsExhaustedException` — kein Cloud-Fallback
 - **Nächste Gate (Bellows-KMP-Migration):** ANVIL-BELLOWS Internals nach KMP portieren, Bridge entfernt
 - **Kill:** Donor-Code importiert, Credentials im Klartext, `LOCAL_ONLY` mit Cloud-Fallback
+
+### Gate B6 — KMP Knight (Datei-I/O)
+- **Ziel:** File-I/O- und Diff-Layer — `ModuleSlotContract` + `CheckpointCapable`-Implementierung
+- **Ergebnis:**
+  - `Knight(fileSystem, workspace)` — read/write/delete via injiziertem Okio `FileSystem`
+  - `write()` gibt `FileDiff(path, unified)` zurück — Diff old→new als Teil des Rückgabewerts
+  - `diff(original, modified)` — reiner Kotlin LCS Unified-Diff (kein diff-match-patch)
+  - `checkpoint()` / `restore()` serialisieren `KnightState` (workspaceId, rootPath, qualityState)
+  - `KnightScopeViolation` + `QualityState.FAILED` bei Pfad außerhalb `workspace.rootPath`
+- **Besonders:** `FileSystem` wird injiziert — `FileSystem.SYSTEM` in Produktion, `FakeFileSystem` in Tests
+- **Kill:** Donor-Code importiert, Mutations ohne Scope-Prüfung, Silent-Fail auf Scope-Verletzung
+
+### Gate B7 — KMP Knight (Contract)
+- **Ziel:** Knight-Modul formalisieren: typisierter `KnightContract` + `applyPatch()`
+- **Ergebnis:**
+  - `KnightContract` — Interface mit readFile / writeFile / diff / applyPatch / qualityState
+  - `FileContent(path, content)` — typisierter Rückgabewert für readFile
+  - `WriteResult(path, diff)` — typisierter Rückgabewert für writeFile
+  - `UnifiedDiff(text)` — typisiertes Diff-Objekt (data class, ersetzt raw String)
+  - `PatchResult(path, success, appliedHunks, rejectedHunks)` — Ergebnis von applyPatch
+  - `diff/DiffEngine` — LCS-Algorithmus (umbenannt von UnifiedDiff-Object); gibt `UnifiedDiff` zurück
+  - `diff/PatchApplier` — pure-Kotlin Unified-Diff Patch-Applicator mit radialer Kontext-Suche
+- **Besonders:** `applyPatch` lokalisiert Hunks via kontextbasierter Suche (radiale Expansion um Hint). Partial-Apply möglich: `PatchResult.rejectedHunks > 0` → `QualityState.DEGRADED`.
+- **diff-match-patch:** Java-only, nicht KMP-kompatibel. Reiner Kotlin LCS + Patch-Applicator deckt Unified-Diff vollständig ab.
+- **Kill:** Donor-Code importiert, applyPatch ohne Scope-Prüfung, Silent-Fail auf Rejection
+
+### Gate B8 — Compose Commander Shell
+- **Ziel:** State-First Compose UI — drei Panels: Workspace-Browser, Diff-Viewer, Run-Log
+- **Ergebnis:**
+  - `CommanderState` (workspace, files, selectedFile, activeDiff, runLog, knightQuality, bellowsQuality, isLoading, error) — Single Source of Truth
+  - `CommanderEvent` sealed: OpenWorkspace, LoadFiles, SelectFile, WriteFile, ApplyPatch, DismissError
+  - `CommanderViewModel` — coroutine-basierter State-Holder, `StateFlow<CommanderState>`, delegiert I/O an `KnightContract`
+  - `CommanderApp` — Composable: `Row(WorkspaceBrowser 25% | DiffViewer 50% | QualityBadge+RunLog 25%)`
+  - `WorkspaceBrowser` — Workspace-Name + `LazyColumn` der Dateinamen, klickbar
+  - `DiffViewer` — Diff-Text (Priorität) oder Dateiinhalt in Monospace + Scroll
+  - `RunLog` — `LazyColumn` der Log-Einträge
+  - `QualityBadge` — farbige Surface-Chips für Knight + Bellows (4 Zustände)
+- **Besonders:** `LoadFiles` Event entkoppelt Verzeichnis-Listing vom Surface — App-Layer (B9) fütter die Dateiliste. `bellowsQuality` initial STABLE; B9 koppelt BellowsRouter ein.
+- **Kill:** Donor-Code importiert, Seiteneffekte in Composables, State nicht durch ViewModel zentralisiert
 
 ---
 
@@ -176,10 +237,15 @@
 | 2026-05-08 | Gates A1–A20 initial erstellt und gepusht |
 | 2026-05-09 | Gate AX: Reconciliation — Status korrigiert, Statusklassen eingeführt |
 | 2026-05-10 | Gates AT1–AT4: Donor-Codebase Transplant Preparation angelegt |
-| 2026-05-10 | Gates A21–A24 als "deferred until Execution Core exists" markiert |
+| 2026-05-10 | Gates A21–A24 als „deferred until Execution Core exists“ markiert |
 | 2026-05-20 | Drift-Bereinigung: Risk 7 (Status-Inflation) ✅, Risk 9 (Permission-Drift) ✅; storage.local in MODULE_CONTRACT.md ergänzt; ANDROID_BLUEPRINT_TRACK Status auf docs-only gesetzt; GATE_RECONCILIATION A18 Pake-Name-Befund aktualisiert; ogcode-Compliance verifiziert |
 | 2026-05-20 | Gate B1: Safety Policy (docs/SAFETY_POLICY.md) — Risk 14 behoben |
 | 2026-05-20 | Gate B2: KMP Core Contracts (core/contracts + core/quality) — Risk 10 teilweise, Risk 5 adressiert |
 | 2026-05-20 | Gate B5: KMP Bellows — BellowsRouter + AnvilBellowsBridgeAdapter (Bridge zu ANVIL-BELLOWS) |
+| 2026-05-20 | Gate B3: KMP Core Domain — Workspace, Run, Artifact, Snapshot, MemoryEntry (Recovery-Push) |
+| 2026-05-20 | Gate B4: KMP Core Pipeline — RunStep sealed, RunResult sealed, StepRecord (Recovery-Push) |
+| 2026-05-20 | Gate B6: KMP Knight — Knight (read/write/delete/diff), FileDiff, UnifiedDiff (LCS), CheckpointCapable (Recovery-Push) |
+| 2026-05-20 | Gate B7: KMP Knight Contract — KnightContract, FileContent, WriteResult, UnifiedDiff (data class), PatchResult, DiffEngine, PatchApplier (applyPatch) |
+| 2026-05-20 | Gate B8: Compose Commander Shell — CommanderState, CommanderEvent, CommanderViewModel, CommanderApp, WorkspaceBrowser, DiffViewer, RunLog, QualityBadge |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.
