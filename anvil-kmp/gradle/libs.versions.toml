@@ -20,6 +20,7 @@ okio                    = "3.9.0"           # square.github.io/okio
 
 # ── Network / HTTP (Bellows cloud adapters) ─────────────────────────────────
 ktor                    = "3.0.3"           # ktor.io
+slf4j                   = "2.0.16"          # ktor logging backend
 
 # ── Diff (Knight — Unified Diff) ───────────────────────────────────────────
 # Pure Kotlin LCS — kein externes Tool. Implementierung: modules/forge/knight/diff/UnifiedDiff.kt
@@ -39,10 +40,14 @@ android-targetSdk      = "35"
 # KotlinX
 kotlinx-coroutines-core     = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core",     version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-android  = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android",  version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test     = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test",     version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json  = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json",  version.ref = "kotlinx-serialization" }
 
 # Okio (Knight — File I/O)
 okio                        = { group = "com.squareup.okio",      name = "okio",                        version.ref = "okio" }
+
+# SLF4J (Bellows Gateway — Ktor-Logging-Backend, runtimeOnly)
+slf4j-simple                = { group = "org.slf4j",              name = "slf4j-simple",                version.ref = "slf4j" }
 
 # SQLDelight (Warden — persistence)
 sqldelight-runtime          = { group = "app.cash.sqldelight",    name = "runtime",                     version.ref = "sqldelight" }
@@ -50,17 +55,28 @@ sqldelight-coroutines       = { group = "app.cash.sqldelight",    name = "corout
 sqldelight-android          = { group = "app.cash.sqldelight",    name = "android-driver",              version.ref = "sqldelight" }
 sqldelight-jvm              = { group = "app.cash.sqldelight",    name = "sqlite-driver",               version.ref = "sqldelight" }
 
-# Ktor (Bellows — Cloud Provider Adapters)
+# Ktor Client (Bellows — Provider Adapters: OpenAI-kompatibel, Cloud + lokal)
 ktor-client-core            = { group = "io.ktor",                name = "ktor-client-core",            version.ref = "ktor" }
 ktor-client-okhttp          = { group = "io.ktor",                name = "ktor-client-okhttp",          version.ref = "ktor" }   # android
 ktor-client-java            = { group = "io.ktor",                name = "ktor-client-java",            version.ref = "ktor" }   # jvm/desktop
 ktor-client-content-neg    = { group = "io.ktor",                name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-json     = { group = "io.ktor",                name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-mock            = { group = "io.ktor",                name = "ktor-client-mock",            version.ref = "ktor" }   # tests
+
+# Ktor Server (Bellows Gateway — OpenAI-kompatibler Endpoint /v1/...)
+ktor-server-core            = { group = "io.ktor",                name = "ktor-server-core",            version.ref = "ktor" }
+ktor-server-cio             = { group = "io.ktor",                name = "ktor-server-cio",             version.ref = "ktor" }
+ktor-server-content-neg    = { group = "io.ktor",                name = "ktor-server-content-negotiation", version.ref = "ktor" }
+ktor-server-status-pages    = { group = "io.ktor",                name = "ktor-server-status-pages",    version.ref = "ktor" }
+ktor-server-cors            = { group = "io.ktor",                name = "ktor-server-cors",            version.ref = "ktor" }
+ktor-server-call-logging    = { group = "io.ktor",                name = "ktor-server-call-logging",    version.ref = "ktor" }
+ktor-server-test-host       = { group = "io.ktor",                name = "ktor-server-test-host",       version.ref = "ktor" }
 
 
 [plugins]
 
 kotlin-multiplatform        = { id = "org.jetbrains.kotlin.multiplatform",       version.ref = "kotlin" }
+kotlin-jvm                  = { id = "org.jetbrains.kotlin.jvm",                  version.ref = "kotlin" }
 kotlin-android              = { id = "org.jetbrains.kotlin.android",              version.ref = "kotlin" }
 kotlin-serialization        = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 compose-multiplatform       = { id = "org.jetbrains.compose",                    version.ref = "compose-multiplatform" }

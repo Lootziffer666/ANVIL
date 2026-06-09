@@ -6,6 +6,7 @@
 plugins {
     // KMP-Plugins — version über libs.versions.toml
     alias(libs.plugins.kotlin.multiplatform)   apply false
+    alias(libs.plugins.kotlin.jvm)             apply false
     alias(libs.plugins.kotlin.android)         apply false
     alias(libs.plugins.kotlin.serialization)   apply false
     alias(libs.plugins.compose.multiplatform)  apply false
@@ -18,16 +19,17 @@ plugins {
 // ── Subproject-Konventionen ────────────────────────────────────────────────────
 // Alle Subprojekte erben diese Basis-Konfiguration.
 subprojects {
-    // Kotlin-Kompilier-Optionen für alle Module
+    // Kotlin-Kompilier-Optionen für alle Module (compilerOptions-DSL, Gradle-9-fest)
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions {
+        compilerOptions {
             // Strikte Warnung → Fehler (kein Silencing)
-            allWarningsAsErrors = true
-            // Opt-ins global freigeben (nicht in jedem Modul wiederholen)
-            freeCompilerArgs += listOf(
+            allWarningsAsErrors.set(true)
+            // Nur Opt-ins, deren Marker in jedem Modul auflösbar sind.
+            // (kotlinx.serialization ist in allen aktiven Modulen auf dem Classpath;
+            //  Coroutines-Opt-ins gehören modul-lokal dorthin, wo sie gebraucht werden.)
+            freeCompilerArgs.addAll(
                 "-opt-in=kotlin.RequiresOptIn",
-                "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-opt-in=kotlinx.serialization.ExperimentalSerializationApi"
+                "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
             )
         }
     }

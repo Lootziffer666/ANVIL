@@ -1,5 +1,5 @@
 // ANVIL KMP — Settings
-// Stand: 2026-05-20
+// Stand: Gate B9 — Bellows Gateway (Produktionsreife)
 // Monorepo-Wurzel: anvil-kmp/
 
 rootProject.name = "anvil"
@@ -20,28 +20,22 @@ dependencyResolutionManagement {
     }
 }
 
-// ── Core Modules ─────────────────────────────────────────────────────────────
-// Interfaces, Domain-Typen, Pipeline-Sealed-Types, QualityState
-// Keine Abhängigkeiten untereinander außer: domain ← contracts
-include(":core:contracts")   // ModuleSlotContract, BellowsContract, CheckpointCapable
-include(":core:domain")      // Workspace, Run, Artifact, Snapshot, MemoryEntry
-include(":core:pipeline")    // RunStep sealed, RunResult sealed, StepRecord
-include(":core:quality")     // QualityState, QualityGuard, QualityReport
+// ── Bellows Gateway Build-Slice (JVM/Windows) ──────────────────────────────────
+// Gate B9 fokussiert auf den lauffähigen Bellows-Gateway. Eingebunden ist genau
+// der Dependency-Graph des Gateways:
+include(":core:contracts")          // ModelRequest/Response, BellowsContract, PrivacyMode, CredentialVaultContract
+include(":modules:bellows")         // BellowsRouter + OpenAI-kompatible Provider-Adapter (KMP, Ktor-Client)
+include(":app:bellows-gateway")     // JVM: Ktor-Server (/v1/...), CLI, JCEKS-CredentialVault
 
-// ── Feature Modules ───────────────────────────────────────────────────────────
-// Implementierungen der Core-Contracts
-include(":modules:forge:knight")    // Datei-I/O (Okio), Unified Diff, diff-match-patch
-include(":modules:bellows")         // LLM-Routing: BellowsRouter + Provider-Adapters
-
-// ── Surfaces ──────────────────────────────────────────────────────────────────
-// Compose Multiplatform UI
-include(":surfaces:commander")      // Desktop-Shell: Workspace-Browser, Diff-Viewer, Run-Log
-
-// ── Apps ─────────────────────────────────────────────────────────────────────
-include(":app:android")             // Compose Android entry point
-include(":app:desktop")             // Compose Desktop entry point (JVM)
-
-// ── Donor Analysis (read-only, kein Kotlin) ───────────────────────────────────
-// Docs und Pattern-Analyse für kekegdsz/android-gradle-smart-build u.a.
-// Kein Gradle-Modul — nur Verzeichnis-Konvention
-// donor-analysis/  ← wird NICHT per include() eingebunden
+// ── Vorerst nicht im Gateway-Build ─────────────────────────────────────────────
+// Diese KMP-/Compose-Module gehören zur Anvil-IDE (Knight, Commander) und ziehen
+// androidTarget()/Compose mit. Sie sind NICHT Teil des Bellows-Gateways und
+// werden hier ausgeklammert, bis der Desktop-/Android-App-Layer steht.
+// (Quellen bleiben erhalten — nur aus dem aktuellen Build-Graph genommen.)
+// include(":core:domain")
+// include(":core:pipeline")
+// include(":core:quality")
+// include(":modules:forge:knight")
+// include(":surfaces:commander")
+// include(":app:android")            // Verzeichnis existiert noch nicht — Android-only
+// include(":app:desktop")            // Verzeichnis existiert noch nicht — Compose-Desktop

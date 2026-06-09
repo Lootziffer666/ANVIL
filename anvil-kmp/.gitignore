@@ -1,0 +1,17 @@
+# Gradle / Build
+.gradle/
+build/
+.kotlin/
+local.properties
+
+# Wrapper-Jar bewusst NICHT ignorieren (muss eingecheckt sein)
+!gradle/wrapper/gradle-wrapper.jar
+
+# Bellows-Laufzeitdaten (falls jemand sie ins Repo legt — gehören NICHT hierher)
+*.jceks
+bellows.config.json
+
+# IDE / OS
+.idea/
+*.iml
+.DS_Store

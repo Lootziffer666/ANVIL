@@ -30,7 +30,11 @@ State Surface: Zustand zuerst, nicht Menüs.
 ### 5. API-Key Leaks
 **Risiko:** API Keys / Tokens in Code oder Commits.  
 **Gegenmaßnahme:** `.gitignore`, keine Hardcoded Keys, Token-System.  
-**Status:** ⚠️ Token Manager speichert `_key` im Klartext in localStorage. Kein Encryption. Kein Leak in Git, aber trivial auslesbar im Browser.
+**Status:** ⚠️ TEILWEISE BEHOBEN. Der KMP-Pfad ist sauber: Gate B9 liefert mit `JvmCredentialVault`
+(JCEKS, verschlüsselt) eine `CredentialVaultContract`-Implementierung für Bellows; die
+`bellows.config.json` enthält nur Referenzen (`apiKeyRef`/`apiKeyEnv`), nie Klartext-Keys
+(verifiziert: Secret nicht im Keystore-Klartext). **Verbleibend:** der historische JS-`token-manager`
+(`app/`, eingefroren) speichert `_key` weiterhin im Klartext in localStorage.
 
 ### 6. Overengineering
 **Risiko:** Zu viel Abstraktion, zu wenig Nutzen.  
