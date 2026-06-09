@@ -70,10 +70,18 @@ class JvmCredentialVault(
     private fun persist() {
         storeFile.parentFile?.mkdirs()
         try {
+            // Rechte VOR dem Schreiben der Geheimnisse einschränken — sonst entsteht ein
+            // kurzes Fenster, in dem die Keystore-Datei für andere Nutzer lesbar ist.
+            // (POSIX greift sofort; auf Windows zusätzlich über ACLs.)
+            if (!storeFile.exists()) {
+                storeFile.createNewFile()
+                storeFile.setReadable(false, false)
+                storeFile.setReadable(true, true)
+                storeFile.setWritable(false, false)
+                storeFile.setWritable(true, true)
+                storeFile.setExecutable(false, false)
+            }
             storeFile.outputStream().use { keyStore.store(it, password) }
-            // Best-effort: nur der Eigentümer darf lesen (POSIX; auf Windows greifen ACLs).
-            storeFile.setReadable(false, false)
-            storeFile.setReadable(true, true)
             quality = QualityState.STABLE
         } catch (e: Exception) {
             quality = QualityState.FAILED

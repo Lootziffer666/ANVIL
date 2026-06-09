@@ -41,13 +41,12 @@ private fun serve(args: Args) = runBlocking {
 
     val needsVault = config.providers.any { it.apiKeyRef != null } || config.gatewayKeyRef != null
     val vault = if (needsVault) {
-        openVault(configFile, promptIfMissing = false) ?: run {
-            System.err.println(
-                "Provider verweisen auf den Vault, aber \$$VAULT_PASSWORD_ENV ist nicht gesetzt.\n" +
-                    "Setze die Variable oder nutze 'apiKeyEnv' statt 'apiKeyRef'.",
-            )
-            exitProcess(3)
-        }
+        openVaultOrExit(
+            configFile,
+            promptIfMissing = false,
+            missingMessage = "Provider verweisen auf den Vault, aber \$$VAULT_PASSWORD_ENV ist nicht gesetzt.\n" +
+                "Setze die Variable oder nutze 'apiKeyEnv' statt 'apiKeyRef'.",
+        )
     } else {
         null
     }
@@ -126,16 +125,14 @@ private fun key(args: Args) = runBlocking {
                 System.err.println("Nutzung: bellows key set <ref>")
                 exitProcess(2)
             }
-            val vault = openVault(configFile, promptIfMissing = true)
-                ?: run { System.err.println("Kein Vault-Passwort."); exitProcess(3) }
+            val vault = openVaultOrExit(configFile, promptIfMissing = true, missingMessage = "Kein Vault-Passwort.")
             val secret = readSecret("Secret für '$ref': ")
             if (secret.isBlank()) { System.err.println("Leeres Secret — abgebrochen."); exitProcess(1) }
             vault.store(CredentialKey(ref), secret)
             println("Gespeichert: '$ref' → ${ConfigLoader.vaultFile(configFile).name}")
         }
         "list" -> {
-            val vault = openVault(configFile, promptIfMissing = true)
-                ?: run { System.err.println("Kein Vault-Passwort."); exitProcess(3) }
+            val vault = openVaultOrExit(configFile, promptIfMissing = true, missingMessage = "Kein Vault-Passwort.")
             val aliases = vault.aliases()
             if (aliases.isEmpty()) println("(Vault ist leer)") else aliases.sorted().forEach { println(it) }
         }
@@ -144,8 +141,7 @@ private fun key(args: Args) = runBlocking {
                 System.err.println("Nutzung: bellows key rm <ref>")
                 exitProcess(2)
             }
-            val vault = openVault(configFile, promptIfMissing = true)
-                ?: run { System.err.println("Kein Vault-Passwort."); exitProcess(3) }
+            val vault = openVaultOrExit(configFile, promptIfMissing = true, missingMessage = "Kein Vault-Passwort.")
             vault.delete(CredentialKey(ref))
             println("Entfernt: '$ref'")
         }
@@ -176,6 +172,25 @@ private fun models(args: Args) {
 private fun openVault(configFile: File, promptIfMissing: Boolean): JvmCredentialVault? {
     val password = vaultPassword(promptIfMissing) ?: return null
     return JvmCredentialVault(ConfigLoader.vaultFile(configFile), password)
+}
+
+/**
+ * Öffnet den Vault oder beendet das Programm mit einer verständlichen Meldung —
+ * niemals mit einem rohen Stacktrace (falsches Passwort, beschädigte Datei, kein Passwort).
+ */
+private fun openVaultOrExit(configFile: File, promptIfMissing: Boolean, missingMessage: String): JvmCredentialVault {
+    val vault = try {
+        openVault(configFile, promptIfMissing)
+    } catch (e: Exception) {
+        System.err.println(
+            "Fehler beim Öffnen des Credential-Vaults (Passwort falsch oder Datei beschädigt): ${e.message}",
+        )
+        exitProcess(3)
+    }
+    return vault ?: run {
+        System.err.println(missingMessage)
+        exitProcess(3)
+    }
 }
 
 private fun vaultPassword(promptIfMissing: Boolean): CharArray? {

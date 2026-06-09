@@ -38,6 +38,7 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
+import java.security.MessageDigest
 import java.util.UUID
 
 @Serializable
@@ -138,7 +139,12 @@ fun Application.bellowsGateway(router: BellowsRouter, gatewayKey: String? = null
 private suspend fun io.ktor.server.application.ApplicationCall.authorize(gatewayKey: String?): Boolean {
     if (gatewayKey.isNullOrBlank()) return true
     val token = request.headers[HttpHeaders.Authorization]?.removePrefix("Bearer ")?.trim()
-    if (token == gatewayKey) return true
+    // Konstantzeit-Vergleich gegen Timing-Attacks (CWE-208).
+    if (token != null &&
+        MessageDigest.isEqual(token.toByteArray(Charsets.UTF_8), gatewayKey.toByteArray(Charsets.UTF_8))
+    ) {
+        return true
+    }
     respond(
         HttpStatusCode.Unauthorized,
         OpenAiError(OpenAiErrorBody("Ungültiger oder fehlender API-Key", "invalid_api_key")),
