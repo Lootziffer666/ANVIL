@@ -1,0 +1,12 @@
+{
+  "name": "Bellows",
+  "gate": "B9",
+  "purpose": "LLM-Routing-Layer — ein OpenAI-kompatibler Router/Gateway über Cloud- und lokale Provider.",
+  "contract": "BellowsContract",
+  "inputs": ["application/json"],
+  "outputs": ["application/json", "text/event-stream"],
+  "requiredPermissions": ["network.api"],
+  "canRunOffline": true,
+  "canExport": false,
+  "failureBehavior": "BellowsExhaustedException, wenn kein Provider die Anfrage bedienen kann. PrivacyMode.LOCAL_ONLY routet ausschließlich zu lokalen Providern und fällt NIE auf Cloud zurück (SAFETY_POLICY §4). Ein fehlschlagender Provider wird DEGRADED und per Fallback-Kette übersprungen; der Router aggregiert den Zustand. Keine stillen Fehler, nie null."
+}

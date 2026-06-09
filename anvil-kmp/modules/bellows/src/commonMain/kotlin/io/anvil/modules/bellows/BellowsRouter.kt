@@ -6,28 +6,62 @@ import io.anvil.core.contracts.ModelRequest
 import io.anvil.core.contracts.ModelResponse
 import io.anvil.core.contracts.PrivacyMode
 import io.anvil.core.contracts.QualityState
+import kotlinx.coroutines.CancellationException
 
+/**
+ * Produktionsreifer Router über mehrere [ProviderAdapter].
+ *
+ * Routing-Reihenfolge:
+ *  1. **Privacy** — `LOCAL_ONLY` filtert auf lokale Adapter; **niemals** Cloud-Fallback
+ *     (docs/SAFETY_POLICY.md §4, Kill-Kriterium).
+ *  2. **Modell-Match** — Adapter, die das angefragte Modell bedienen, zuerst.
+ *  3. **Gesundheit** — `FAILED`-Adapter werden übersprungen.
+ *  4. **Fallback-Kette** — der erste Adapter, der erfolgreich antwortet, gewinnt.
+ *
+ * Im Fehlerfall nie `null`, sondern [BellowsExhaustedException].
+ */
 class BellowsRouter(
     private val adapters: List<ProviderAdapter>,
 ) : BellowsContract {
 
     override suspend fun route(request: ModelRequest): ModelResponse {
-        val candidates = when (request.privacyMode) {
+        val byPrivacy = when (request.privacyMode) {
             PrivacyMode.LOCAL_ONLY -> adapters.filter { it.isLocal }
             PrivacyMode.OPEN -> adapters
         }
-        if (candidates.isEmpty()) {
+        if (byPrivacy.isEmpty()) {
             throw BellowsExhaustedException(
-                "No adapter available for privacyMode=${request.privacyMode}"
+                if (request.privacyMode == PrivacyMode.LOCAL_ONLY) {
+                    "Kein lokales Modell verfügbar. PrivacyMode.LOCAL_ONLY verbietet Cloud-Fallback."
+                } else {
+                    "Kein Provider konfiguriert."
+                },
             )
         }
-        val healthy = candidates.filter { it.qualityState() != QualityState.FAILED }
-        if (healthy.isEmpty()) {
-            throw BellowsExhaustedException("All adapters are in FAILED state")
+
+        val (matching, others) = byPrivacy.partition { it.handles(request.model) }
+        val candidates = (matching + others).filter { it.qualityState() != QualityState.FAILED }
+        if (candidates.isEmpty()) {
+            throw BellowsExhaustedException("Alle passenden Provider sind im FAILED-Zustand.")
         }
-        return healthy.first().route(request)
+
+        var lastError: Exception? = null
+        for (adapter in candidates) {
+            try {
+                return adapter.route(request)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                lastError = e
+            }
+        }
+        throw BellowsExhaustedException(
+            "Alle Provider erschöpft (model=${request.model ?: "<default>"}, " +
+                "privacyMode=${request.privacyMode}). Letzter Fehler: ${lastError?.message}",
+        )
     }
 
+    /** Aggregierter Qualitätszustand über alle Adapter (für /health + State Surface). */
     fun qualityState(): QualityState {
         val states = adapters.map { it.qualityState() }
         return when {
@@ -39,4 +73,11 @@ class BellowsRouter(
             else -> QualityState.STABLE
         }
     }
+
+    /** Alle bekannten Modell-IDs über alle Adapter (für `GET /v1/models`). */
+    fun listModels(): List<String> = adapters.flatMap { it.models }.distinct().sorted()
+
+    /** Zustand je Adapter — für `/health`. */
+    fun adapterStates(): Map<String, QualityState> =
+        adapters.associate { it.id to it.qualityState() }
 }

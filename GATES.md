@@ -100,6 +100,7 @@
 | B6 | KMP Knight (Datei-I/O) | `done` | `anvil-kmp/modules/forge/knight/` (Knight, FileDiff, UnifiedDiff, module.json, README) | B3 |
 | B7 | KMP Knight (Contract) | `done` | `anvil-kmp/modules/forge/knight/` (KnightContract, FileContent, WriteResult, UnifiedDiff, PatchResult, DiffEngine, PatchApplier) | B6 |
 | B8 | Compose Commander Shell | `done` | `anvil-kmp/surfaces/commander/` (CommanderState, CommanderEvent, CommanderViewModel, CommanderApp, WorkspaceBrowser, DiffViewer, RunLog, QualityBadge) | B7 |
+| B9 | Bellows Gateway (Produktionsreife) | `done` | `anvil-kmp/modules/bellows/` (OpenAiCompatibleAdapter, BellowsRouter, BellowsConfig, ProviderFactory, wire/OpenAiDto), `anvil-kmp/app/bellows-gateway/` (Ktor-Server, CLI, JvmCredentialVault), `docs/BELLOWS_GATEWAY.md` | B5 |
 
 ### Gate B1 — Safety Policy
 - **Ziel:** Bindende Regeln für alle Execution-Code-Implementierungen
@@ -181,6 +182,30 @@
 - **Besonders:** `LoadFiles` Event entkoppelt Verzeichnis-Listing vom Surface — App-Layer (B9) fütter die Dateiliste. `bellowsQuality` initial STABLE; B9 koppelt BellowsRouter ein.
 - **Kill:** Donor-Code importiert, Seiteneffekte in Composables, State nicht durch ViewModel zentralisiert
 
+### Gate B9 — Bellows Gateway (Produktionsreife)
+- **Ziel:** Aus dem Bellows-Bridge-Skeleton (B5) einen tatsächlich nutzbaren, OpenAI-kompatiblen
+  LLM-Gateway machen — lokal auf Windows/Desktop lauffähig, für OpenCode & lokale Modelle (Hermes).
+  Erfüllt den in B5 angekündigten nächsten Schritt: „ANVIL-BELLOWS Internals nach KMP portieren, Bridge entfernt."
+- **Ergebnis:**
+  - `:core:contracts`: `ModelRequest`/`ModelResponse` angereichert (`ChatMessage`, `TokenUsage`) — OpenAI-tauglich.
+  - `:modules:bellows` (commonMain/KMP): `OpenAiCompatibleAdapter` (Ktor-Client; deckt OpenAI, OpenRouter,
+    Nvidia, LM Studio, Ollama, llama.cpp, vLLM ab), produktionsreifer `BellowsRouter`
+    (Privacy → Modell-Match → Health → Fallback-Kette), `BellowsConfig`/`ProviderConfig`,
+    `ProviderFactory`, kanonische `wire/OpenAiDto`. Android-Bridge entfernt.
+  - `:app:bellows-gateway` (JVM): Ktor-Server (`POST /v1/chat/completions`, `GET /v1/models`, `/health`),
+    SSE-Streaming, optionaler Bearer-Token, CLI (`serve|config|key|models`),
+    `JvmCredentialVault` (JCEKS — kein Klartext-Key, SAFETY_POLICY §3).
+  - Build JVM-fähig: Android-Target opt-in (`-Panvil.android`), Gradle-Wrapper ergänzt,
+    Ktor-Server im Version-Catalog, Root auf `compilerOptions`-DSL migriert.
+- **Verifiziert:** `:modules:bellows:jvmTest` + `:app:bellows-gateway:test` grün; Live-Smoke
+  (echter `bellows serve` gegen Upstream liefert OpenAI-konforme Antwort); `installDist` erzeugt
+  `bellows`/`bellows.bat`.
+- **Privacy:** `LOCAL_ONLY` (Header `X-Anvil-Privacy: local_only`) routet nur lokal — kein Cloud-Fallback,
+  sonst `503 bellows_exhausted`.
+- **Kill:** Donor-Code importiert, Credentials im Klartext (Config/Log/Store), `LOCAL_ONLY` mit Cloud-Fallback.
+- **Offen (dokumentiert in `docs/BELLOWS_GATEWAY.md` §10):** inkrementelles Passthrough-Streaming,
+  Cost-Cap-/Rate-Limit-Enforcement.
+
 ---
 
 ## 🔜 Deferred Gates (warten auf Execution Core)
@@ -247,5 +272,6 @@
 | 2026-05-20 | Gate B6: KMP Knight — Knight (read/write/delete/diff), FileDiff, UnifiedDiff (LCS), CheckpointCapable (Recovery-Push) |
 | 2026-05-20 | Gate B7: KMP Knight Contract — KnightContract, FileContent, WriteResult, UnifiedDiff (data class), PatchResult, DiffEngine, PatchApplier (applyPatch) |
 | 2026-05-20 | Gate B8: Compose Commander Shell — CommanderState, CommanderEvent, CommanderViewModel, CommanderApp, WorkspaceBrowser, DiffViewer, RunLog, QualityBadge |
+| 2026-06-09 | Gate B9: Bellows Gateway (Produktionsreife) — OpenAI-kompatibler Router/Gateway (JVM/Windows), OpenAiCompatibleAdapter, BellowsRouter (Fallback + LOCAL_ONLY), Ktor-Server + CLI + JCEKS-Vault, Bridge entfernt. Build JVM-fähig (Android opt-in, Gradle-Wrapper). Verifiziert per Tests + Live-Smoke. |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.
