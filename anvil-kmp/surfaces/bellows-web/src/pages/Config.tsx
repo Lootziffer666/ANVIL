@@ -3,16 +3,16 @@ import { Save, Eye, EyeOff, CheckCircle } from 'lucide-react'
 
 export default function Config() {
   const [url, setUrl]           = useState(() => localStorage.getItem('bellows_gateway_url') ?? 'http://localhost:8765')
-  const [key, setKey]           = useState(() => localStorage.getItem('bellows_gateway_key') ?? '')
+  const [key, setKey]           = useState(() => sessionStorage.getItem('bellows_gateway_key') ?? '')
   const [showKey, setShowKey]   = useState(false)
   const [saved, setSaved]       = useState(false)
 
   const save = () => {
     localStorage.setItem('bellows_gateway_url', url.trim() || 'http://localhost:8765')
     if (key.trim()) {
-      localStorage.setItem('bellows_gateway_key', key.trim())
+      sessionStorage.setItem('bellows_gateway_key', key.trim())
     } else {
-      localStorage.removeItem('bellows_gateway_key')
+      sessionStorage.removeItem('bellows_gateway_key')
     }
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
@@ -72,7 +72,7 @@ export default function Config() {
                 {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
-            <span className="field-hint">Stored in localStorage — never sent to third parties</span>
+            <span className="field-hint">Stored in sessionStorage (cleared on tab close) — never sent to third parties</span>
           </div>
 
           <button className="btn btn--primary" onClick={save} style={{ alignSelf: 'flex-start' }}>

@@ -57,10 +57,7 @@ function getGatewayUrl(): string {
 function buildHeaders(includeContentType = false): Record<string, string> {
   const headers: Record<string, string> = {}
   if (includeContentType) headers['Content-Type'] = 'application/json'
-  const key =
-    localStorage.getItem('bellows_gateway_key') ||
-    (import.meta.env.VITE_BELLOWS_GATEWAY_KEY as string | undefined) ||
-    ''
+  const key = sessionStorage.getItem('bellows_gateway_key') || ''
   if (key) headers['Authorization'] = `Bearer ${key}`
   return headers
 }

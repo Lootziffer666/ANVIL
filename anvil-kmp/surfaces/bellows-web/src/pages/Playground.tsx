@@ -146,7 +146,7 @@ export default function Playground() {
           className="btn btn--ghost btn--sm"
           style={{ margin: '0 16px 16px', width: 'calc(100% - 32px)' }}
           onClick={() => setTurns([])}
-          disabled={turns.length === 0}
+          disabled={turns.length === 0 || busy}
         >
           <Trash2 size={13} /> Clear conversation
         </button>
@@ -205,7 +205,7 @@ export default function Playground() {
             onKeyDown={onKey}
             rows={2}
           />
-          <button className="btn btn--primary pg-send" onClick={send} disabled={busy || !input.trim()}>
+          <button className="btn btn--primary pg-send" onClick={send} disabled={busy || !input.trim()} aria-label={busy ? 'Sending message' : 'Send message'}>
             {busy ? <RefreshCw size={16} className="spin" /> : <Send size={16} />}
           </button>
         </div>
