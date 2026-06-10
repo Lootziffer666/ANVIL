@@ -23,17 +23,21 @@ export default function Layout() {
   const [gatewayState, setGatewayState] = useState<GatewayState>('CONNECTING')
 
   useEffect(() => {
+    let active = true
     const poll = async () => {
       try {
         const h = await bellowsApi.getHealth()
-        setGatewayState(h.status)
+        if (active) setGatewayState(h.status)
       } catch {
-        setGatewayState('OFFLINE')
+        if (active) setGatewayState('OFFLINE')
       }
     }
     poll()
     const id = setInterval(poll, 15_000)
-    return () => clearInterval(id)
+    return () => {
+      active = false
+      clearInterval(id)
+    }
   }, [])
 
   const dotClass = `gw-dot gw-dot--${gatewayState.toLowerCase()}`

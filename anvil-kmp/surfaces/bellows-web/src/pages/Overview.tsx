@@ -25,7 +25,7 @@ export default function Overview() {
 
   useEffect(() => { load() }, [load])
 
-  const adapters     = health ? Object.entries(health.adapters) : []
+  const adapters     = health?.adapters ? Object.entries(health.adapters) : []
   const stableCount  = adapters.filter(([, s]) => s === 'STABLE').length
   const localModels  = (health?.models ?? []).filter(
     m => m.includes('local') || m.includes('hermes') || m.includes('llama') || m.includes('ollama'),

@@ -23,7 +23,7 @@ export default function Providers() {
 
   useEffect(() => { load() }, [load])
 
-  const adapters = health ? Object.entries(health.adapters) : []
+  const adapters = health?.adapters ? Object.entries(health.adapters) : []
 
   const modelsByAdapter = (id: string) =>
     (health?.models ?? []).filter(m => {

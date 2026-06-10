@@ -54,7 +54,7 @@ export default function Playground() {
         ...prev,
         {
           role: 'assistant',
-          content: res.choices[0]?.message?.content ?? '',
+          content: res.choices?.[0]?.message?.content ?? '',
           modelUsed: res.model,
           usage: res.usage,
           latencyMs: Math.round(performance.now() - t0),
