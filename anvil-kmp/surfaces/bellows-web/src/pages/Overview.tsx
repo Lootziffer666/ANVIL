@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
-import { RefreshCw, AlertCircle, Wifi } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { RefreshCw, AlertCircle, Wifi, Wand2 } from 'lucide-react'
 import { bellowsApi, type HealthResponse } from '../api/bellows'
 import StatusBadge from '../components/StatusBadge'
 
 export default function Overview() {
+  const navigate = useNavigate()
   const [health, setHealth]       = useState<HealthResponse | null>(null)
   const [loading, setLoading]     = useState(true)
   const [error, setError]         = useState<string | null>(null)
@@ -44,17 +46,25 @@ export default function Overview() {
       {error ? (
         <div className="alert alert--error">
           <AlertCircle size={16} style={{ flexShrink: 0 }} />
-          <div>
+          <div style={{ flex: 1 }}>
             <strong>Gateway unreachable</strong> — {error}
             <br />
             <span className="alert-hint">
-              Start with: <code>bellows serve</code> · then check{' '}
-              <a href="#" onClick={e => { e.preventDefault(); window.location.href = '/config' }}>
+              Run the start script from Setup, or check{' '}
+              <a href="#" onClick={e => { e.preventDefault(); navigate('/config') }}>
                 Config
               </a>{' '}
               for the gateway URL.
             </span>
           </div>
+          <button
+            className="btn btn--primary btn--sm"
+            onClick={() => navigate('/setup')}
+            style={{ flexShrink: 0, gap: 6 }}
+          >
+            <Wand2 size={13} />
+            Jetzt einrichten
+          </button>
         </div>
       ) : (
         <>

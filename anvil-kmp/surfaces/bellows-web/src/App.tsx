@@ -5,6 +5,7 @@ import Providers from './pages/Providers'
 import Models from './pages/Models'
 import Playground from './pages/Playground'
 import Config from './pages/Config'
+import Setup from './pages/Setup'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="models" element={<Models />} />
           <Route path="playground" element={<Playground />} />
           <Route path="config" element={<Config />} />
+          <Route path="setup" element={<Setup />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

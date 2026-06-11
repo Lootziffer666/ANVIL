@@ -25,13 +25,24 @@ class BellowsRouter(
 ) : BellowsContract {
 
     override suspend fun route(request: ModelRequest): ModelResponse {
-        val byPrivacy = when (request.privacyMode) {
+        // Strip bellows/ prefix: "bellows/auto" or "bellows/" → null (any), "bellows/gpt-4o" → "gpt-4o"
+        val effectiveModel = request.model?.let { m ->
+            if (m.startsWith("bellows/")) {
+                val stripped = m.removePrefix("bellows/")
+                if (stripped == "auto" || stripped.isBlank()) null else stripped
+            } else {
+                m
+            }
+        }
+        val routeRequest = if (effectiveModel == request.model) request else request.copy(model = effectiveModel)
+
+        val byPrivacy = when (routeRequest.privacyMode) {
             PrivacyMode.LOCAL_ONLY -> adapters.filter { it.isLocal }
             PrivacyMode.OPEN -> adapters
         }
         if (byPrivacy.isEmpty()) {
             throw BellowsExhaustedException(
-                if (request.privacyMode == PrivacyMode.LOCAL_ONLY) {
+                if (routeRequest.privacyMode == PrivacyMode.LOCAL_ONLY) {
                     "Kein lokales Modell verfügbar. PrivacyMode.LOCAL_ONLY verbietet Cloud-Fallback."
                 } else {
                     "Kein Provider konfiguriert."
@@ -39,7 +50,7 @@ class BellowsRouter(
             )
         }
 
-        val (matching, others) = byPrivacy.partition { it.handles(request.model) }
+        val (matching, others) = byPrivacy.partition { it.handles(routeRequest.model) }
         val candidates = (matching + others).filter { it.qualityState() != QualityState.FAILED }
         if (candidates.isEmpty()) {
             throw BellowsExhaustedException("Alle passenden Provider sind im FAILED-Zustand.")
@@ -48,7 +59,7 @@ class BellowsRouter(
         var lastError: Exception? = null
         for (adapter in candidates) {
             try {
-                return adapter.route(request)
+                return adapter.route(routeRequest)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -56,8 +67,8 @@ class BellowsRouter(
             }
         }
         throw BellowsExhaustedException(
-            "Alle Provider erschöpft (model=${request.model ?: "<default>"}, " +
-                "privacyMode=${request.privacyMode}). Letzter Fehler: ${lastError?.message}",
+            "Alle Provider erschöpft (model=${routeRequest.model ?: "<default>"}, " +
+                "privacyMode=${routeRequest.privacyMode}). Letzter Fehler: ${lastError?.message}",
         )
     }
 
@@ -74,8 +85,9 @@ class BellowsRouter(
         }
     }
 
-    /** Alle bekannten Modell-IDs über alle Adapter (für `GET /v1/models`). */
-    fun listModels(): List<String> = adapters.flatMap { it.models }.distinct().sorted()
+    /** Alle bekannten Modell-IDs über alle Adapter (für `GET /v1/models`). Prepends bellows/auto. */
+    fun listModels(): List<String> =
+        listOf("bellows/auto") + adapters.flatMap { it.models }.distinct().sorted()
 
     /** Zustand je Adapter — für `/health`. */
     fun adapterStates(): Map<String, QualityState> =
