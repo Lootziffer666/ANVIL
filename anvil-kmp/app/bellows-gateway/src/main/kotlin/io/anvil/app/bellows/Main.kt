@@ -58,7 +58,11 @@ private fun serve(args: Args) = runBlocking {
             vault.retrieve(CredentialKey(ref))?.let { secrets[ref] = it }
         }
     }
-    val gatewayKey = config.gatewayKeyRef?.let { vault?.retrieve(CredentialKey(it)) }
+    val gatewayKey: String? = when {
+        config.gatewayKeyRef != null -> vault?.retrieve(CredentialKey(config.gatewayKeyRef))
+        config.gatewayKeyEnv != null -> System.getenv(config.gatewayKeyEnv)
+        else -> null
+    }
 
     val client = buildHttpClient()
     val factory = ProviderFactory(

@@ -14,6 +14,8 @@ data class BellowsConfig(
     val port: Int = 8765,
     /** Optionaler Vault-Verweis auf einen Bearer-Token, der den Gateway-Endpoint schützt. */
     val gatewayKeyRef: String? = null,
+    /** Alternativ: Umgebungsvariable, die den Gateway-Bearer-Token enthält (kein Vault nötig). */
+    val gatewayKeyEnv: String? = null,
 )
 
 @Serializable

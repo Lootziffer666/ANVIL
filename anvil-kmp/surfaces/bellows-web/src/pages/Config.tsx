@@ -1,11 +1,14 @@
 import { useState } from 'react'
-import { Save, Eye, EyeOff, CheckCircle } from 'lucide-react'
+import { Save, Eye, EyeOff, CheckCircle, Copy } from 'lucide-react'
 
 export default function Config() {
   const [url, setUrl]           = useState(() => localStorage.getItem('bellows_gateway_url') ?? 'http://localhost:8765')
   const [key, setKey]           = useState(() => sessionStorage.getItem('bellows_gateway_key') ?? '')
   const [showKey, setShowKey]   = useState(false)
   const [saved, setSaved]       = useState(false)
+
+  const gatewayV1 = url.replace(/\/$/, '') + '/v1'
+  const copyText  = (text: string) => navigator.clipboard.writeText(text).catch(() => {})
 
   const save = () => {
     localStorage.setItem('bellows_gateway_url', url.trim() || 'http://localhost:8765')
@@ -79,6 +82,67 @@ export default function Config() {
             {saved ? <CheckCircle size={15} /> : <Save size={15} />}
             {saved ? 'Saved!' : 'Save'}
           </button>
+        </div>
+      </div>
+
+      {/* Als Provider nutzen */}
+      <div className="card" style={{ maxWidth: 560 }}>
+        <div className="card-header">
+          <h2 className="card-title">Als Provider nutzen</h2>
+        </div>
+        <div className="card-body">
+          <p className="card-prose">
+            Trage Bellows in deiner App als OpenAI-kompatiblen Provider ein:
+          </p>
+
+          <div className="field-group">
+            <label className="field-label">Base URL</label>
+            <div className="copy-field">
+              <span className="copy-field-value">{gatewayV1}</span>
+              <button className="btn btn--ghost btn--sm" onClick={() => copyText(gatewayV1)} title="Kopieren">
+                <Copy size={13} />
+              </button>
+            </div>
+          </div>
+
+          <div className="field-group">
+            <label className="field-label">API Key</label>
+            <div className="copy-field">
+              <span className="copy-field-value" style={{ flex: 1 }}>
+                {key ? (showKey ? key : '•'.repeat(Math.min(key.length, 32))) : <em style={{ color: 'var(--hw-color-fg-secondary)' }}>Kein Key gesetzt — Config ↑ speichern</em>}
+              </span>
+              {key && (
+                <>
+                  <button className="btn btn--ghost btn--sm" onClick={() => setShowKey(s => !s)} title={showKey ? 'Verbergen' : 'Anzeigen'}>
+                    {showKey ? <EyeOff size={13} /> : <Eye size={13} />}
+                  </button>
+                  <button className="btn btn--ghost btn--sm" onClick={() => copyText(key)} title="Kopieren">
+                    <Copy size={13} />
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="field-group">
+            <label className="field-label">Modell-Format</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div className="copy-field">
+                <code className="copy-field-value" style={{ fontFamily: 'var(--hw-font-mono)', fontSize: 13 }}>bellows/auto</code>
+                <button className="btn btn--ghost btn--sm" onClick={() => copyText('bellows/auto')} title="Kopieren">
+                  <Copy size={13} />
+                </button>
+              </div>
+              <span className="field-hint">Rotiert automatisch über alle konfigurierten Provider</span>
+              <div className="copy-field" style={{ marginTop: 2 }}>
+                <code className="copy-field-value" style={{ fontFamily: 'var(--hw-font-mono)', fontSize: 13 }}>bellows/gpt-4o</code>
+                <button className="btn btn--ghost btn--sm" onClick={() => copyText('bellows/gpt-4o')} title="Kopieren">
+                  <Copy size={13} />
+                </button>
+              </div>
+              <span className="field-hint">Direkt an ein spezifisches Modell routen</span>
+            </div>
+          </div>
         </div>
       </div>
 

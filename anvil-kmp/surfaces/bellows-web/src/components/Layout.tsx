@@ -7,6 +7,7 @@ import {
   MessageSquare,
   Settings,
   Wind,
+  Wand2,
 } from 'lucide-react'
 import { bellowsApi, type QualityState } from '../api/bellows'
 
@@ -70,6 +71,16 @@ export default function Layout() {
         </nav>
 
         <div className="sidebar-foot">
+          <NavLink
+            to="/setup"
+            className={({ isActive }) =>
+              `nav-item${isActive ? ' nav-item--active' : ''}`
+            }
+          >
+            <Wand2 size={16} />
+            <span>Setup</span>
+          </NavLink>
+
           <NavLink
             to="/config"
             className={({ isActive }) =>
