@@ -1055,3 +1055,173 @@ button { cursor: pointer; }
   border-top: 1px solid var(--hw-color-border);
   background: var(--hw-color-bg);
 }
+
+/* ── Provider selection (Setup step 1) ────────────────────────────────────── */
+.provider-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--hw-color-border);
+  flex-wrap: wrap;
+}
+
+.provider-scroll {
+  overflow-y: auto;
+  max-height: 440px;
+}
+
+.provider-select-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 16px;
+  border-bottom: 1px solid var(--hw-color-border);
+  transition: background var(--hw-dur-short) var(--hw-ease-std);
+}
+
+.provider-select-row:hover { background: var(--hw-color-bg); }
+.provider-select-row--on   { background: rgba(242,153,74,.04); }
+
+.provider-select-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.provider-select-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.provider-select-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  flex-wrap: wrap;
+}
+
+.provider-select-url {
+  font-size: 11px;
+  color: var(--hw-color-fg-secondary);
+  font-family: var(--hw-font-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.provider-key-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 20px;
+}
+.provider-key-badge--set   { background: var(--hw-color-success-light); color: var(--hw-color-success); }
+.provider-key-badge--miss  { background: var(--hw-color-warning-light);  color: var(--hw-color-warning); }
+.provider-key-badge--local { background: var(--hw-color-info-light);     color: var(--hw-color-info); }
+
+.provider-key-inline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* ── Clipboard watch (Setup step 2) ───────────────────────────────────────── */
+.clipboard-watch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 2px dashed var(--hw-color-border);
+  border-radius: var(--hw-radius-md);
+  color: var(--hw-color-fg-secondary);
+  font-size: 14px;
+  transition: border-color var(--hw-dur-short) var(--hw-ease-std),
+              background   var(--hw-dur-short) var(--hw-ease-std);
+}
+
+.clipboard-watch--detected {
+  border-color: var(--hw-color-success);
+  background: var(--hw-color-success-light);
+  color: var(--hw-color-success);
+}
+
+.clip-icon { flex-shrink: 0; }
+
+.clip-icon--pulse {
+  animation: clip-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes clip-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: .5; transform: scale(0.92); }
+}
+
+.clip-icon--ok { color: var(--hw-color-success); }
+
+/* ── Wizard progress dots ─────────────────────────────────────────────────── */
+.wizard-progress {
+  display: flex;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.wizard-progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--hw-color-border);
+  transition: background var(--hw-dur-short) var(--hw-ease-std);
+  flex-shrink: 0;
+}
+
+.wizard-progress-dot--active { background: var(--hw-color-accent); }
+.wizard-progress-dot--done   { background: var(--hw-color-success); }
+
+/* ── CopyCmd ──────────────────────────────────────────────────────────────── */
+.copy-cmd {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.copy-cmd-text {
+  flex: 1;
+  font-family: var(--hw-font-mono);
+  font-size: 13px;
+  padding: 6px 10px;
+  background: var(--hw-color-bg);
+  border: 1px solid var(--hw-color-border);
+  border-radius: var(--hw-radius-sm);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* ── Step items (Next Steps section) ─────────────────────────────────────── */
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.step-num {
+  min-width: 28px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--hw-color-accent);
+  color: #fff;
+  border-radius: var(--hw-radius-sm);
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
