@@ -5,6 +5,7 @@ import io.anvil.core.contracts.ChatMessage
 import io.anvil.core.contracts.ModelRequest
 import io.anvil.core.contracts.ModelResponse
 import io.anvil.core.contracts.PrivacyMode
+import io.anvil.modules.bellows.BellowsConfig
 import io.anvil.modules.bellows.BellowsRouter
 import io.anvil.modules.bellows.wire.OpenAiChatChunk
 import io.anvil.modules.bellows.wire.OpenAiChatRequest
@@ -36,10 +37,214 @@ import io.ktor.server.response.respondTextWriter
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import java.security.MessageDigest
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicReference
+import kotlin.system.exitProcess
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+
+@Serializable
+data class HealthDto(
+    val status: String,
+    val adapters: Map<String, String>,
+    val models: List<String>,
+)
+
+@Serializable
+data class HotReloadRequest(
+    val config: BellowsConfig,
+    /** Resolved API key values keyed by env-var name, e.g. {"OPENAI_API_KEY": "sk-…"} */
+    val resolvedKeys: Map<String, String> = emptyMap(),
+)
+
+@Serializable
+data class HotReloadResponse(
+    val status: String,
+    val providers: Int,
+)
+
+/** Factory that rebuilds the [BellowsRouter] from a new config + injected keys. */
+typealias RouterFactory = (BellowsConfig, Map<String, String>) -> BellowsRouter
+
+/**
+ * Der Bellows-Gateway als Ktor-Application-Modul.
+ *
+ * @param routerRef     atomare Referenz auf den aktiven Router — wird durch hot-reload ersetzt.
+ * @param gatewayKey    optionaler Bearer-Token zum Schutz der Endpoints.
+ * @param routerFactory optionale Factory für hot-reload; `null` deaktiviert `POST /admin/hot-reload`.
+ */
+fun Application.bellowsGateway(
+    routerRef: AtomicReference<BellowsRouter>,
+    gatewayKey: String? = null,
+    routerFactory: RouterFactory? = null,
+) {
+    install(ContentNegotiation) { json(gatewayJson) }
+    install(CORS) {
+        anyHost()
+        allowHeader(HttpHeaders.Authorization)
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader("X-Anvil-Privacy")
+        allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Options)
+    }
+    install(StatusPages) {
+        exception<BellowsExhaustedException> { call, cause ->
+            call.respond(
+                HttpStatusCode.ServiceUnavailable,
+                OpenAiError(OpenAiErrorBody(cause.message ?: "Kein Provider verfügbar", "bellows_exhausted")),
+            )
+        }
+        exception<Throwable> { call, cause ->
+            call.respond(
+                HttpStatusCode.InternalServerError,
+                OpenAiError(OpenAiErrorBody(cause.message ?: "Interner Fehler", "internal_error")),
+            )
+        }
+    }
+
+    routing {
+        get("/") {
+            call.respondText("Anvil Bellows Gateway — OpenAI-kompatibel. Siehe /health und /v1/models.")
+        }
+
+        get("/health") {
+            val router = routerRef.get()
+            call.respond(
+                HealthDto(
+                    status = router.qualityState().name,
+                    adapters = router.adapterStates().mapValues { it.value.name },
+                    models = router.listModels(),
+                ),
+            )
+        }
+
+        get("/v1/models") {
+            if (!call.authorize(gatewayKey)) return@get
+            call.respond(OpenAiModelList(data = routerRef.get().listModels().map { OpenAiModelCard(id = it) }))
+        }
+
+        post("/v1/chat/completions") {
+            if (!call.authorize(gatewayKey)) return@post
+            val body = call.receive<OpenAiChatRequest>()
+            if (body.messages.isEmpty()) {
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    OpenAiError(OpenAiErrorBody("'messages' darf nicht leer sein", "invalid_request")),
+                )
+                return@post
+            }
+            val request = ModelRequest(
+                messages = body.messages.map { ChatMessage(it.role, it.content ?: "") },
+                model = body.model,
+                privacyMode = call.privacyMode(),
+                maxTokens = body.maxTokens,
+                temperature = body.temperature,
+                stream = body.stream,
+            )
+            val response = routerRef.get().route(request)
+            if (body.stream) call.respondOpenAiStream(response)
+            else call.respond(response.toOpenAiResponse())
+        }
+
+        // ── Admin endpoints ────────────────────────────────────────────────────
+
+        /** Applies a new config + injected API keys without restarting the process. */
+        post("/admin/hot-reload") {
+            if (!call.authorize(gatewayKey)) return@post
+            if (routerFactory == null) {
+                call.respond(
+                    HttpStatusCode.NotImplemented,
+                    OpenAiError(OpenAiErrorBody("Hot-reload nicht konfiguriert", "not_implemented")),
+                )
+                return@post
+            }
+            val req = call.receive<HotReloadRequest>()
+            val newRouter = routerFactory(req.config, req.resolvedKeys)
+            routerRef.set(newRouter)
+            call.respond(HotReloadResponse(status = "reloaded", providers = newRouter.adapterStates().size))
+        }
+
+        /** Graceful process exit — the start-script restart-loop brings the server back up. */
+        post("/admin/restart") {
+            if (!call.authorize(gatewayKey)) return@post
+            call.respond(HttpStatusCode.OK, mapOf("status" to "restarting"))
+            call.application.launch {
+                delay(300)
+                exitProcess(0)
+            }
+        }
+    }
+}
+
+/** Backward-compatible overload for tests and existing callers. */
+fun Application.bellowsGateway(
+    router: BellowsRouter,
+    gatewayKey: String? = null,
+) = bellowsGateway(AtomicReference(router), gatewayKey, null)
+
+// ── Auth & Privacy ─────────────────────────────────────────────────────────────
+
+private suspend fun io.ktor.server.application.ApplicationCall.authorize(gatewayKey: String?): Boolean {
+    if (gatewayKey.isNullOrBlank()) return true
+    val token = request.headers[HttpHeaders.Authorization]?.removePrefix("Bearer ")?.trim()
+    if (token != null &&
+        MessageDigest.isEqual(token.toByteArray(Charsets.UTF_8), gatewayKey.toByteArray(Charsets.UTF_8))
+    ) {
+        return true
+    }
+    respond(
+        HttpStatusCode.Unauthorized,
+        OpenAiError(OpenAiErrorBody("Ungültiger oder fehlender API-Key", "invalid_api_key")),
+    )
+    return false
+}
+
+private fun io.ktor.server.application.ApplicationCall.privacyMode(): PrivacyMode =
+    when (request.headers["X-Anvil-Privacy"]?.lowercase()?.replace("-", "_")) {
+        "local_only", "local" -> PrivacyMode.LOCAL_ONLY
+        else -> PrivacyMode.OPEN
+    }
+
+// ── Mapping & Streaming ─────────────────────────────────────────────────────────
+
+private fun chatId(): String = "chatcmpl-" + UUID.randomUUID().toString().replace("-", "").take(24)
+
+private fun ModelResponse.toOpenAiResponse(): OpenAiChatResponse = OpenAiChatResponse(
+    id = chatId(),
+    created = System.currentTimeMillis() / 1000,
+    model = modelUsed,
+    choices = listOf(
+        OpenAiChoice(
+            index = 0,
+            message = OpenAiMessage("assistant", content),
+            finishReason = finishReason ?: "stop",
+        ),
+    ),
+    usage = usage?.let { OpenAiUsage(it.promptTokens, it.completionTokens, it.totalTokens) },
+)
+
+private suspend fun io.ktor.server.application.ApplicationCall.respondOpenAiStream(response: ModelResponse) {
+    val id = chatId()
+    val created = System.currentTimeMillis() / 1000
+    val model = response.modelUsed
+    respondTextWriter(contentType = ContentType.Text.EventStream) {
+        fun emit(choice: OpenAiChunkChoice) {
+            val chunk = OpenAiChatChunk(id = id, created = created, model = model, choices = listOf(choice))
+            write("data: ${gatewayJson.encodeToString(chunk)}\n\n")
+            flush()
+        }
+        emit(OpenAiChunkChoice(delta = OpenAiDelta(role = "assistant")))
+        emit(OpenAiChunkChoice(delta = OpenAiDelta(content = response.content)))
+        emit(OpenAiChunkChoice(delta = OpenAiDelta(), finishReason = response.finishReason ?: "stop"))
+        write("data: [DONE]\n\n")
+        flush()
+    }
+}
+
 
 @Serializable
 data class HealthDto(

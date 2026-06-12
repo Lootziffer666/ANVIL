@@ -37,7 +37,13 @@ export function generateStartBat(
   providers
     .filter(p => !p.local)
     .forEach(p => lines.push(`set ${p.apiKeyEnvVar}=${keyValues[p.id] ?? ''}`))
-  lines.push('', 'bellows serve --config "%~dp0bellows.config.json"', 'pause')
+  lines.push(
+    '',
+    ':restart',
+    'bellows serve --config "%~dp0bellows.config.json"',
+    'echo [Bellows] Restarting...',
+    'goto restart',
+  )
   return lines.join('\r\n')
 }
 
@@ -55,7 +61,14 @@ export function generateStartSh(
   providers
     .filter(p => !p.local)
     .forEach(p => lines.push(`export ${p.apiKeyEnvVar}="${keyValues[p.id] ?? ''}"`))
-  lines.push('', 'exec bellows serve --config "$(dirname "$0")/bellows.config.json"')
+  lines.push(
+    '',
+    'while true; do',
+    '  bellows serve --config "$(dirname "$0")/bellows.config.json"',
+    '  echo "[Bellows] Restarting in 1s..."',
+    '  sleep 1',
+    'done',
+  )
   return lines.join('\n')
 }
 

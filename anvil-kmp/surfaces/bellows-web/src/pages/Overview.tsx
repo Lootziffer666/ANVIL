@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { RefreshCw, AlertCircle, Wifi, Wand2 } from 'lucide-react'
-import { bellowsApi, type HealthResponse } from '../api/bellows'
+import { bellowsApi, BellowsError, type HealthResponse } from '../api/bellows'
 import StatusBadge from '../components/StatusBadge'
+
+interface ErrorState { message: string; kind: 'network' | 'auth' | 'server' | 'client' }
 
 export default function Overview() {
   const navigate = useNavigate()
   const [health, setHealth]       = useState<HealthResponse | null>(null)
   const [loading, setLoading]     = useState(true)
-  const [error, setError]         = useState<string | null>(null)
+  const [error, setError]         = useState<ErrorState | null>(null)
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null)
 
   const load = useCallback(async () => {
@@ -19,7 +21,11 @@ export default function Overview() {
       setHealth(h)
       setUpdatedAt(new Date())
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Unreachable')
+      setError(
+        e instanceof BellowsError
+          ? { message: e.message, kind: e.kind }
+          : { message: e instanceof Error ? e.message : 'Unbekannt', kind: 'network' },
+      )
     } finally {
       setLoading(false)
     }
@@ -47,15 +53,25 @@ export default function Overview() {
         <div className="alert alert--error">
           <AlertCircle size={16} style={{ flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
-            <strong>Gateway unreachable</strong> — {error}
-            <br />
-            <span className="alert-hint">
-              Run the start script from Setup, or check{' '}
-              <a href="#" onClick={e => { e.preventDefault(); navigate('/config') }}>
-                Config
-              </a>{' '}
-              for the gateway URL.
-            </span>
+            {error.kind === 'auth' ? (
+              <>
+                <strong>Falscher API-Key</strong> — der Gateway läuft, aber der Bearer-Token stimmt nicht überein.
+                <br />
+                <span className="alert-hint">
+                  Key in <a href="#" onClick={e => { e.preventDefault(); navigate('/setup') }}>Setup</a> prüfen oder in{' '}
+                  <a href="#" onClick={e => { e.preventDefault(); navigate('/config') }}>Config</a> korrigieren.
+                </span>
+              </>
+            ) : (
+              <>
+                <strong>Gateway nicht erreichbar</strong>{error.message !== 'Gateway nicht erreichbar' ? ` — ${error.message}` : ''}
+                <br />
+                <span className="alert-hint">
+                  Falsche URL oder Gateway nicht gestartet — starte{' '}
+                  <code>start-bellows.bat</code> / <code>start-bellows.sh</code> aus dem Setup.
+                </span>
+              </>
+            )}
           </div>
           <button
             className="btn btn--primary btn--sm"

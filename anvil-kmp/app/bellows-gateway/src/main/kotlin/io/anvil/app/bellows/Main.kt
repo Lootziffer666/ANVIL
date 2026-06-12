@@ -5,10 +5,11 @@ import io.anvil.modules.bellows.BellowsRouter
 import io.anvil.modules.bellows.ProviderFactory
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
-import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.PrintStream
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.system.exitProcess
+import kotlinx.coroutines.runBlocking
 
 private const val VAULT_PASSWORD_ENV = "ANVIL_BELLOWS_VAULT_PASSWORD"
 
@@ -70,11 +71,20 @@ private fun serve(args: Args) = runBlocking {
         secretResolver = { secrets[it] },
         envResolver = { name -> System.getenv(name) },
     )
-    val router = BellowsRouter(factory.build(config))
+    val routerRef = AtomicReference(BellowsRouter(factory.build(config)))
 
     printBanner(host, port, config, gatewayKey != null)
     embeddedServer(CIO, host = host, port = port) {
-        bellowsGateway(router, gatewayKey)
+        bellowsGateway(routerRef, gatewayKey) { cfg, injectedKeys ->
+            // injectedKeys: env-var-name → actual key value (sent by the browser UI)
+            BellowsRouter(
+                ProviderFactory(
+                    client = client,
+                    secretResolver = { injectedKeys[it] ?: secrets[it] },
+                    envResolver = { name -> injectedKeys[name] ?: System.getenv(name) },
+                ).build(cfg),
+            )
+        }
     }.start(wait = true)
 }
 

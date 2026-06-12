@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import {
   Clipboard, ExternalLink, Plus, Trash2, RefreshCw,
   Eye, EyeOff, Download, ChevronRight, ChevronLeft,
-  Check, Copy, Wand2, Globe, Search,
+  Check, Copy, Wand2, Globe, Search, Zap,
 } from 'lucide-react'
 import { KNOWN_PROVIDERS, makeCustomProvider, type ProviderSetup } from '../lib/knownProviders'
 import { generateConfigJson, generateStartBat, generateStartSh, downloadFile } from '../lib/configExport'
+import { bellowsApi, BellowsError } from '../api/bellows'
 
 const GATEWAY_KEY_ENV = 'ANVIL_BELLOWS_KEY'
 const KNOWN_IDS = new Set(KNOWN_PROVIDERS.map(p => p.id))
@@ -113,6 +114,12 @@ export default function Setup() {
   const [search, setSearch]       = useState('')
   const [wizardIndex, setWizardIndex] = useState(0)
   const [clipStatus, setClipStatus] = useState<'waiting' | 'detected'>('waiting')
+
+  // Export step: live gateway interaction
+  const [gwOnline, setGwOnline]     = useState<boolean | null>(null)
+  const [applyState, setApplyState] = useState<'idle' | 'busy' | 'ok' | 'err'>('idle')
+  const [applyMsg, setApplyMsg]     = useState('')
+  const [restartState, setRestartState] = useState<'idle' | 'busy' | 'waiting' | 'ok' | 'err'>('idle')
 
   const [gatewayHost, setGatewayHost] = useState(() => {
     try { return new URL(localStorage.getItem('bellows_gateway_url') ?? 'http://127.0.0.1:8765').hostname }
@@ -221,6 +228,61 @@ export default function Setup() {
   const selectNone    = () => setSelectedIds(new Set())
   const selectCloud   = () => setSelectedIds(new Set(allProviders.filter(p => !p.local).map(p => p.id)))
   const selectLocal   = () => setSelectedIds(new Set(allProviders.filter(p => p.local).map(p => p.id)))
+
+  // Poll gateway when export step is visible
+  useEffect(() => {
+    if (step !== 'export') return
+    setGwOnline(null)
+    bellowsApi.getHealth()
+      .then(() => setGwOnline(true))
+      .catch(() => setGwOnline(false))
+  }, [step])
+
+  const applyToGateway = async () => {
+    setApplyState('busy')
+    setApplyMsg('')
+    try {
+      const configObj = JSON.parse(generateConfigJson(selectedProviders, gatewayHost, gatewayPort, GATEWAY_KEY_ENV)) as object
+      const resolvedKeys: Record<string, string> = {}
+      selectedProviders.forEach(p => { if (!p.local && keyValues[p.id]) resolvedKeys[p.apiKeyEnvVar] = keyValues[p.id] })
+      const result = await bellowsApi.hotReload(configObj, resolvedKeys)
+      setApplyState('ok')
+      setApplyMsg(`${result.providers} Provider aktiv`)
+      setGwOnline(true)
+    } catch (e) {
+      setApplyState('err')
+      const err = e instanceof BellowsError ? e : null
+      if (err?.kind === 'auth') {
+        setApplyMsg('Falscher API-Key — Gateway läuft mit einem anderen Bearer-Token. Starte den Gateway mit dem neuen Start-Script neu.')
+      } else if (err?.kind === 'network') {
+        setApplyMsg('Gateway nicht erreichbar — starte zuerst start-bellows.bat / start-bellows.sh.')
+        setGwOnline(false)
+      } else {
+        setApplyMsg(err?.message ?? 'Unbekannter Fehler')
+      }
+    }
+  }
+
+  const restartGateway = async () => {
+    setRestartState('busy')
+    try {
+      await bellowsApi.restart()
+    } catch { /* network error expected */ }
+    setRestartState('waiting')
+    // Poll until gateway is back
+    const t0 = Date.now()
+    const poll = async (): Promise<void> => {
+      if (Date.now() - t0 > 30_000) { setRestartState('err'); return }
+      try {
+        await bellowsApi.getHealth()
+        setRestartState('ok')
+        setGwOnline(true)
+        return
+      } catch { /* not up yet */ }
+      setTimeout(poll, 1000)
+    }
+    setTimeout(poll, 1500)
+  }
 
   const doExport = (type: 'json' | 'bat' | 'sh') => {
     const json = generateConfigJson(selectedProviders, gatewayHost, gatewayPort, GATEWAY_KEY_ENV)
@@ -559,9 +621,104 @@ export default function Setup() {
         </div>
       )}
 
-      {/* ── Step 3: Export ────────────────────────────────────────────────────── */}
+      {/* ── Step 3: Export ──────────────────────────────────── */}
       {step === 'export' && (
         <>
+          {/* ── Gateway live actions ─────────────────────────── */}
+          <div className="card">
+            <div className="card-header">
+              <h2 className="card-title">Gateway</h2>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
+                <span className={`gw-dot gw-dot--${gwOnline === null ? 'connecting' : gwOnline ? 'stable' : 'offline'}`} />
+                {gwOnline === null ? 'Prüfe…' : gwOnline ? 'Online' : 'Offline'}
+              </span>
+            </div>
+            <div className="card-body">
+              {gwOnline === true && (
+                <>
+                  <p className="card-prose">Gateway läuft — Konfiguration jetzt anwenden, kein Terminal nötig.</p>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+                    <button
+                      className="btn btn--primary"
+                      disabled={applyState === 'busy'}
+                      onClick={applyToGateway}
+                    >
+                      {applyState === 'busy' ? <RefreshCw size={14} className="spin" /> : <Zap size={14} />}
+                      {applyState === 'busy' ? 'Wird angewendet…' : 'Konfiguration anwenden'}
+                    </button>
+                    <button
+                      className="btn btn--ghost"
+                      disabled={restartState === 'busy' || restartState === 'waiting'}
+                      onClick={restartGateway}
+                    >
+                      <RefreshCw size={14} className={restartState === 'busy' || restartState === 'waiting' ? 'spin' : ''} />
+                      {restartState === 'waiting' ? 'Startet neu…' : 'Gateway neu starten'}
+                    </button>
+                  </div>
+                  {applyState === 'ok' && (
+                    <div className="apply-status apply-status--ok"><Check size={14} /> Angewendet — {applyMsg}</div>
+                  )}
+                  {restartState === 'ok' && (
+                    <div className="apply-status apply-status--ok"><Check size={14} /> Gateway neu gestartet</div>
+                  )}
+                  {(applyState === 'err' || restartState === 'err') && (
+                    <div className="apply-status apply-status--err">{applyMsg || 'Fehler'}</div>
+                  )}
+                </>
+              )}
+              {gwOnline === false && (
+                <>
+                  <p className="card-prose">Gateway offline — Dateien herunterladen und Script starten:</p>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+                    <button className="btn btn--primary" onClick={() => doExport('json')}>
+                      <Download size={14} /> bellows.config.json
+                    </button>
+                    <button className="btn btn--ghost" onClick={() => doExport('bat')}>
+                      <Download size={14} /> start-bellows.bat
+                      <span style={{ fontSize: 11, marginLeft: 4, color: 'var(--hw-color-fg-secondary)' }}>Windows</span>
+                    </button>
+                    <button className="btn btn--ghost" onClick={() => doExport('sh')}>
+                      <Download size={14} /> start-bellows.sh
+                      <span style={{ fontSize: 11, marginLeft: 4, color: 'var(--hw-color-fg-secondary)' }}>Mac/Linux</span>
+                    </button>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 14 }}>
+                    <div className="step-item">
+                      <span className="step-num">1</span>
+                      <span>Dateien neben <code className="inline-code">bellows.exe</code> ablegen</span>
+                    </div>
+                    <div className="step-item">
+                      <span className="step-num">2a</span>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <span><strong>Mac / Linux:</strong></span>
+                        <CopyCmd cmd="chmod +x start-bellows.sh && ./start-bellows.sh" />
+                      </div>
+                    </div>
+                    <div className="step-item">
+                      <span className="step-num">2b</span>
+                      <span><strong>Windows:</strong> Doppelklick auf <code className="inline-code">start-bellows.bat</code></span>
+                    </div>
+                    <div className="step-item">
+                      <span className="step-num">3</span>
+                      <button
+                        className="btn btn--ghost btn--sm"
+                        onClick={() => {
+                          setGwOnline(null)
+                          bellowsApi.getHealth().then(() => setGwOnline(true)).catch(() => setGwOnline(false))
+                        }}
+                      >
+                        <RefreshCw size={12} /> Verbindung prüfen
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+              {gwOnline === null && (
+                <p style={{ color: 'var(--hw-color-fg-secondary)', fontSize: 14 }}>Prüfe Verbindung…</p>
+              )}
+            </div>
+          </div>
+
           {/* Verbindungs-Info */}
           <div className="card">
             <div className="card-header"><h2 className="card-title">Verbindungs-Info für externe Apps</h2></div>
@@ -576,60 +733,24 @@ export default function Setup() {
             </div>
           </div>
 
-          {/* Download */}
-          <div className="card">
-            <div className="card-header">
-              <h2 className="card-title">Konfiguration herunterladen</h2>
-              <span className="card-count">{selectedProviders.length} Provider</span>
-            </div>
-            <div className="card-body">
-              <p className="card-prose">
-                Beide Dateien neben <code className="inline-code">bellows.exe</code> legen, dann das Start-Script einmal ausführen — danach läuft der Gateway.
-              </p>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 12 }}>
-                <button className="btn btn--primary" onClick={() => doExport('json')}>
-                  <Download size={14} /> bellows.config.json
-                </button>
-                <button className="btn btn--ghost" onClick={() => doExport('bat')}>
-                  <Download size={14} /> start-bellows.bat
-                  <span style={{ fontSize: 11, color: 'var(--hw-color-fg-secondary)', marginLeft: 4 }}>Windows</span>
-                </button>
-                <button className="btn btn--ghost" onClick={() => doExport('sh')}>
-                  <Download size={14} /> start-bellows.sh
-                  <span style={{ fontSize: 11, color: 'var(--hw-color-fg-secondary)', marginLeft: 4 }}>Mac / Linux</span>
-                </button>
+          {gwOnline === true && (
+            <div className="card">
+              <div className="card-header">
+                <h2 className="card-title">Dateien herunterladen</h2>
+                <span style={{ fontSize: 12, color: 'var(--hw-color-fg-secondary)' }}>Backup / Neuinstallation</span>
               </div>
-            </div>
-          </div>
-
-          {/* Nächste Schritte */}
-          <div className="card">
-            <div className="card-header"><h2 className="card-title">Nächste Schritte</h2></div>
-            <div className="card-body" style={{ gap: 14 }}>
-              <div className="step-item">
-                <span className="step-num">1</span>
-                <span>Beide Dateien neben <code className="inline-code">bellows.exe</code> ablegen</span>
-              </div>
-              <div className="step-item">
-                <span className="step-num">2a</span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
-                  <span><strong>Mac / Linux</strong> — Script ausführbar machen und starten:</span>
-                  <CopyCmd cmd="chmod +x start-bellows.sh && ./start-bellows.sh" />
+              <div className="card-body">
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button className="btn btn--ghost btn--sm" onClick={() => doExport('json')}><Download size={13} /> bellows.config.json</button>
+                  <button className="btn btn--ghost btn--sm" onClick={() => doExport('bat')}><Download size={13} /> start-bellows.bat</button>
+                  <button className="btn btn--ghost btn--sm" onClick={() => doExport('sh')}><Download size={13} /> start-bellows.sh</button>
                 </div>
               </div>
-              <div className="step-item">
-                <span className="step-num">2b</span>
-                <span><strong>Windows</strong> — Doppelklick auf <code className="inline-code">start-bellows.bat</code></span>
-              </div>
-              <div className="step-item">
-                <span className="step-num">3</span>
-                <span>Verbinden klicken</span>
-              </div>
             </div>
-          </div>
+          )}
 
           <div style={{ display: 'flex', gap: 8, justifyContent: 'space-between', marginTop: 4 }}>
-            <button className="btn btn--ghost" onClick={() => setStep('select')}>
+            <button className="btn btn--ghost" onClick={() => { setApplyState('idle'); setRestartState('idle'); setStep('select') }}>
               <ChevronLeft size={14} /> Provider bearbeiten
             </button>
             <button className="btn btn--primary" onClick={() => navigate('/')}>

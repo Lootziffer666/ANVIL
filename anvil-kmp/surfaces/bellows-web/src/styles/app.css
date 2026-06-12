@@ -1225,3 +1225,22 @@ button { cursor: pointer; }
   flex-shrink: 0;
   margin-top: 1px;
 }
+
+/* ── Apply status (Setup export step) ────────────────────────────────────── */
+.apply-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--hw-radius-sm);
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.apply-status--ok  { background: var(--hw-color-success-light); color: var(--hw-color-success); }
+.apply-status--err { background: var(--hw-color-error-light);   color: var(--hw-color-error); }
+
+/* ── gw-dot offline state ─────────────────────────────────────────────────── */
+.gw-dot--offline {
+  background: var(--hw-color-fg-secondary);
+}
