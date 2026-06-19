@@ -51,6 +51,7 @@
 | Gate | Name | Status | Dateien |
 |------|------|--------|---------|
 | AX | Repo Reality Lock | `done` | `docs/REPO_REALITY_LOCK.md`, `docs/GATE_RECONCILIATION.md`, `docs/KNOWN_DRIFT_RISKS.md` |
+| AX2 | Starred Donor Analysis | `done` | `donor-analysis/STARRED_REPOS_BRIEF.md`, `donor-analysis/SKILLS_ARCHITECTURE_CONCEPT.md`, `donor-analysis/HEADROOM_INTEGRATION_CONCEPT.md`, `donor-analysis/ORCHESTRATION_PATTERNS.md` |
 
 ---
 
@@ -273,5 +274,6 @@
 | 2026-05-20 | Gate B7: KMP Knight Contract — KnightContract, FileContent, WriteResult, UnifiedDiff (data class), PatchResult, DiffEngine, PatchApplier (applyPatch) |
 | 2026-05-20 | Gate B8: Compose Commander Shell — CommanderState, CommanderEvent, CommanderViewModel, CommanderApp, WorkspaceBrowser, DiffViewer, RunLog, QualityBadge |
 | 2026-06-09 | Gate B9: Bellows Gateway (Produktionsreife) — OpenAI-kompatibler Router/Gateway (JVM/Windows), OpenAiCompatibleAdapter, BellowsRouter (Fallback + LOCAL_ONLY), Ktor-Server + CLI + JCEKS-Vault, Bridge entfernt. Build JVM-fähig (Android opt-in, Gradle-Wrapper). Verifiziert per Tests + Live-Smoke. |
+| 2026-06-10 | Gate AX2: Starred Donor Analysis — Pattern-Studie externer Repos (open-design, tau, headroom, claude-skills, agency-agents-zh, UFO, mimo-ai-proxy). 4 Konzept-Dokumente in donor-analysis/. |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.
