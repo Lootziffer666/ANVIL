@@ -5,6 +5,8 @@ import io.anvil.core.contracts.ChatMessage
 import io.anvil.core.contracts.ModelRequest
 import io.anvil.core.contracts.ModelResponse
 import io.anvil.core.contracts.PrivacyMode
+import io.anvil.core.contracts.ToolCall
+import io.anvil.core.contracts.ToolDefinition
 import io.anvil.modules.bellows.BellowsRouter
 import io.anvil.modules.bellows.wire.OpenAiChatChunk
 import io.anvil.modules.bellows.wire.OpenAiChatRequest
@@ -14,9 +16,13 @@ import io.anvil.modules.bellows.wire.OpenAiChunkChoice
 import io.anvil.modules.bellows.wire.OpenAiDelta
 import io.anvil.modules.bellows.wire.OpenAiError
 import io.anvil.modules.bellows.wire.OpenAiErrorBody
+import io.anvil.modules.bellows.wire.OpenAiFunctionDef
 import io.anvil.modules.bellows.wire.OpenAiMessage
 import io.anvil.modules.bellows.wire.OpenAiModelCard
 import io.anvil.modules.bellows.wire.OpenAiModelList
+import io.anvil.modules.bellows.wire.OpenAiToolCall
+import io.anvil.modules.bellows.wire.OpenAiToolCallFunction
+import io.anvil.modules.bellows.wire.OpenAiToolDefinition
 import io.anvil.modules.bellows.wire.OpenAiUsage
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -116,12 +122,14 @@ fun Application.bellowsGateway(router: BellowsRouter, gatewayKey: String? = null
                 return@post
             }
             val request = ModelRequest(
-                messages = body.messages.map { ChatMessage(it.role, it.content ?: "") },
+                messages = body.messages.map { it.toChatMessage() },
                 model = body.model,
                 privacyMode = call.privacyMode(),
                 maxTokens = body.maxTokens,
                 temperature = body.temperature,
                 stream = body.stream,
+                tools = body.tools?.map { it.toToolDefinition() },
+                toolChoice = body.toolChoice,
             )
             val response = router.route(request) // Fehler ⇒ StatusPages
 
@@ -169,11 +177,38 @@ private fun ModelResponse.toOpenAiResponse(): OpenAiChatResponse = OpenAiChatRes
     choices = listOf(
         OpenAiChoice(
             index = 0,
-            message = OpenAiMessage("assistant", content),
-            finishReason = finishReason ?: "stop",
+            message = OpenAiMessage(
+                role = "assistant",
+                // OpenAI-Konvention: `content` ist `null`, wenn die Antwort ausschließlich
+                // aus Tool-Aufrufen besteht.
+                content = if (content.isEmpty() && !toolCalls.isNullOrEmpty()) null else content,
+                toolCalls = toolCalls?.map { it.toOpenAiToolCall() },
+            ),
+            finishReason = finishReason ?: if (toolCalls.isNullOrEmpty()) "stop" else "tool_calls",
         ),
     ),
     usage = usage?.let { OpenAiUsage(it.promptTokens, it.completionTokens, it.totalTokens) },
+)
+
+private fun OpenAiMessage.toChatMessage() = ChatMessage(
+    role = role,
+    content = content ?: "",
+    name = name,
+    toolCallId = toolCallId,
+    toolCalls = toolCalls?.map { it.toToolCall() },
+)
+
+private fun OpenAiToolDefinition.toToolDefinition() = ToolDefinition(
+    name = function.name,
+    description = function.description,
+    parameters = function.parameters,
+)
+
+private fun OpenAiToolCall.toToolCall() = ToolCall(id = id, name = function.name, arguments = function.arguments)
+
+private fun ToolCall.toOpenAiToolCall() = OpenAiToolCall(
+    id = id,
+    function = OpenAiToolCallFunction(name = name, arguments = arguments),
 )
 
 /**

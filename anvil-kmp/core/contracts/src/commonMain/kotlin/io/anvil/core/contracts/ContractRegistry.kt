@@ -18,6 +18,8 @@ enum class ContractOwner {
     TARGET,
     CUE,
     BELLOWS,
+    SWIFT,
+    SHADED,
 }
 
 @Serializable
@@ -30,6 +32,8 @@ data class ContractDescriptor(
     val failClosedOnUnknownVersion: Boolean = true,
 )
 
+class ContractViolationException(message: String) : IllegalStateException(message)
+
 @Serializable
 data class ContractRegistry(
     val schema: String = SCHEMA,
@@ -38,11 +42,51 @@ data class ContractRegistry(
     fun descriptorFor(id: ContractId, version: Int): ContractDescriptor? =
         contracts.firstOrNull { it.id == id && it.version == version }
 
+    /** Fail-closed lookup: throws for unsupported or unknown contract/version combinations. */
     fun requireSupported(id: ContractId, version: Int): ContractDescriptor =
-        descriptorFor(id, version) ?: error(
+        descriptorFor(id, version) ?: throw ContractViolationException(
             "Unsupported contract ${id.value}/v$version. Supported: " +
                 contracts.joinToString { "${it.id.value}/v${it.version}" },
         )
+
+    /** Throws unless [producer] is an allowed producer of [id]/v[version]. */
+    fun requireProducerAllowed(id: ContractId, version: Int, producer: String): ContractDescriptor {
+        val descriptor = requireSupported(id, version)
+        if (producer !in descriptor.allowedProducers) {
+            throw ContractViolationException(
+                "Producer '$producer' is not allowed to produce ${id.value}/v$version. " +
+                    "Allowed producers: ${descriptor.allowedProducers.joinToString()}",
+            )
+        }
+        return descriptor
+    }
+
+    /** Throws unless [consumer] is an allowed consumer of [id]/v[version]. */
+    fun requireConsumerAllowed(id: ContractId, version: Int, consumer: String): ContractDescriptor {
+        val descriptor = requireSupported(id, version)
+        if (consumer !in descriptor.allowedConsumers) {
+            throw ContractViolationException(
+                "Consumer '$consumer' is not allowed to consume ${id.value}/v$version. " +
+                    "Allowed consumers: ${descriptor.allowedConsumers.joinToString()}",
+            )
+        }
+        return descriptor
+    }
+
+    /**
+     * Structural self-check of the registry itself (not of a single lookup).
+     * Returns every duplicate `(id, version)` combination found; an empty list means the
+     * registry is internally consistent.
+     */
+    fun validateRegistry(): List<String> {
+        val seen = mutableSetOf<Pair<String, Int>>()
+        val duplicates = mutableListOf<String>()
+        for (descriptor in contracts) {
+            val key = descriptor.id.value to descriptor.version
+            if (!seen.add(key)) duplicates += "${descriptor.id.value}/v${descriptor.version}"
+        }
+        return duplicates
+    }
 
     companion object { const val SCHEMA = "anvil.contract-registry/v1" }
 }
@@ -62,10 +106,30 @@ object AnvilContractRegistry {
             descriptor("anvil.bard.creative-brief", ContractOwner.BARD, listOf("external-bard"), listOf("wizard", "gameplay", "scene", "cue")),
             descriptor("anvil.bard.production-intent", ContractOwner.BARD, listOf("external-bard"), listOf("wizard", "gameplay", "scene", "interface", "acoustic", "target")),
             descriptor("anvil.gameplay.plan", ContractOwner.GAMEPLAY, listOf("gameplay"), listOf("scene", "interface", "acoustic", "target", "cue")),
-            descriptor("anvil.scene-bundle", ContractOwner.SCENE, listOf("scene"), listOf("target", "cue", "shaded")),
+            // "interface" and "acoustic" added here (Gate I Golden Run): both InterfaceIntent
+            // and AudioIntent carry a `sceneBundleRef` field in their real module models, so
+            // both roles must be allowed consumers, not just downstream target/cue/shaded.
+            descriptor("anvil.scene-bundle", ContractOwner.SCENE, listOf("scene"), listOf("target", "cue", "shaded", "interface", "acoustic")),
             descriptor("anvil.interface.bundle", ContractOwner.INTERFACE, listOf("interface"), listOf("target", "cue")),
             descriptor("anvil.audio-cue-graph", ContractOwner.ACOUSTIC, listOf("acoustic"), listOf("target", "cue")),
             descriptor("anvil.runnable-build", ContractOwner.TARGET, listOf("target"), listOf("cue", "commander")),
+
+            // ── Gate B-01: externe Studio-Nähte (Fable-Reparaturauftrag) ────────────
+            descriptor("anvil.wizard.production-assessment", ContractOwner.WIZARD, listOf("wizard"), listOf("gameplay", "scene", "interface", "acoustic", "target", "cue")),
+            descriptor("anvil.wizard.capability-cast", ContractOwner.WIZARD, listOf("wizard"), listOf("gameplay", "target")),
+
+            descriptor("swift.actor-bundle", ContractOwner.SWIFT, listOf("swift"), listOf("target", "shaded", "cue")),
+            descriptor("swift.render-result", ContractOwner.SWIFT, listOf("swift"), listOf("target", "cue")),
+
+            descriptor("shaded.scene-config", ContractOwner.SHADED, listOf("shaded"), listOf("target", "cue")),
+            descriptor("shaded.actor-binding", ContractOwner.SHADED, listOf("shaded"), listOf("target", "cue")),
+
+            descriptor("cue.playable-proof", ContractOwner.CUE, listOf("cue"), listOf("bard", "commander")),
+            descriptor("cue.temporal-proof", ContractOwner.CUE, listOf("cue"), listOf("bard", "commander")),
+            descriptor("cue.audio-proof", ContractOwner.CUE, listOf("cue"), listOf("bard", "commander")),
+
+            descriptor("anvil.audio-asset-manifest", ContractOwner.ACOUSTIC, listOf("acoustic-producer"), listOf("acoustic", "target", "cue")),
+            descriptor("anvil.web-audio-runtime-bundle", ContractOwner.ACOUSTIC, listOf("acoustic"), listOf("target", "cue")),
         ),
     )
 

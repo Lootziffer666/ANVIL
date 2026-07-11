@@ -2,7 +2,9 @@ package io.anvil.core.run
 
 import io.anvil.core.artifacts.ArtifactManifest
 import io.anvil.core.artifacts.ArtifactRegistry
+import io.anvil.core.contracts.ContractId
 import io.anvil.core.contracts.QualityState
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @JvmInline
@@ -28,7 +30,36 @@ data class RunPlanStep(
     val operation: String,
     val payload: String,
     val parentRefs: List<String> = emptyList(),
+    /** Step ids that must complete before this step may run. Rückwärtskompatibel: default leer. */
+    val dependsOn: List<String> = emptyList(),
+    /** Contract this step's resolved input payload must satisfy, if any. */
+    val inputContract: RunContractRef? = null,
+    /** Contract this step's produced artifact must satisfy, if any. */
+    val outputContract: RunContractRef? = null,
+    /**
+     * How to obtain the actual payload at execution time. `null` preserves the old
+     * behaviour of using [payload] verbatim (fully backward compatible).
+     */
+    val inputSelector: RunInputSelector? = null,
 )
+
+@Serializable
+data class RunContractRef(val id: ContractId, val version: Int)
+
+@Serializable
+sealed interface RunInputSelector {
+    @Serializable
+    @SerialName("inline-payload")
+    data class InlinePayload(val payload: String) : RunInputSelector
+
+    @Serializable
+    @SerialName("artifact-by-step")
+    data class ArtifactByStep(val stepId: String) : RunInputSelector
+
+    @Serializable
+    @SerialName("latest-artifact-by-contract")
+    data class LatestArtifactByContract(val contractId: ContractId, val version: Int) : RunInputSelector
+}
 
 @Serializable
 data class RunSummary(

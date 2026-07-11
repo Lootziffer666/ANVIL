@@ -34,7 +34,13 @@ include(":modules:scene")           // Scene Compiler / 3D-RE-GEN: SceneBundle +
 include(":modules:target")          // Target Adapter: ProductionBundle + RunnableBuild
 include(":modules:interface")       // Interface Compiler: InputActionMap + HUDState
 include(":modules:acoustic")        // Acoustic Runtime: AudioCueGraph + AudioProof
+include(":core:externaladapters")   // Gate E-03: real ExternalToolPort CLI adapters (SWIFT, CUE-AGENT)
 include(":app:bellows-gateway")     // JVM: Ktor-Server (/v1/...), CLI, JCEKS-CredentialVault
+
+// Gate I — Golden Run proof. Lives under :surfaces:* (not :core:run) because it must
+// import both :core:* and :modules:* to orchestrate the end-to-end chain; CLAUDE.md §3
+// forbids :core:* from ever importing :modules:*, even in a test source set.
+include(":surfaces:golden-run")     // Golden Run: BARD..CUE fixture chain, no production code
 
 // ── Vorerst nicht im Gateway-Build ─────────────────────────────────────────────
 // Diese KMP-/Compose-Module gehören zur Anvil-IDE (Knight, Commander) und ziehen

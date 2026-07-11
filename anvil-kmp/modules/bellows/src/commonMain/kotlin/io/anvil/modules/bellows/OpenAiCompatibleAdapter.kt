@@ -3,10 +3,16 @@ package io.anvil.modules.bellows
 import io.anvil.core.contracts.ModelRequest
 import io.anvil.core.contracts.ModelResponse
 import io.anvil.core.contracts.QualityState
+import io.anvil.core.contracts.ToolCall
+import io.anvil.core.contracts.ToolDefinition
 import io.anvil.core.contracts.TokenUsage
 import io.anvil.modules.bellows.wire.OpenAiChatRequest
 import io.anvil.modules.bellows.wire.OpenAiChatResponse
+import io.anvil.modules.bellows.wire.OpenAiFunctionDef
 import io.anvil.modules.bellows.wire.OpenAiMessage
+import io.anvil.modules.bellows.wire.OpenAiToolCall
+import io.anvil.modules.bellows.wire.OpenAiToolCallFunction
+import io.anvil.modules.bellows.wire.OpenAiToolDefinition
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header
@@ -54,10 +60,12 @@ class OpenAiCompatibleAdapter(
         val targetModel = request.model?.takeIf { handles(it) } ?: defaultModel ?: request.model
         val payload = OpenAiChatRequest(
             model = targetModel,
-            messages = request.messages.map { OpenAiMessage(it.role, it.content) },
+            messages = request.messages.map { it.toOpenAiMessage() },
             maxTokens = request.maxTokens,
             temperature = request.temperature,
             stream = false,
+            tools = request.tools?.map { it.toOpenAiToolDefinition() },
+            toolChoice = request.toolChoice,
         )
         try {
             val response = client.post(chatCompletionsUrl()) {
@@ -73,8 +81,13 @@ class OpenAiCompatibleAdapter(
             }
             val parsed: OpenAiChatResponse = response.body()
             val choice = parsed.choices.firstOrNull()
+            val toolCalls = choice?.message?.toolCalls?.map { it.toToolCall() }
             val content = choice?.message?.content
-                ?: throw ProviderException(id, response.status.value, "Leere Completion von Provider '$id'")
+                ?: if (toolCalls.isNullOrEmpty()) {
+                    throw ProviderException(id, response.status.value, "Leere Completion von Provider '$id'")
+                } else {
+                    "" // Tool-Call-only-Antworten haben laut OpenAI-Vertrag `content: null`.
+                }
             quality = QualityState.STABLE
             return ModelResponse(
                 content = content,
@@ -83,6 +96,7 @@ class OpenAiCompatibleAdapter(
                     TokenUsage(it.promptTokens, it.completionTokens, it.totalTokens)
                 },
                 finishReason = choice.finishReason,
+                toolCalls = toolCalls,
             )
         } catch (e: CancellationException) {
             throw e
@@ -102,3 +116,26 @@ class OpenAiCompatibleAdapter(
 
     override fun qualityState(): QualityState = quality
 }
+
+private fun io.anvil.core.contracts.ChatMessage.toOpenAiMessage() = OpenAiMessage(
+    role = role,
+    content = content,
+    name = name,
+    toolCallId = toolCallId,
+    toolCalls = toolCalls?.map { it.toOpenAiToolCall() },
+)
+
+private fun ToolDefinition.toOpenAiToolDefinition() = OpenAiToolDefinition(
+    function = OpenAiFunctionDef(name = name, description = description, parameters = parameters),
+)
+
+private fun ToolCall.toOpenAiToolCall() = OpenAiToolCall(
+    id = id,
+    function = OpenAiToolCallFunction(name = name, arguments = arguments),
+)
+
+private fun OpenAiToolCall.toToolCall() = ToolCall(
+    id = id,
+    name = function.name,
+    arguments = function.arguments,
+)
