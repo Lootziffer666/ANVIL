@@ -37,7 +37,7 @@ Gates sind sequenziell, jede hat:
 | A5 | Module Slot Contract | `done` |
 | A6 | The Forge — Module Launchpad | `done` |
 | A7 | Artifact Output Layer | `prototype` |
-| A8 | Blueprint Export: Agent-Ready Prompt Packs | `partial` |
+| A8 | Blueprint Export: Agent-Ready Prompt Packs | `prototype` |
 | A9 | Tasker/App-Factory Blueprint Track | `docs-only` |
 | A10 | Local Preview / Run Surface | `prototype` |
 | A11 | Governance Files | `done` |
@@ -65,6 +65,7 @@ Gates sind sequenziell, jede hat:
 | B15 | Acoustic Runtime Slice | `prototype` | `AudioCueGraph/v1`, `AudioProof/v1` |
 | B16 | Artifact Output Layer MVP | `prototype` | `ArtifactManifest/v1`, `ArtifactRegistry/v1` |
 | B17 | Run Surface MVP | `prototype` | `RunPlan/v1`, `RunSummary/v1` |
+| B18 | Handoff Export MVP | `prototype` | `HandoffExportRequest/v1`, `HandoffPackage/v1` |
 
 B-Serie-Gates folgen der Roadmap-Regel: erst Contract Registry / Wahrheitsbesitzer,
 dann Implementierung. Keine Engine-, Plugin- oder Modulabhängigkeit darf vor dem
@@ -156,3 +157,4 @@ Jede neue Gate wird hier eingetragen. Gate-Reihenfolge wird nicht nachträglich 
 | 2026-07-11 | B17/A10 | Run Surface Module-Execution-MVP begonnen |
 | 2026-07-11 | A13 | Legacy Token Manager deaktiviert |
 | 2026-07-11 | A18 | Pake Icon-Asset und Build-Script ergänzt |
+| 2026-07-11 | B18/A8 | Handoff Export über Artifact Layer als KMP-MVP begonnen |
