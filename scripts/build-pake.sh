@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+PAKE_CMD=(pake)
 if ! command -v pake >/dev/null 2>&1; then
-  echo "pake CLI not found. Install with: npm install -g pake-cli" >&2
-  exit 2
+  PAKE_CMD=(npx --yes pake-cli)
 fi
 
-pake ./app/index.html \
+"${PAKE_CMD[@]}" ./app/index.html \
   --name "Anvil" \
   --icon assets/anvil-icon.svg \
   --width 1280 --height 800 \
-  --transparent
+  --use-local-file

@@ -1,7 +1,7 @@
 # Pake Desktop Shell
 
 **Gate:** A18
-**Status:** Prototype — Icon-Asset und Build-Script vorhanden, Build nicht verifiziert
+**Status:** Prototype — Icon-Asset, npm scripts und Pake-Checks vorhanden; Desktop-Build umgebungsabhängig
 **Quelle:** [tw93/Pake](https://github.com/tw93/Pake) — Starred von Lootziffer666
 
 ## Zweck
@@ -30,7 +30,7 @@ pake ./app/index.html \
   --name "Anvil" \
   --icon assets/anvil-icon.svg \
   --width 1280 --height 800 \
-  --transparent \
+  --use-local-file \
   --targets .exe
 ```
 
@@ -40,6 +40,7 @@ pake ./app/index.html \
   --name "Anvil" \
   --icon assets/anvil-icon.svg \
   --width 1280 --height 800 \
+  --use-local-file \
   --targets .dmg
 ```
 
@@ -49,6 +50,7 @@ pake ./app/index.html \
   --name "Anvil" \
   --icon assets/anvil-icon.svg \
   --width 1280 --height 800 \
+  --use-local-file \
   --targets .appimage
 ```
 
@@ -88,12 +90,12 @@ src-tauri/
 ## Build-Script
 
 ```bash
-./scripts/build-pake.sh
+npm run pake:check
+npm run pake:build
 ```
 
-Das Script setzt `pake-cli` voraus und bricht mit Installationshinweis ab, wenn `pake`
-nicht im PATH liegt. Der vollständige Desktop-Build ist in dieser Umgebung nicht
-verifiziert.
+`pake:check` validiert App-Einstieg, Config, Icon und Pake-CLI-Verfügbarkeit.
+`pake:build` nutzt ein lokal/global installiertes `pake` oder fällt auf `npx --yes pake-cli` zurück. Der vollständige Desktop-Build bleibt umgebungsabhängig, weil Rust/Tauri-Systemabhängigkeiten außerhalb des Repo-Contracts liegen.
 
 ## Build Pipeline
 
