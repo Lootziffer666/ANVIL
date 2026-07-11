@@ -1,0 +1,7 @@
+{
+  "id": "mini-me",
+  "version": "1.0.0",
+  "checksum": "sha256:profile-checksum-required-at-packaging",
+  "visibility": "private-profile-reference-only",
+  "exportPolicy": "Only id, version, and checksum may leave BARD artifacts. Philosophy, rhythm, forbidden rules, examples, and regression fixtures are private."
+}

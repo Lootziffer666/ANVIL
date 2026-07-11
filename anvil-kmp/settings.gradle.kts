@@ -25,6 +25,11 @@ dependencyResolutionManagement {
 // der Dependency-Graph des Gateways:
 include(":core:contracts")          // ModelRequest/Response, BellowsContract, PrivacyMode, CredentialVaultContract
 include(":modules:bellows")         // BellowsRouter + OpenAI-kompatible Provider-Adapter (KMP, Ktor-Client)
+include(":modules:bard")            // ANVIL-BARD: Bedeutungskompiler / CreativeBrief + ProductionIntent
+include(":modules:gameplay")        // Gameplay Compiler: Regelwahrheit / InteractionDefinition + StatePatch
+include(":modules:scene")           // Scene Compiler / 3D-RE-GEN: SceneBundle + räumliche Wahrheit
+include(":modules:target")          // Target Adapter: ProductionBundle + RunnableBuild
+include(":modules:interface")       // Interface Compiler: InputActionMap + HUDState
 include(":app:bellows-gateway")     // JVM: Ktor-Server (/v1/...), CLI, JCEKS-CredentialVault
 
 // ── Vorerst nicht im Gateway-Build ─────────────────────────────────────────────
