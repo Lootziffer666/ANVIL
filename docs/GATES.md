@@ -47,7 +47,7 @@ Gates sind sequenziell, jede hat:
 | A15 | Nvidia Build Models | `done` |
 | A16 | HuggingFace Launcher Surface | `done` |
 | A17 | Platform Abstraction Layer | `done` |
-| A18 | Pake Desktop Shell | `docs-only` |
+| A18 | Pake Desktop Shell | `prototype` |
 | A19 | Workspace Sync Protocol | `done` |
 | A20 | OmniRoute Gateway Bridge | `docs-only` |
 | AX | Repo Reality Lock | `done` |
@@ -154,3 +154,5 @@ Jede neue Gate wird hier eingetragen. Gate-Reihenfolge wird nicht nachträglich 
 | 2026-07-11 | B15 | Acoustic Runtime Contract-MVP begonnen |
 | 2026-07-11 | B16/A7 | Artifact Output Layer Manifest-/Registry-MVP begonnen |
 | 2026-07-11 | B17/A10 | Run Surface Module-Execution-MVP begonnen |
+| 2026-07-11 | A13 | Legacy Token Manager deaktiviert |
+| 2026-07-11 | A18 | Pake Icon-Asset und Build-Script ergänzt |

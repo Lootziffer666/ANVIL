@@ -33,8 +33,8 @@ State Surface: Zustand zuerst, nicht Menüs.
 **Status:** ⚠️ TEILWEISE BEHOBEN. Der KMP-Pfad ist sauber: Gate B9 liefert mit `JvmCredentialVault`
 (JCEKS, verschlüsselt) eine `CredentialVaultContract`-Implementierung für Bellows; die
 `bellows.config.json` enthält nur Referenzen (`apiKeyRef`/`apiKeyEnv`), nie Klartext-Keys
-(verifiziert: Secret nicht im Keystore-Klartext). **Verbleibend:** der historische JS-`token-manager`
-(`app/`, eingefroren) speichert `_key` weiterhin im Klartext in localStorage.
+(verifiziert: Secret nicht im Keystore-Klartext). **Legacy-Status:** der historische JS-`token-manager`
+(`app/`, eingefroren) ist deaktiviert. Er purgt alte `_key`-Werte aus `localStorage`, behält nur deaktivierte Metadaten und verweist auf Bellows CredentialVault.
 
 ### 6. Overengineering
 **Risiko:** Zu viel Abstraktion, zu wenig Nutzen.  

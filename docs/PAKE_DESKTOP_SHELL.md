@@ -1,7 +1,7 @@
 # Pake Desktop Shell
 
 **Gate:** A18
-**Status:** Referenz
+**Status:** Prototype — Icon-Asset und Build-Script vorhanden, Build nicht verifiziert
 **Quelle:** [tw93/Pake](https://github.com/tw93/Pake) — Starred von Lootziffer666
 
 ## Zweck
@@ -28,7 +28,7 @@ npm install -g pake-cli
 ```bash
 pake ./app/index.html \
   --name "Anvil" \
-  --icon assets/anvil-icon.ico \
+  --icon assets/anvil-icon.svg \
   --width 1280 --height 800 \
   --transparent \
   --targets .exe
@@ -38,7 +38,7 @@ pake ./app/index.html \
 ```bash
 pake ./app/index.html \
   --name "Anvil" \
-  --icon assets/anvil-icon.icns \
+  --icon assets/anvil-icon.svg \
   --width 1280 --height 800 \
   --targets .dmg
 ```
@@ -47,7 +47,7 @@ pake ./app/index.html \
 ```bash
 pake ./app/index.html \
   --name "Anvil" \
-  --icon assets/anvil-icon.png \
+  --icon assets/anvil-icon.svg \
   --width 1280 --height 800 \
   --targets .appimage
 ```
@@ -58,7 +58,7 @@ pake ./app/index.html \
 {
   "name": "Anvil",
   "version": "0.1.0",
-  "icon": "assets/anvil-icon",
+  "icon": "assets/anvil-icon.svg",
   "width": 1280,
   "height": 800,
   "transparent": true,
@@ -84,6 +84,16 @@ src-tauri/
   src/
     main.rs
 ```
+
+## Build-Script
+
+```bash
+./scripts/build-pake.sh
+```
+
+Das Script setzt `pake-cli` voraus und bricht mit Installationshinweis ab, wenn `pake`
+nicht im PATH liegt. Der vollständige Desktop-Build ist in dieser Umgebung nicht
+verifiziert.
 
 ## Build Pipeline
 

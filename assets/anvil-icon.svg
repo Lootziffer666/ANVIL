@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Anvil icon">
+  <rect width="256" height="256" rx="48" fill="#111827"/>
+  <path d="M54 88h148c6 0 10 4 10 10v22c0 6-4 10-10 10h-34l-18 28h32c6 0 10 4 10 10v18c0 6-4 10-10 10H74c-6 0-10-4-10-10v-18c0-6 4-10 10-10h32l-18-28H54c-6 0-10-4-10-10V98c0-6 4-10 10-10Z" fill="#d1d5db"/>
+  <path d="M82 72h92c8 0 14 6 14 14v10H68V86c0-8 6-14 14-14Z" fill="#f59e0b"/>
+  <path d="M110 130h36l-18 28-18-28Z" fill="#9ca3af"/>
+</svg>

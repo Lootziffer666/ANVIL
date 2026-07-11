@@ -1,7 +1,7 @@
 # Token Management
 
 **Gate:** A13  
-**Status:** Verbindlich
+**Status:** Legacy deaktiviert — KMP/Bellows CredentialVault ist der aktive Pfad
 
 ## Zweck
 
@@ -48,3 +48,19 @@ Provider System (nutzt Tokens für API-Calls)
 - Erstellen: Provider wählen → Label → Key eingeben
 - Löschen: Bestätigung erforderlich
 - Kein Copy-to-Clipboard für Token (Sicherheit)
+
+
+## Legacy-Deaktivierung (2026-07-11)
+
+Der historische Browser-`TokenManager` speichert keine neuen Secrets mehr in
+`localStorage`. Beim Laden werden alte `_key`-Werte aus `anvil_tokens` entfernt und
+nur noch deaktivierte Metadaten in `anvil_tokens_disabled_meta` behalten.
+
+Aktiver Credential-Pfad:
+
+- KMP/Bellows `CredentialVaultContract`
+- JVM: `JvmCredentialVault` / JCEKS
+- Configs verweisen nur auf `apiKeyRef` oder sichere Umgebung, nie auf Klartext-Keys
+
+Alte UI-Aufrufe wie `create()`, `getKey()` und `rotate()` werfen bewusst einen Fehler,
+damit kein Modul heimlich wieder Klartext-Secrets speichert.
