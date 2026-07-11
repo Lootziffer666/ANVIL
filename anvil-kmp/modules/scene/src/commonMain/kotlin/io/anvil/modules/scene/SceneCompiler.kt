@@ -46,9 +46,9 @@ class SceneCompilerModule : ModuleSlotContract {
         require(intent.schema == SceneIntent.SCHEMA) { "Unsupported scene intent schema: ${intent.schema}" }
         require(intent.interactionRefs.isNotEmpty()) { "Scene compile requires at least one interaction ref." }
 
-        val start = SpatialAnchor(AnchorId("ANC_START"), "player-start", Transform3(0.0, 0.0, 0.0))
-        val focus = SpatialAnchor(AnchorId("ANC_FOCUS"), "first-interaction", Transform3(3.0, 0.0, 0.0))
-        val camera = SpatialAnchor(AnchorId("ANC_CAMERA"), "main-camera", Transform3(-4.0, -5.0, 3.0, yaw = 35.0, pitch = -20.0))
+        val start = SpatialAnchor(id = AnchorId("ANC_START"), label = "player-start", transform = Transform3(0.0, 0.0, 0.0))
+        val focus = SpatialAnchor(id = AnchorId("ANC_FOCUS"), label = "first-interaction", transform = Transform3(3.0, 0.0, 0.0))
+        val camera = SpatialAnchor(id = AnchorId("ANC_CAMERA"), label = "main-camera", transform = Transform3(-4.0, -5.0, 3.0, yaw = 35.0, pitch = -20.0))
         val anchors = listOf(start, focus, camera)
 
         return SceneBundle(
@@ -75,7 +75,7 @@ class SceneCompilerModule : ModuleSlotContract {
             spawnPoints = intent.requiredRoles.ifEmpty { listOf("player") }.mapIndexed { index, role ->
                 SpawnPoint("SPAWN_${role.uppercase()}_${index + 1}", role, start.id)
             },
-            cameras = listOf(CameraPlan(CameraId("CAM_MAIN"), CameraMode.FIXED, camera.id, focus.id)),
+            cameras = listOf(CameraPlan(id = CameraId("CAM_MAIN"), mode = CameraMode.FIXED, anchorRef = camera.id, targetAnchorRef = focus.id)),
             interactionZones = intent.interactionRefs.mapIndexed { index, interactionRef ->
                 InteractionZone(
                     id = ZoneId("ZONE_INTERACTION_${index + 1}"),

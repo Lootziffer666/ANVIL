@@ -85,9 +85,9 @@ class BellowsRouter(
         }
     }
 
-    /** Alle bekannten Modell-IDs über alle Adapter (für `GET /v1/models`). Prepends bellows/auto. */
+    /** Alle bekannten Modell-IDs über alle Adapter (für `GET /v1/models`). */
     fun listModels(): List<String> =
-        listOf("bellows/auto") + adapters.flatMap { it.models }.distinct().sorted()
+        adapters.flatMap { it.models }.distinct().sorted()
 
     /** Zustand je Adapter — für `/health`. */
     fun adapterStates(): Map<String, QualityState> =

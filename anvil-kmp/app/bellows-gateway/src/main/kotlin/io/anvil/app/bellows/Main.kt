@@ -58,9 +58,11 @@ private fun serve(args: Args) = runBlocking {
             vault.retrieve(CredentialKey(ref))?.let { secrets[ref] = it }
         }
     }
+    val gatewayKeyRef = config.gatewayKeyRef
+    val gatewayKeyEnv = config.gatewayKeyEnv
     val gatewayKey: String? = when {
-        config.gatewayKeyRef != null -> vault?.retrieve(CredentialKey(config.gatewayKeyRef))
-        config.gatewayKeyEnv != null -> System.getenv(config.gatewayKeyEnv)
+        gatewayKeyRef != null -> vault?.retrieve(CredentialKey(gatewayKeyRef))
+        gatewayKeyEnv != null -> System.getenv(gatewayKeyEnv)
         else -> null
     }
 
