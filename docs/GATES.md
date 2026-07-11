@@ -36,7 +36,7 @@ Gates sind sequenziell, jede hat:
 | A4 | Workspace Model | `done` |
 | A5 | Module Slot Contract | `done` |
 | A6 | The Forge — Module Launchpad | `done` |
-| A7 | Artifact Output Layer | `partial` |
+| A7 | Artifact Output Layer | `prototype` |
 | A8 | Blueprint Export: Agent-Ready Prompt Packs | `partial` |
 | A9 | Tasker/App-Factory Blueprint Track | `docs-only` |
 | A10 | Local Preview / Run Surface | `prototype` |
@@ -63,6 +63,7 @@ Gates sind sequenziell, jede hat:
 | B13 | Target Adapter MVP | `prototype` | `TargetAdapterContract/v1`, `RunnableBuild/v1` |
 | B14 | Interface Compiler MVP | `prototype` | `InputActionMap/v1`, `HUDState/v1` |
 | B15 | Acoustic Runtime Slice | `prototype` | `AudioCueGraph/v1`, `AudioProof/v1` |
+| B16 | Artifact Output Layer MVP | `prototype` | `ArtifactManifest/v1`, `ArtifactRegistry/v1` |
 
 B-Serie-Gates folgen der Roadmap-Regel: erst Contract Registry / Wahrheitsbesitzer,
 dann Implementierung. Keine Engine-, Plugin- oder Modulabhängigkeit darf vor dem
@@ -150,3 +151,4 @@ Jede neue Gate wird hier eingetragen. Gate-Reihenfolge wird nicht nachträglich 
 | 2026-07-11 | B13 | Target Adapter Contract-MVP begonnen |
 | 2026-07-11 | B14 | Interface Compiler Contract-MVP begonnen |
 | 2026-07-11 | B15 | Acoustic Runtime Contract-MVP begonnen |
+| 2026-07-11 | B16/A7 | Artifact Output Layer Manifest-/Registry-MVP begonnen |

@@ -24,6 +24,7 @@ dependencyResolutionManagement {
 // Gate B9 fokussiert auf den lauffähigen Bellows-Gateway. Eingebunden ist genau
 // der Dependency-Graph des Gateways:
 include(":core:contracts")          // ModelRequest/Response, BellowsContract, PrivacyMode, CredentialVaultContract
+include(":core:artifacts")          // Artifact Output Layer: Manifest + Registry MVP
 include(":modules:bellows")         // BellowsRouter + OpenAI-kompatible Provider-Adapter (KMP, Ktor-Client)
 include(":modules:bard")            // ANVIL-BARD: Bedeutungskompiler / CreativeBrief + ProductionIntent
 include(":modules:gameplay")        // Gameplay Compiler: Regelwahrheit / InteractionDefinition + StatePatch
