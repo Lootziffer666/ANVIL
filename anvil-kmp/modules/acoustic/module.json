@@ -1,0 +1,23 @@
+{
+  "id": "anvil-acoustic-runtime",
+  "slot": "acoustic-state-runtime",
+  "version": "0.1.0",
+  "contract": "ModuleSlotContract",
+  "purpose": "Compiles audio intent into adaptive cue graphs and proof requirements without owning gameplay state or creative truth.",
+  "operations": ["COMPILE", "VALIDATE"],
+  "inputs": [
+    "anvil.audio.intent/v1",
+    "anvil.audio-cue-graph/v1"
+  ],
+  "outputs": [
+    "anvil.audio-cue-graph/v1",
+    "anvil.audio.validation-report/v1"
+  ],
+  "forbidden": [
+    "gameplay-state-authoring",
+    "creative-intent-mutation",
+    "asset-license-interpretation",
+    "technical-ready-verdict",
+    "workspace-status-mutation"
+  ]
+}

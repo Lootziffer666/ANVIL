@@ -1,0 +1,24 @@
+{
+  "id": "anvil-target-adapter",
+  "slot": "target-build-adapter",
+  "version": "0.1.0",
+  "contract": "ModuleSlotContract",
+  "purpose": "Plans target-engine project assembly from ANVIL production bundles without owning creative, gameplay, scene, actor, visual, or audio truth.",
+  "operations": ["PREPARE", "VALIDATE"],
+  "inputs": [
+    "anvil.production-bundle/v1",
+    "anvil.runnable-build/v1"
+  ],
+  "outputs": [
+    "anvil.runnable-build/v1",
+    "anvil.build-health-report/v1"
+  ],
+  "forbidden": [
+    "creative-intent-mutation",
+    "gameplay-rule-authoring",
+    "scene-spatial-authoring",
+    "asset-license-interpretation",
+    "workspace-status-mutation",
+    "technical-ready-verdict"
+  ]
+}

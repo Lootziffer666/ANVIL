@@ -2,7 +2,7 @@
 
 **Gate:** A7 — Artifact Output Layer
 **Stand:** 2026-05-08
-**Status:** Verbindlich
+**Status:** Prototype — KMP Manifest-/Registry-MVP in `anvil-kmp/core/artifacts` begonnen
 
 ---
 
@@ -70,3 +70,18 @@ Wird bei jedem neuen Output aktualisiert.
 3. Kein Output ohne `origin.module`
 4. Kein Output ohne Zeitstempel
 5. Kein Output ohne Dateityp
+
+
+## KMP-MVP (Gate B16 / A7-Fortsetzung)
+
+Der KMP-Pfad ergänzt den historischen Output-Layer um erste serialisierbare
+Contracts:
+
+- `ArtifactManifest/v1` — ID, Ursprung, Run, Typ, URI, Größe, SHA-256 und Parent-Refs.
+- `ArtifactRegistry/v1` — geordnete Liste registrierter Artifact-Manifeste.
+- `ArtifactWriteRequest` — verbindet `ModuleArtifactRef` + Payload + Timestamp.
+- `ArtifactWriter` — validiert Pflichtfelder und erzeugt `ArtifactEnvelope` + aktualisierte Registry.
+
+Noch nicht enthalten: plattformspezifisches Dateisystem-Schreiben, `latest/`-Symlink
+und Persistenz in `outputs/registry.json`. Diese Schritte gehören in den nächsten
+Run-/Workspace-Slice.

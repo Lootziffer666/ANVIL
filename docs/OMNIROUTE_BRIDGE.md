@@ -1,8 +1,23 @@
 # OmniRoute Gateway Bridge
 
 **Gate:** A20
-**Status:** Referenz
+**Status:** Superseded / Referenz — Bellows bleibt der kanonische ANVIL-Gateway
 **Quelle:** [diegosouzapw/OmniRoute](https://github.com/diegosouzapw/OmniRoute) — Starred von Lootziffer666
+
+
+## Entscheidung 2026-07-11 — Bellows bleibt
+
+OmniRoute wird **nicht** als A20/B20-Implementierung in ANVIL übernommen.
+ANVIL behält **Bellows** als kanonischen Gateway- und Modellrouting-Pfad.
+OmniRoute bleibt lediglich eine externe Referenz für Gateway-Ideen.
+
+Konsequenzen:
+
+1. Keine neue OmniRoute-Abhängigkeit im aktiven KMP-Build.
+2. Keine zweite Provider-Wahrheit neben Bellows.
+3. Credentials bleiben im Bellows `CredentialVault`-Pfad.
+4. A20 wird als `superseded` geführt, nicht als nächstes Implementierungsziel.
+5. Weitere Gateway-Arbeit erfolgt als Bellows-Härtung, nicht als OmniRoute-Bridge.
 
 ## Zweck
 

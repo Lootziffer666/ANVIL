@@ -1,6 +1,6 @@
 {
   "name": "Token Manager",
-  "purpose": "CRUD für API-Tokens. Kein Token im Code.",
+  "purpose": "Legacy UI shim: disabled localStorage token storage; use Bellows CredentialVault for secrets.",
   "inputs": [
     "config/json"
   ],
@@ -12,5 +12,6 @@
   ],
   "canRunOffline": true,
   "canExport": false,
-  "failureBehavior": "Fehlermeldung ohne Token-Inhalt."
+  "failureBehavior": "Secret creation/retrieval/rotation is rejected; legacy localStorage keys are purged and only disabled metadata remains.",
+  "status": "disabled"
 }
