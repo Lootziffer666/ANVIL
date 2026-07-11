@@ -64,6 +64,7 @@ Gates sind sequenziell, jede hat:
 | B14 | Interface Compiler MVP | `prototype` | `InputActionMap/v1`, `HUDState/v1` |
 | B15 | Acoustic Runtime Slice | `prototype` | `AudioCueGraph/v1`, `AudioProof/v1` |
 | B16 | Artifact Output Layer MVP | `prototype` | `ArtifactManifest/v1`, `ArtifactRegistry/v1` |
+| B17 | Run Surface MVP | `prototype` | `RunPlan/v1`, `RunSummary/v1` |
 
 B-Serie-Gates folgen der Roadmap-Regel: erst Contract Registry / Wahrheitsbesitzer,
 dann Implementierung. Keine Engine-, Plugin- oder Modulabhängigkeit darf vor dem
@@ -152,3 +153,4 @@ Jede neue Gate wird hier eingetragen. Gate-Reihenfolge wird nicht nachträglich 
 | 2026-07-11 | B14 | Interface Compiler Contract-MVP begonnen |
 | 2026-07-11 | B15 | Acoustic Runtime Contract-MVP begonnen |
 | 2026-07-11 | B16/A7 | Artifact Output Layer Manifest-/Registry-MVP begonnen |
+| 2026-07-11 | B17/A10 | Run Surface Module-Execution-MVP begonnen |

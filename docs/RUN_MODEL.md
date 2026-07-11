@@ -142,3 +142,16 @@ created → adapting → stable
 - [`EXECUTION_CORE_ARCHITECTURE.md`](EXECUTION_CORE_ARCHITECTURE.md) — Architecture overview
 - [`INTERNAL_EXECUTION_PLAN.md`](INTERNAL_EXECUTION_PLAN.md) — Plan model
 - [`TASK_GRAPH_MODEL.md`](TASK_GRAPH_MODEL.md) — Task model
+
+## KMP Run Surface MVP (Gate B17 / A10-Fortsetzung)
+
+Der KMP-Pfad ergänzt einen minimalen in-process `RunSurface`:
+
+- `RunPlan/v1` — geordnete Module-Steps mit Modul-ID, Operation, Payload und Parent-Refs.
+- `RunSurface` — ruft registrierte `ModuleSlotContract`-Implementierungen sequenziell auf.
+- `ArtifactWriter`-Integration — `StepResult.Completed` wird zu `ArtifactManifest` + Registry-Eintrag.
+- `RunSummary/v1` — enthält Step-Records, Run-Status und aktuelle `ArtifactRegistry`.
+
+Noch nicht enthalten: UI-Run-Button, persistente Run-Historie, parallele Task-Graphs,
+Retry/Recovery-Policy und echte Preview-Integration. Diese folgen nach dem Contract-
+MVP.
