@@ -229,7 +229,13 @@ Vault-Passwort: Umgebungsvariable `ANVIL_BELLOWS_VAULT_PASSWORD`.
 
 ---
 
-## 10. Status & Grenzen (ehrlich)
+## 10. Cloudserver / Docker
+
+Für deinen Cloudserver-Plan gilt: ANVIL-BELLOWS bleibt ein eigenes Repo und wird als privater, OpenAI-kompatibler Gateway per Docker betrieben. Dieses ANVIL-Repo dokumentiert nur die Routing- und Sicherheitsgrenzen; der konkrete Container-Build gehört ins Bellows-Repo. Siehe [`BELLOWS_CLOUDSERVER_DOCKER.md`](BELLOWS_CLOUDSERVER_DOCKER.md).
+
+---
+
+## 11. Status & Grenzen (ehrlich)
 
 - ✅ OpenAI-kompatibel: `chat/completions`, `models`, `health`, Bearer-Auth, SSE-Streaming.
 - ✅ Cloud + lokal, Privacy `LOCAL_ONLY` hart, Fallback-Kette, verschlüsselter Key-Store.

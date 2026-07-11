@@ -1,7 +1,7 @@
 {
   "name": "Anvil",
   "version": "0.1.0",
-  "icon": "assets/anvil-icon",
+  "icon": "assets/anvil-icon.svg",
   "width": 1280,
   "height": 800,
   "transparent": true,

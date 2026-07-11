@@ -1,7 +1,7 @@
 # Pake Desktop Shell
 
 **Gate:** A18
-**Status:** Referenz
+**Status:** Prototype — Icon-Asset, npm scripts und Pake-Checks vorhanden; Desktop-Build umgebungsabhängig
 **Quelle:** [tw93/Pake](https://github.com/tw93/Pake) — Starred von Lootziffer666
 
 ## Zweck
@@ -28,9 +28,9 @@ npm install -g pake-cli
 ```bash
 pake ./app/index.html \
   --name "Anvil" \
-  --icon assets/anvil-icon.ico \
+  --icon assets/anvil-icon.svg \
   --width 1280 --height 800 \
-  --transparent \
+  --use-local-file \
   --targets .exe
 ```
 
@@ -38,8 +38,9 @@ pake ./app/index.html \
 ```bash
 pake ./app/index.html \
   --name "Anvil" \
-  --icon assets/anvil-icon.icns \
+  --icon assets/anvil-icon.svg \
   --width 1280 --height 800 \
+  --use-local-file \
   --targets .dmg
 ```
 
@@ -47,8 +48,9 @@ pake ./app/index.html \
 ```bash
 pake ./app/index.html \
   --name "Anvil" \
-  --icon assets/anvil-icon.png \
+  --icon assets/anvil-icon.svg \
   --width 1280 --height 800 \
+  --use-local-file \
   --targets .appimage
 ```
 
@@ -58,7 +60,7 @@ pake ./app/index.html \
 {
   "name": "Anvil",
   "version": "0.1.0",
-  "icon": "assets/anvil-icon",
+  "icon": "assets/anvil-icon.svg",
   "width": 1280,
   "height": 800,
   "transparent": true,
@@ -84,6 +86,16 @@ src-tauri/
   src/
     main.rs
 ```
+
+## Build-Script
+
+```bash
+npm run pake:check
+npm run pake:build
+```
+
+`pake:check` validiert App-Einstieg, Config, Icon und Pake-CLI-Verfügbarkeit.
+`pake:build` nutzt ein lokal/global installiertes `pake` oder fällt auf `npx --yes pake-cli` zurück. Der vollständige Desktop-Build bleibt umgebungsabhängig, weil Rust/Tauri-Systemabhängigkeiten außerhalb des Repo-Contracts liegen.
 
 ## Build Pipeline
 

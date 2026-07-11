@@ -2,7 +2,7 @@
 
 **Gate:** A8 — Blueprint Export: Agent-Ready Prompt Packs
 **Stand:** 2026-05-08
-**Status:** Verbindlich
+**Status:** Verbindlich; Gate B18/A8 hat jetzt einen KMP-Prototyp über den Artifact Layer.
 
 ---
 
@@ -65,3 +65,28 @@ Welche Dateien muss der Agent kennen?
 3. Keine impliziten Annahmen — alles explizit
 4. Kontext-Dateien werden referenziert, nicht eingebettet
 5. Kill-Kriterien sind Pflicht
+
+
+---
+
+## Gate B18/A8 — Handoff Export über Artifact Layer
+
+Der funktionale MVP lebt in `anvil-kmp/core/handoff` und macht A8 nicht mehr zu
+freiem Markdown-Export, sondern zu einem artifact-backed Contract:
+
+- `HandoffExportRequest/v1` beschreibt Ziel, Agent-Zielsystem, Gates,
+  Constraints, Definition of Done, Kill-Kriterien und referenzierte Artifacts.
+- `HandoffPackage/v1` ist das erzeugte Prompt Pack; es kann als Markdown oder
+  JSON gerendert werden.
+- `HandoffExporter` validiert Pflichtfelder, löst Artifact-Refs ausschließlich
+  gegen eine `ArtifactRegistry` auf und schreibt das Paket wieder über
+  `ArtifactWriter` zurück.
+
+### Zusätzliche Regeln
+
+1. Kein Handoff ohne mindestens ein Artifact aus der Registry.
+2. Fehlende oder unbekannte Artifact-Refs blockieren den Export.
+3. Kill-Kriterien bleiben Pflicht.
+4. Kontext-Dateien werden weiter referenziert, nicht eingebettet.
+5. Das Handoff-Paket selbst ist ein normales Artifact mit Manifest, Run,
+   Workspace, Ursprung und Prüfsumme.

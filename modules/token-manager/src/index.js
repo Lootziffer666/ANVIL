@@ -1,85 +1,93 @@
-/* Token Manager — Gate A13 */
+/* Token Manager — Gate A13
+ *
+ * LEGACY DISABLED: the historical browser localStorage implementation stored
+ * secrets in clear text. The KMP/Bellows path now owns credential storage via
+ * CredentialVaultContract. This shim keeps the old UI from crashing, purges any
+ * legacy `_key` values, and refuses new secret storage.
+ */
 
 const TokenManager = (function () {
-  const STORAGE_KEY = "anvil_tokens";
+  const LEGACY_STORAGE_KEY = "anvil_tokens";
+  const DISABLED_META_KEY = "anvil_tokens_disabled_meta";
 
-  function _load() {
+  function _loadJson(key, fallback) {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    } catch { return []; }
+      return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+    } catch (err) {
+      return fallback;
+    }
   }
 
-  function _save(tokens) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens));
+  function _saveDisabledMeta(tokens) {
+    localStorage.setItem(DISABLED_META_KEY, JSON.stringify(tokens));
   }
 
-  function _preview(key) {
-    if (!key || key.length < 8) return "****";
-    return key.slice(0, 4) + "..." + key.slice(-4);
+  function _purgeLegacySecrets() {
+    var existingMeta = _loadJson(DISABLED_META_KEY, []);
+    var legacy = _loadJson(LEGACY_STORAGE_KEY, []);
+    if (legacy.length > 0) {
+      var migrated = legacy.map(function (t) {
+        return {
+          token_id: t.token_id,
+          provider: t.provider,
+          label: t.label,
+          key_preview: t.key_preview || "****",
+          created_at: t.created_at,
+          last_used: null,
+          status: "disabled",
+          disabled_reason: "Legacy localStorage token storage disabled; re-enter credential in Bellows CredentialVault."
+        };
+      });
+      _saveDisabledMeta(existingMeta.concat(migrated));
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+      return migrated;
+    }
+    return existingMeta;
   }
 
-  function create(provider, label, key, scopes) {
-    if (!provider || !label || !key) throw new Error("Provider, Label und Key sind Pflicht.");
-    const tokens = _load();
-    const id = "TOK_" + String(tokens.length + 1).padStart(3, "0");
-    const token = {
-      token_id: id, provider, label,
-      key_preview: _preview(key),
-      _key: key,  // stored encrypted in real impl
-      created_at: new Date().toISOString(),
-      last_used: null,
-      status: "active",
-      scopes: scopes || ["inference"]
-    };
-    tokens.push(token);
-    _save(tokens);
-    return { token_id: id, provider, label, status: "active" };
+  function _disabledError() {
+    return new Error("Legacy Token Manager ist deaktiviert. Nutze Bellows CredentialVault statt localStorage.");
+  }
+
+  function create() {
+    _purgeLegacySecrets();
+    throw _disabledError();
   }
 
   function list() {
-    return _load().map(function (t) {
+    return _purgeLegacySecrets().map(function (t) {
       return {
-        token_id: t.token_id, provider: t.provider, label: t.label,
-        key_preview: t.key_preview, status: t.status,
-        created_at: t.created_at, last_used: t.last_used
+        token_id: t.token_id,
+        provider: t.provider,
+        label: t.label,
+        key_preview: t.key_preview,
+        status: "disabled",
+        created_at: t.created_at,
+        last_used: null,
+        disabled_reason: t.disabled_reason
       };
     });
   }
 
   function remove(tokenId) {
-    var tokens = _load().filter(function (t) { return t.token_id !== tokenId; });
-    _save(tokens);
+    var tokens = _purgeLegacySecrets().filter(function (t) { return t.token_id !== tokenId; });
+    _saveDisabledMeta(tokens);
     return true;
   }
 
-  function getKey(tokenId) {
-    var t = _load().find(function (t) { return t.token_id === tokenId && t.status === "active"; });
-    if (!t) return null;
-    t.last_used = new Date().toISOString();
-    var all = _load();
-    for (var i = 0; i < all.length; i++) {
-      if (all[i].token_id === tokenId) { all[i] = t; break; }
-    }
-    _save(all);
-    return t._key;
+  function getKey() {
+    _purgeLegacySecrets();
+    throw _disabledError();
   }
 
-  function rotate(tokenId, newKey) {
-    var tokens = _load();
-    for (var i = 0; i < tokens.length; i++) {
-      if (tokens[i].token_id === tokenId) {
-        tokens[i]._key = newKey;
-        tokens[i].key_preview = _preview(newKey);
-        tokens[i].last_used = null;
-        break;
-      }
-    }
-    _save(tokens);
-    return true;
+  function rotate() {
+    _purgeLegacySecrets();
+    throw _disabledError();
   }
 
-  function getForProvider(providerId) {
-    return _load().filter(function (t) { return t.provider === providerId && t.status === "active"; });
+  function getForProvider() {
+    _purgeLegacySecrets();
+    return [];
   }
 
   return { create: create, list: list, remove: remove, getKey: getKey, rotate: rotate, getForProvider: getForProvider };

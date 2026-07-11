@@ -24,7 +24,17 @@ dependencyResolutionManagement {
 // Gate B9 fokussiert auf den lauffähigen Bellows-Gateway. Eingebunden ist genau
 // der Dependency-Graph des Gateways:
 include(":core:contracts")          // ModelRequest/Response, BellowsContract, PrivacyMode, CredentialVaultContract
+include(":core:artifacts")          // Artifact Output Layer: Manifest + Registry MVP
+include(":core:run")                // Run Surface: Module execution + Artifact summaries
+include(":core:handoff")            // Handoff Export: Artifact-backed agent packages
+include(":core:sync")               // Workspace Sync: Artifact/Run registry bundles
 include(":modules:bellows")         // BellowsRouter + OpenAI-kompatible Provider-Adapter (KMP, Ktor-Client)
+include(":modules:bard")            // ANVIL-BARD: Bedeutungskompiler / CreativeBrief + ProductionIntent
+include(":modules:gameplay")        // Gameplay Compiler: Regelwahrheit / InteractionDefinition + StatePatch
+include(":modules:scene")           // Scene Compiler / 3D-RE-GEN: SceneBundle + räumliche Wahrheit
+include(":modules:target")          // Target Adapter: ProductionBundle + RunnableBuild
+include(":modules:interface")       // Interface Compiler: InputActionMap + HUDState
+include(":modules:acoustic")        // Acoustic Runtime: AudioCueGraph + AudioProof
 include(":app:bellows-gateway")     // JVM: Ktor-Server (/v1/...), CLI, JCEKS-CredentialVault
 
 // ── Vorerst nicht im Gateway-Build ─────────────────────────────────────────────
