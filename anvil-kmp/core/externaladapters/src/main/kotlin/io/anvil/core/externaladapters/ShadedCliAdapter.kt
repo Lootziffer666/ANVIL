@@ -23,6 +23,16 @@ import java.io.File
  * it only writes that payload to a temp file and shells out. Exit codes mirror
  * SwiftCliAdapter's convention: `0` success, `1` generic failure (incl. real
  * console/GL errors during the run), `2` missing input (referenced file not found).
+ *
+ * **Path requirement:** `orchestrate.js` resolves `scene`/`material`/`sheet`/`manifest`
+ * relative to the request file's own directory. Because this adapter writes the payload
+ * to an OS temp file (not SHADED's `tools/` directory), any relative paths in the
+ * payload would resolve against the wrong directory — callers MUST supply absolute
+ * paths for every referenced asset. `tools/orchestrate-example-request.json` in the
+ * SHADED repo uses paths relative to `tools/` and is meant for direct CLI invocation
+ * (`node tools/orchestrate.js --project tools/orchestrate-example-request.json`), NOT
+ * for use verbatim as this adapter's `request.payload` — rewrite its paths to absolute
+ * first (see `RealGoldenRunTest`).
  */
 class ShadedCliAdapter(
     private val repoRoot: File,

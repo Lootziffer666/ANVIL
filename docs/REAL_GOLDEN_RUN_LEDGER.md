@@ -453,6 +453,96 @@ Vertrag kein Fixture-Blocker mehr.
 
 ---
 
+## R-19..R-21 — ANVIL: `RealGoldenRunTest.kt`
+
+- **Repo:** ANVIL
+- **Status:** DONE
+- **Files:** `anvil-kmp/surfaces/golden-run/src/jvmTest/kotlin/io/anvil/surfaces/goldenrun/RealGoldenRunTest.kt`,
+  `anvil-kmp/surfaces/golden-run/build.gradle.kts` (`jvmTest`-Deps: `core:externaladapters`,
+  Ktor-Client-Engine), `anvil-kmp/core/externaladapters/src/main/kotlin/io/anvil/core/externaladapters/ShadedCliAdapter.kt`
+  (Doku-Fix, s. u.)
+- **Contract:** übergreifend (`anvil.wizard.production-assessment/v1`, `shaded.scene-project/v1`, `cue.audio-proof/v1`)
+- **Owner:** übergreifend — dieser Test behauptet selbst keine Owner-Rolle, er beweist
+  nur, dass die drei realen Adapter aus R-05/R-12/R-18 tatsächlich mit den echten
+  Sibling-Repos sprechen.
+- **Problem:** Der bestehende `GoldenRunTest` (Gate I, `commonTest`) beweist die interne
+  RunSurface-/ArtifactStore-/Handoff-/Sync-Kette — aber JEDES externe System darin ist
+  ein `Fake*Port`. Es gab keinen Test, der beweist, dass die in dieser Runde gebauten
+  REALEN Adapter (WizardHttpAdapter, ShadedCliAdapter, CueCliAdapter+audio-check)
+  tatsächlich end-to-end funktionieren — nicht nur gegen `FakeProcessRunner`/`MockEngine`
+  mit aufgezeichnetem JSON, sondern gegen die echten, laufenden Sibling-Checkouts.
+- **Smallest safe change:** Neue, unabhängige Testklasse in einem neuen `jvmTest`-Source-Set
+  (JVM-only, da `ProcessBuilder`/echtes HTTP nicht KMP-portabel sind) — kein Eingriff in
+  den bestehenden `GoldenRunTest`/die Fixtures. Gated by `WIZARD_REPO_PATH`/
+  `SHADED_REPO_PATH`/`CUE_AGENT_REPO_PATH` (identisches Muster wie
+  `Swift/Cue/ShadedCliManualIntegrationTest`) — no-op Pass, wenn alle drei fehlen (kein
+  Fail in normaler CI ohne Sibling-Checkouts). BARD/SWIFT bewusst außerhalb: BARD bleibt
+  laut Auftrag Fixture, SWIFTs realer Adapter wurde bereits in Gate E-03 bewiesen.
+  Neun reale Prüfungen (R-20, angelehnt an das 13-Schritte-Muster des originalen
+  Fix-Prompts, hier als dreigeteilte reale Positiv-/Negativ-Sequenz je System
+  interpretiert, da mir der exakte Wortlaut des Original-Prompts für dieses
+  Fortsetzungsgespräch nicht mehr vorlag — bewusst dokumentiert, nicht stillschweigend
+  angenommen):
+  1. WIZARD: echter Dev-Server (`npm run dev`) hochgefahren, `health()` → STABLE.
+  2. WIZARD: echtes `POST /api/production-assessment` → Produced.
+  3. WIZARD: unerreichbarer Port → Failed (R-21: kein stiller Erfolg).
+  4. SHADED: `health()` gegen echten Checkout → STABLE.
+  5. SHADED: echter `invoke()` mit absoluten Asset-Pfaden → Produced, `ready:true`.
+  6. SHADED: nicht existierendes Szenenbild → Failed ("missing input", R-21).
+  7. CUE: `health()` (`doctor`) gegen echten Checkout → STABLE oder DEGRADED (real,
+     nicht fingiert — Playwright/API-Key fehlen in dieser Sandbox, wie schon in
+     `CueCliManualIntegrationTest` dokumentiert).
+  8. CUE: `audio-check` gegen eine echte, lokal servierte Seite MIT `window.ANVIL_AUDIO`
+     → Produced, "AUDIO-VERTRAG BELEGT".
+  9. CUE: `audio-check` gegen eine echte Seite OHNE `window.ANVIL_AUDIO` → weiterhin
+     Produced (kein Crash), aber "KEIN AUDIO-VERTRAG GEFUNDEN" (R-21: NOT_VERIFIED-artige
+     Klassifikation, kein `Failed`, kein stiller Erfolg).
+  **Beim Verifizieren zwei echte Bugs gefunden und gefixt:**
+  (a) `ShadedCliAdapter` schreibt `request.payload` in eine beliebige Temp-Datei —
+      relative Asset-Pfade (wie in `tools/orchestrate-example-request.json`, gedacht für
+      direkten CLI-Aufruf) lösen sich dadurch gegen das FALSCHE Verzeichnis auf. Gefixt
+      durch KDoc-Ergänzung ("Path requirement": Aufrufer müssen absolute Pfade liefern)
+      und entsprechend absolute Pfade im Test selbst.
+  (b) Der `npm run dev`-Kindprozess (`next dev`) überlebte `Process.destroyForcibly()`
+      auf den Eltern-Prozess (Shell-Wrapper) — ein echter verwaister Prozess wurde nach
+      dem ersten Testlauf gefunden (`ps aux`). Gefixt durch explizites Beenden von
+      `process.toHandle().descendants()` vor dem Zerstören des Eltern-Handles.
+- **Command:**
+  `WIZARD_REPO_PATH=/home/user/WIZARD SHADED_REPO_PATH=/home/user/SHADED CUE_AGENT_REPO_PATH=/home/user/CUE-AGENT /opt/gradle/bin/gradle :surfaces:golden-run:jvmTest --console=plain --rerun`
+  (echt, gegen alle drei echten Sibling-Checkouts in dieser Sandbox); zusätzlich
+  `/opt/gradle/bin/gradle :surfaces:golden-run:jvmTest --console=plain --rerun` ohne
+  Env-Vars (No-op-Pass-Pfad + bestehender `GoldenRunTest` unverändert grün).
+- **Result:** PASS — `BUILD SUCCESSFUL` in beiden Modi. Mit gesetzten Env-Vars: echtes
+  `system-out` mit allen neun Schritten grün (`stepsActuallyRun=9`,
+  `wizard.health=STABLE`, `wizard.invoke=Produced(10877 chars)`,
+  `wizard.negativeCase=Failed(as expected)`, `shaded.health=STABLE`,
+  `shaded.invoke=Produced(ready=true)`,
+  `shaded.negativeCase=Failed(missing input, as expected)`, `cue.health=DEGRADED`,
+  `cue.audioCheck=Produced(BELEGT)`,
+  `cue.audioCheckNegative=Produced(KEIN AUDIO-VERTRAG GEFUNDEN, not Failed)`). Nach dem
+  Lauf: `ps aux | grep "next dev"` leer (sauberes Teardown, kein Leck mehr). Ohne
+  Env-Vars: No-op-Pass, bestehender `GoldenRunTest` weiterhin unverändert grün (keine
+  Regression).
+- **Evidence:** `anvil-kmp/surfaces/golden-run/build/test-results/jvmTest/TEST-io.anvil.surfaces.goldenrun.RealGoldenRunTest.xml`
+  (`system-out`-CDATA-Block, Timestamp `2026-07-11T23:13:55.147Z`, echter Re-Lauf).
+- **Remaining risk:** Kein einziger Testlauf verkettet WIZARD → SHADED → CUE ursächlich
+  (d. h. WIZARDs Output fließt nicht als Eingabe in SHADEDs Szene, die wiederum nicht in
+  CUEs Audio-Check) — jeder der drei Blöcke beweist reale Konnektivität unabhängig, nicht
+  eine echte End-to-End-Datenkette über alle drei Systeme hinweg. Eine echte inhaltliche
+  Verkettung (WIZARDs Production Assessment → SHADED-Szene mit den empfohlenen Assets →
+  CUE prüft genau diese Szene) bliebe für eine künftige Runde offen. `mockAudioServer`/
+  `noAudioServer` bedienen handgeschriebene, vertragsgetreue Seiten (kein echter,
+  deployter ANVIL-Web-Audio-Build existiert bislang — dieselbe Einschränkung wie in
+  R-13..R-17 dokumentiert).
+
+---
+
+**Gate 7 (ANVIL) Status: ABGESCHLOSSEN.** Alle drei realen Adapter (WIZARD/SHADED/CUE)
+real gegeneinander verifiziert, inklusive echter Negativ-Fälle und zwei während der
+Verifikation gefundener und gefixter echter Bugs.
+
+---
+
 **Gate 1 (WIZARD) Status: ABGESCHLOSSEN.** Alle vier Atome (R-01–R-04) real
 implementiert, real getestet (23/23 grün), Build grün. WIZARD ist ab hier kein
 Fixture mehr für diesen Vertrag — `POST /api/production-assessment` liefert

@@ -27,5 +27,15 @@ kotlin {
             implementation(project(":modules:target"))
             implementation(libs.kotlinx.serialization.json)
         }
+        // Real Golden Run R-19: RealGoldenRunTest needs the JVM-only real adapters
+        // (ProcessBuilder/HTTP are not KMP-portable) plus a real Ktor HTTP engine —
+        // gated by env vars, mirrors *ManualIntegrationTest's existing pattern.
+        val jvmTest by getting {
+            dependencies {
+                implementation(project(":core:externaladapters"))
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.java)
+            }
+        }
     }
 }
