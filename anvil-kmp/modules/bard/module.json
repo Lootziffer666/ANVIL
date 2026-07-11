@@ -1,0 +1,17 @@
+{
+  "id": "anvil-bard",
+  "slot": "creative-intent-compiler",
+  "version": "0.1.0",
+  "contract": "ModuleSlotContract",
+  "purpose": "Transforms human creative seeds into versioned, testable creative contracts without taking over production.",
+  "operations": ["GENERATE", "LOCK", "REVISE", "CHALLENGE", "AUDIT"],
+  "forbidden": [
+    "asset-selection",
+    "license-interpretation",
+    "swift-execution",
+    "shaded-parameter-selection",
+    "workspace-status-mutation",
+    "technical-ready-verdict",
+    "private-profile-export"
+  ]
+}
