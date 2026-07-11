@@ -2,11 +2,15 @@ package io.anvil.core.artifacts
 
 /** Minimal commonMain SHA-256 implementation for artifact payload checksums. */
 object Sha256 {
-    fun digestHex(text: String): String = digest(text.encodeToByteArray()).joinToString("") { byte ->
+    fun digestHex(text: String): String = digestHex(text.encodeToByteArray())
+
+    fun digestHex(bytes: ByteArray): String = digest(bytes).joinToString("") { byte ->
         byte.toUByte().toString(16).padStart(2, '0')
     }
 
     fun digestPrefixed(text: String): String = "sha256:${digestHex(text)}"
+
+    fun digestPrefixed(bytes: ByteArray): String = "sha256:${digestHex(bytes)}"
 
     private fun digest(message: ByteArray): ByteArray {
         val h = intArrayOf(

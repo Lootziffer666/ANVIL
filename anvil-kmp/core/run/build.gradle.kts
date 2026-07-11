@@ -13,5 +13,9 @@ kotlin {
             implementation(project(":core:artifacts"))
             implementation(libs.kotlinx.serialization.json)
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+        }
     }
 }

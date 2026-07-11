@@ -8,9 +8,15 @@ kotlin {
     jvm()
 
     sourceSets {
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
         commonMain.dependencies {
             implementation(project(":core:contracts"))
             implementation(libs.kotlinx.serialization.json)
+        }
+        jvmTest.dependencies {
+            implementation(kotlin("test"))
         }
     }
 }

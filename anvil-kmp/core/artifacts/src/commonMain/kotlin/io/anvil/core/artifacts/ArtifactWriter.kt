@@ -32,6 +32,22 @@ class ArtifactWriter {
         )
     }
 
+    /**
+     * Like [write], but only returns an updated [ArtifactRegistry] once [store] has durably
+     * accepted the envelope. If the store write throws (checksum mismatch, immutable-payload
+     * conflict, ...), the exception propagates and the caller never observes a registry entry
+     * for an artifact that was not actually persisted — no phantom manifests.
+     */
+    suspend fun writeAndPersist(
+        request: ArtifactWriteRequest,
+        store: ArtifactStore,
+        currentRegistry: ArtifactRegistry = ArtifactRegistry(),
+    ): ArtifactWriteResult {
+        val result = write(request, currentRegistry)
+        store.write(result.envelope)
+        return result
+    }
+
     fun validate(manifest: ArtifactManifest): List<ArtifactValidationFinding> = listOf(
         ArtifactValidationFinding("has-id", manifest.artifactId.value.isNotBlank(), "Artifact id must be present."),
         ArtifactValidationFinding("has-origin-module", manifest.origin.module.isNotBlank(), "Origin module must be present."),

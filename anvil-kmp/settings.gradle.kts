@@ -36,6 +36,11 @@ include(":modules:interface")       // Interface Compiler: InputActionMap + HUDS
 include(":modules:acoustic")        // Acoustic Runtime: AudioCueGraph + AudioProof
 include(":app:bellows-gateway")     // JVM: Ktor-Server (/v1/...), CLI, JCEKS-CredentialVault
 
+// Gate I — Golden Run proof. Lives under :surfaces:* (not :core:run) because it must
+// import both :core:* and :modules:* to orchestrate the end-to-end chain; CLAUDE.md §3
+// forbids :core:* from ever importing :modules:*, even in a test source set.
+include(":surfaces:golden-run")     // Golden Run: BARD..CUE fixture chain, no production code
+
 // ── Vorerst nicht im Gateway-Build ─────────────────────────────────────────────
 // Diese KMP-/Compose-Module gehören zur Anvil-IDE (Knight, Commander) und ziehen
 // androidTarget()/Compose mit. Sie sind NICHT Teil des Bellows-Gateways und
