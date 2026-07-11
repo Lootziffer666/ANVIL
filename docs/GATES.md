@@ -66,6 +66,7 @@ Gates sind sequenziell, jede hat:
 | B16 | Artifact Output Layer MVP | `prototype` | `ArtifactManifest/v1`, `ArtifactRegistry/v1` |
 | B17 | Run Surface MVP | `prototype` | `RunPlan/v1`, `RunSummary/v1` |
 | B18 | Handoff Export MVP | `prototype` | `HandoffExportRequest/v1`, `HandoffPackage/v1` |
+| B19 | Workspace Sync Registry MVP | `prototype` | `WorkspaceSyncBundle/v1`, `WorkspaceSyncMergeReport/v1` |
 
 B-Serie-Gates folgen der Roadmap-Regel: erst Contract Registry / Wahrheitsbesitzer,
 dann Implementierung. Keine Engine-, Plugin- oder Modulabhängigkeit darf vor dem
@@ -158,3 +159,4 @@ Jede neue Gate wird hier eingetragen. Gate-Reihenfolge wird nicht nachträglich 
 | 2026-07-11 | A13 | Legacy Token Manager deaktiviert |
 | 2026-07-11 | A18 | Pake Icon-Asset und Build-Script ergänzt |
 | 2026-07-11 | B18/A8 | Handoff Export über Artifact Layer als KMP-MVP begonnen |
+| 2026-07-11 | B19/A19 | Workspace Sync über Artifact-/Run-Registry als KMP-MVP begonnen |
