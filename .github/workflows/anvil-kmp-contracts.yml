@@ -60,3 +60,6 @@ jobs:
 
       - name: surfaces:golden-run allTests (Gate I)
         run: ./gradlew :surfaces:golden-run:allTests --console=plain
+
+      - name: core:externaladapters test (Gate E-03 — unit tests only, no live sibling repos in CI)
+        run: ./gradlew :core:externaladapters:test --console=plain

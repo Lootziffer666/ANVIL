@@ -134,10 +134,19 @@ verified against ElevenLabs' current public API docs via live fetch in this sess
 
 ## Open risks / not verified
 
-- Real SWIFT/SHADED/WIZARD/CUE adapters (Gate E-03): sibling repos are present in this
-  environment but implementing and verifying four independent real adapters was judged
-  out of scope for a single session; deferred, does not block this Golden Run since the
-  run is explicitly fixture-based per the Gate I spec itself.
+- Real external adapters (Gate E-03, added in a follow-up pass): **SWIFT and CUE-AGENT**
+  now have real, tested `ExternalToolPort` adapters (`core:externaladapters`) built
+  against each system's own documented CLI contract (SWIFT's
+  `docs/ORCHESTRATION.md`; CUE-AGENT's `bin/cue.js --help`/`doctor`/`playable-check`/
+  `temporal-check`, read from source, not guessed) and verified live in this sandbox
+  (`python3 main.py render ... --json` real exit codes 2/3; `node bin/cue.js doctor
+  --json` real output after `npm install`). **WIZARD and SHADED remain deferred**:
+  neither exposes a stable, side-effect-free ANVIL contract today (WIZARD's only
+  matching function needs a live Next.js+SQLite+Anthropic-key stack and no dedicated
+  API route exists; SHADED's entire API is browser-only with no CLI/orchestration
+  contract) — building either would mean inventing a contract on the sibling repo's
+  side, out of this ANVIL-only task's scope. None of this blocks the Golden Run, which
+  is explicitly fixture-based per the Gate I spec itself.
 - ElevenLabs live network path (Gate I-03): no `ELEVENLABS_API_KEY` in this sandbox;
   only the MockEngine-based request/error/budget/redaction behavior is verified.
 - `runtime.ts` (Gate G-02) was verified as a string template, not compiled by a real

@@ -288,26 +288,145 @@ identische Ergebnisse liefern, da beide Toolchains JDK 21 nutzen und dieselben
 
 ## E-03 — Reale Adapter aus echten Verträgen
 
-- Status: blocked (bewusst — Scope-Grenze dieser Session, siehe unten)
-- Files: keine
-- Contract: `swift.actor-bundle`, `shaded.scene-config`, `anvil.wizard.production-assessment`, `cue.*`
-- Owner: SWIFT, SHADED, WIZARD, CUE (jeweils)
-- Problem: Die Geschwister-Repos SWIFT/SHADED/WIZARD/CUE-AGENT sind in dieser Session
-  tatsächlich zugänglich (`/home/user/SWIFT`, `/home/user/SHADED`, `/home/user/WIZARD`,
-  `/home/user/CUE-AGENT`) — anders als der Auftrag es als Alternative vorsieht
-  ("wenn nicht zugänglich: BLOCKED_EXTERNAL_CONTRACT"). Echte, verifizierte Adapter für
-  vier unabhängige Systeme (jeweils eigenes CLI-/JSON-Vertragsstudium + Tests) sind aber
-  kein kleines Atom mehr, sondern vier eigene Sprints.
-- Smallest safe change: nicht in dieser Session begonnen, um keine ungetesteten,
-  möglicherweise falsch geratenen Adapter als "fertig" auszugeben.
-- Command: keiner ausgeführt.
-- Result: n/a
-- Evidence: n/a
-- Remaining risk: Golden Run (Gate I) ist laut Auftrag selbst explizit Fixture-basiert
-  (`BARD-Fixture`, `WIZARD-Fixture`, ..., `CUE-Fixture` — siehe Gate-I-Spezifikation),
-  daher blockiert dieses Atom den Golden Run nicht. Empfehlung für eine Folge-Session:
-  ein Atom pro Sibling-Repo, beginnend mit SWIFT (hat bereits ein dokumentiertes
-  `sprite_sheet`-Exportformat laut SHADED-`CLAUDE.md`).
+**Update (Folge-Session, auf expliziten Wunsch "e-03 bitte"):** SWIFT und CUE-AGENT
+haben jeweils einen **echten, dokumentierten, maschinenlesbaren CLI-Vertrag** — für
+beide wurde ein reales, getestetes `ExternalToolPort`-Adapter gebaut. WIZARD und SHADED
+haben **keinen** stabilen, seiteneffektfreien ANVIL-Vertrag (Details unten) — für beide
+bleibt E-03 bewusst blocked, mit präziser Begründung statt Raten.
+
+### E-03a — SwiftCliAdapter (passed)
+
+- Files:
+  - `anvil-kmp/core/externaladapters/build.gradle.kts` (neues Modul, JVM-only, hängt nur
+    von `:core:contracts` ab — konsistent mit "core:X darf core:contracts importieren")
+  - `anvil-kmp/core/externaladapters/src/main/kotlin/io/anvil/core/externaladapters/ProcessRunner.kt`
+  - `.../SwiftCliAdapter.kt`
+  - `.../CueCliAdapter.kt`
+  - `anvil-kmp/core/externaladapters/src/test/kotlin/io/anvil/core/externaladapters/{FakeProcessRunner,SwiftCliAdapterTest,CueCliAdapterTest,SwiftCliManualIntegrationTest,CueCliManualIntegrationTest}.kt`
+  - `anvil-kmp/settings.gradle.kts` (`:core:externaladapters` ergänzt)
+  - `anvil-kmp/core/contracts/src/commonMain/kotlin/io/anvil/core/contracts/ExternalToolPort.kt`
+    (neuer `ExternalToolResult.Failed`-Case — Fixtures brauchten das nie, weil sie immer
+    deterministisch erfolgreich sind; echte Adapter müssen echtes Scheitern melden können)
+- Contract: `swift.render-result/v1` (neu genutzt, war bereits in B-01 registriert),
+  intern `swift.render-request` (SWIFT-eigener CLI-Parametervertrag, keine
+  ANVIL-Cross-Modul-Registry-ID nötig — analog zu `AudioGenerationRequest` in F-01)
+- Owner: SWIFT
+- Problem: `swift.actor-bundle` in der Registry war bisher reine Behauptung ohne
+  irgendeinen Code, der SWIFTs echten Vertrag tatsächlich aufruft.
+- **Vertragsquelle (nicht geraten):** `SWIFT/docs/ORCHESTRATION.md` — ein von SWIFTs
+  eigenem Maintainer als "authoritative contract" markiertes Dokument, explizit aus
+  `main.py`/`core/renderer.py`/`core/exporter.py`/`core/sprite_sheet.py` abgeleitet.
+  Exit-Codes: `0` Erfolg, `1` generisch, `2` fehlender Input (`InputMissingError`),
+  `3` fehlendes externes Tool (`ToolMissingError`, z. B. Blender). `--json` liefert bei
+  Erfolg **ein** JSON-Objekt auf stdout, bei Fehler `{"status":"error","error":...}`
+  auf stderr.
+- **Verifikation der Verträge live in dieser Sandbox** (nicht nur aus der Doku
+  übernommen):
+  ```bash
+  cd /home/user/SWIFT
+  python3 main.py render --model /tmp/does-not-exist.fbx --json
+  # → exit 2, stdout leer, stderr: {"status": "error", "error": "Model FBX not found: /tmp/does-not-exist.fbx"}
+  touch /tmp/fake-model.fbx
+  python3 main.py render --model /tmp/fake-model.fbx --json
+  # → exit 3, stderr: {"status": "error", "error": "Blender not available: ..."}
+  ```
+  (Zuvor lieferte der erste Aufruf exit 1 `"No module named 'PIL'"` — behoben durch
+  `pip install Pillow numpy`, eine reine Sandbox-Abhängigkeit, keine SWIFT-Code-Änderung.)
+- Smallest safe change: `SwiftCliAdapter` shellt exakt diese Doku-Kommandos aus,
+  mapped Exit-Codes 1-Optionen ohne Erfindung zusätzlicher Felder; `ProcessRunner`
+  als Seam für Tests (`FakeProcessRunner` mit den oben real erfassten Fixtures).
+- Command: `/opt/gradle/bin/gradle :core:externaladapters:test --console=plain`
+  (Unit-Tests, `FakeProcessRunner`) und
+  `SWIFT_REPO_PATH=/home/user/SWIFT CUE_AGENT_REPO_PATH=/home/user/CUE-AGENT
+  /opt/gradle/bin/gradle :core:externaladapters:test --tests "*ManualIntegrationTest*"
+  --rerun --console=plain` (echter Prozessaufruf gegen den echten SWIFT-Checkout).
+- Result: PASS — 4 Unit-Tests (Erfolg → `swift.render-result`, exit 2 → `Failed`
+  "missing input", exit 3 → `Failed` "Blender", falscher Contract → `BlockedExternalContract`,
+  nie ausgeführt) + 2 echte Manual-Tests gegen den realen SWIFT-Checkout
+  (`health()` STABLE, echter `exit 2` bei fehlendem Modell — Laufzeit 99 ms, damit
+  nachweislich ein echter Subprozess und kein No-op).
+- Evidence: `BUILD SUCCESSFUL`, Test-XML zeigt `time="0.142"` für die zwei Manual-Tests
+  zusammen (echte Prozessausführung, kein Skip-No-op).
+- Remaining risk: Kein Blender in dieser Sandbox installiert — der eigentliche
+  Render-Erfolgspfad (`exit 0` mit echtem Sprite-Sheet) ist nur mit dem gefixten
+  Fake-JSON in `SwiftCliAdapterTest` getestet, nicht live.
+
+### E-03b — CueCliAdapter (passed)
+
+- Files: s. oben (gleiches Modul/gleiche Commits)
+- Contract: `cue.playable-proof/v1`, `cue.temporal-proof/v1` (aus B-01) — **kein**
+  `cue.audio-proof`-Support, weil `cue audio-check` real nicht existiert (per
+  `node bin/cue.js --help`, live geprüft — s. Gate H).
+- Owner: CUE
+- **Vertragsquelle (nicht geraten):** `CUE-AGENT/bin/cue.js` + `src/qa/{playable,temporal}.js`
+  — nach `npm install` (Netzwerkzugriff auf `registry.npmjs.org` funktioniert in dieser
+  Sandbox, anders als `services.gradle.org`) real ausgeführt:
+  ```bash
+  cd /home/user/CUE-AGENT && npm install
+  node bin/cue.js --help          # bestätigt: playable-check, temporal-check, doctor, kein audio-check
+  node bin/cue.js doctor --json   # echtes JSON, s. u.
+  ```
+  Reales `doctor --json`-Ergebnis in dieser Sandbox (unverändert übernommen als
+  Test-Fixture):
+  ```json
+  {"ok": false, "lang": "de", "checks": [
+    {"name": "Node.js", "required": true, "ok": true, "detail": "v22.22.2"},
+    {"name": "Playwright Chromium", "required": true, "ok": false, "detail": "fehlt — ..."},
+    {"name": "LLM-Provider", "required": true, "ok": false, "detail": "anthropic — ANTHROPIC_API_KEY fehlt/Platzhalter"},
+    ...
+  ]}
+  ```
+  JSON-Form von `playable-check`/`temporal-check` (`verdict`, `signals`, `checks`,
+  `failed`, `score`) aus dem Quellcode von `src/qa/playable.js`/`src/qa/temporal.js`
+  gelesen, nicht geraten. Exit `1` bedeutet dort ein echtes negatives Verdict
+  ("NICHT BELEGT ..."), keinen Absturz — der Adapter behandelt daher sowohl `0` als
+  auch `1` als `Produced`, nur leerer stdout als `Failed`.
+- Smallest safe change: `CueCliAdapter` ruft `node bin/cue.js {doctor,playable-check,
+  temporal-check} --json` auf und parst nur real vorhandene Felder.
+- Command: s. E-03a (gleicher Testlauf, gleiches Modul).
+- Result: PASS — 7 Unit-Tests (echtes `doctor`-JSON → DEGRADED mit den zwei fehlenden
+  Required-Checks benannt, alle Required ok → STABLE, kein JSON → FAILED, negatives
+  Playable-Verdict bei exit 1 → trotzdem `Produced`, `temporal-check`-Dispatch, kein
+  `audio-check` → `BlockedExternalContract`, Absturz ohne stdout → `Failed`) + 1 echter
+  Manual-Test gegen den realen, `npm install`-ierten CUE-AGENT-Checkout (`health()` lief
+  936 ms — echter Node-Prozessstart mit echtem `doctor`-Report, DEGRADED weil
+  Playwright-Chromium-Check und `ANTHROPIC_API_KEY` in dieser Sandbox fehlen).
+- Evidence: `BUILD SUCCESSFUL`, Test-XML `time="0.53"`..`"0.966"` je nach Lauf.
+- Remaining risk: `playable-check`/`temporal-check` selbst wurden nicht live gegen eine
+  laufende URL getestet (kein Playwright-Chromium-Setup für CUE-AGENTs eigene
+  `node_modules/playwright`-Kopie in dieser Sandbox verifiziert, unabhängig vom
+  system-weiten `/opt/pw-browsers/chromium`); nur `doctor` lief live.
+
+### E-03c/d — WIZARD, SHADED (weiterhin blocked — mit Begründung, nicht geraten)
+
+- Status: blocked
+- **WIZARD:** `README.md`/`.kilocode/rules/memory-bank/architecture.md` markieren die
+  ANVIL-Anbindung selbst ausdrücklich als **"Konzept"** ("ANVIL as Orchestrator" steht
+  unter "Architecture / Larger Projects", nicht implementiert). Die einzige reale,
+  inhaltlich passende Funktion ist `buildProductionBrief()`
+  (`src/lib/brief.ts`) — aber sie ist eine async TS-Funktion **innerhalb** der
+  Next.js-App, die eine seedbare SQLite-Asset-Bibliothek (`data/assets.db`),
+  Volltext-/Semantik-Suche und einen echten `ANTHROPIC_API_KEY` voraussetzt. Es gibt
+  **keine** dedizierte API-Route dafür (`src/app/api/` hat nur `chat`, `image`,
+  `health`, `memory`, `assets` — keine "brief"/"production-assessment"-Route). Ein
+  Adapter müsste entweder (a) die volle Next.js-App inkl. DB+Key hochfahren (schwerer,
+  zustandsbehafteter Integrationstest, kein sauberer CLI-/HTTP-Vertrag) oder (b) eine
+  neue API-Route/einen neuen CLI-Einstieg **in WIZARD selbst** anlegen — beides
+  außerhalb des Auftragsumfangs ("Du sollst ANVIL härten", nicht WIZARD ändern).
+- **SHADED:** Laut eigener `CLAUDE.md` "Single-File, kein Build-Step" — die gesamte
+  API (`window.SHADED.*`) existiert nur **im Browser-Kontext** von `index.html`. Es
+  gibt kein Node-/CLI-aufrufbares Modul und keinen dokumentierten Orchestrierungs-Vertrag
+  wie SWIFTs `docs/ORCHESTRATION.md`. Ein echter Adapter bräuchte Playwright-Automation
+  gegen `index.html` (wie SHADEDs eigenes `tools/verify.js`) — das wäre aber ein neu
+  **erfundener** Vertrag (welche `window.SHADED`-Aufrufe genau, welches Rückgabeformat),
+  nicht die Übernahme eines bereits bestehenden. Genau das verbietet der Auftrag
+  ("Nicht anhand der Roadmap raten").
+- Smallest safe change: nicht begonnen — für beide wäre der nächste ehrliche Schritt,
+  zuerst *im jeweiligen Repo* (WIZARD bzw. SHADED, außerhalb dieses ANVIL-Auftrags)
+  einen dedizierten, dokumentierten ANVIL-Contract-Endpunkt/CLI zu bauen, den ANVIL
+  danach adaptieren kann.
+- Remaining risk: Golden Run (Gate I) bleibt unberührt — er ist laut eigener
+  Spezifikation Fixture-basiert für alle externen Systeme.
 
 ## F-01 — AudioAssetManifest-Modelle
 

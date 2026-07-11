@@ -45,4 +45,10 @@ sealed interface ExternalToolResult {
     data class BlockedExternalContract(
         val reason: String,
     ) : ExternalToolResult
+
+    /** Genuine runtime failure (process crashed, tool missing, malformed output, ...) — distinct from [BlockedExternalContract], which means "this port never supports that contract". */
+    @Serializable
+    data class Failed(
+        val reason: String,
+    ) : ExternalToolResult
 }
