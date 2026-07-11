@@ -120,3 +120,9 @@ State Surface: Zustand zuerst, nicht Menüs.
 - Erlaubte Anvil-Begriffe definiert
 - Donor-Referenzen nur in `docs/provenance/` erlaubt
 **Status:** Regeln stehen. Compliance-Prüfung 2026-05-20: Keine verbotenen Begriffe ("ogcode", "Striker", "ogden") außerhalb `docs/provenance/` gefunden. Muss bei jeder Transplant-Aktion erneut geprüft werden.
+
+### 16. Gateway-Drift: OmniRoute vs Bellows ✅ BEHOBEN
+**Risiko:** A20/OmniRoute könnte als zweiter Gateway neben Bellows interpretiert werden.
+**Entscheidung:** Bellows bleibt der kanonische ANVIL-Gateway und Modellrouter. OmniRoute ist nur Referenz.
+**Gegenmaßnahme:** `docs/OMNIROUTE_BRIDGE.md` markiert OmniRoute als superseded/reference; `docs/GATES.md` setzt A20 auf `superseded`.
+**Status:** Behoben am 2026-07-11.

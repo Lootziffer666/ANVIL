@@ -49,7 +49,7 @@ Gates sind sequenziell, jede hat:
 | A17 | Platform Abstraction Layer | `done` |
 | A18 | Pake Desktop Shell | `prototype` |
 | A19 | Workspace Sync Protocol | `done` |
-| A20 | OmniRoute Gateway Bridge | `docs-only` |
+| A20 | OmniRoute Gateway Bridge | `superseded` |
 | AX | Repo Reality Lock | `done` |
 
 
@@ -96,8 +96,8 @@ Für vollständige Details pro Gate siehe:
 
 ## Gate A20 — OmniRoute Gateway Bridge
 - **Dateien:** `docs/OMNIROUTE_BRIDGE.md`
-- **Zweck:** Ein Endpoint für 160+ Provider
-- **Status:** `docs-only` — Nur Docs + Provider-Eintrag, kein Bridge-Code
+- **Zweck:** Externe Gateway-Referenz; Bellows bleibt kanonisch
+- **Status:** `superseded` — keine OmniRoute-Implementierung, keine zweite Provider-Wahrheit
 
 ## Gate AX — Repo Reality Lock
 - **Dateien:** `docs/REPO_REALITY_LOCK.md`, `docs/GATE_RECONCILIATION.md`, `docs/KNOWN_DRIFT_RISKS.md`
@@ -160,3 +160,4 @@ Jede neue Gate wird hier eingetragen. Gate-Reihenfolge wird nicht nachträglich 
 | 2026-07-11 | A18 | Pake Icon-Asset und Build-Script ergänzt |
 | 2026-07-11 | B18/A8 | Handoff Export über Artifact Layer als KMP-MVP begonnen |
 | 2026-07-11 | B19/A19 | Workspace Sync über Artifact-/Run-Registry als KMP-MVP begonnen |
+| 2026-07-11 | A20 | Bellows als kanonischen Gateway bestätigt; OmniRoute Bridge superseded |
