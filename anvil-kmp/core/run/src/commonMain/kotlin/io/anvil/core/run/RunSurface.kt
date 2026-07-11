@@ -37,6 +37,7 @@ class RunSurface(
                 workspaceId = plan.workspaceId,
                 runId = plan.runId,
                 artifactRoot = plan.artifactRoot,
+                createdAt = createdAt,
             )
             val result = module.handle(ModuleRunStep(operation = step.operation, payload = step.payload, context = context))
             when (result) {

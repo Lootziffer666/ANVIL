@@ -49,7 +49,7 @@ Empfohlene Reihenfolge:
 
 ### BARD
 
-BARD bleibt Bedeutungskompiler:
+BARD bleibt Bedeutungskompiler und lebt als eigenes privates Repo; ANVIL/Unreal-Tooling konsumiert nur seine Contracts:
 
 - erzeugt `CreativeBrief/v1`, `ProductionIntent/v1`, Locks und Acceptance Criteria;
 - prüft nach CUE nur kreative Werktreue;

@@ -4,6 +4,7 @@ import io.anvil.core.artifacts.ArtifactRegistry
 import io.anvil.core.artifacts.ArtifactWriteRequest
 import io.anvil.core.artifacts.ArtifactWriteResult
 import io.anvil.core.artifacts.ArtifactWriter
+import io.anvil.core.artifacts.Sha256
 import io.anvil.core.contracts.ModuleArtifactRef
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -61,7 +62,7 @@ class HandoffExporter(
             )
         }
 
-        val checksum = stableSha256(body)
+        val checksum = Sha256.digestPrefixed(body)
         val artifactId = "ART_HANDOFF_${stableHash(request.packageId.value + checksum)}"
         val artifactRef = ModuleArtifactRef(
             id = artifactId,
@@ -151,7 +152,6 @@ class HandoffExporter(
         appendLine()
     }
 
-    private fun stableSha256(value: String): String = "sha256:${stableHash(value)}"
 
     private fun stableHash(value: String): String {
         var hash = 0

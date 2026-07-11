@@ -29,7 +29,6 @@ include(":core:run")                // Run Surface: Module execution + Artifact 
 include(":core:handoff")            // Handoff Export: Artifact-backed agent packages
 include(":core:sync")               // Workspace Sync: Artifact/Run registry bundles
 include(":modules:bellows")         // BellowsRouter + OpenAI-kompatible Provider-Adapter (KMP, Ktor-Client)
-include(":modules:bard")            // ANVIL-BARD: Bedeutungskompiler / CreativeBrief + ProductionIntent
 include(":modules:gameplay")        // Gameplay Compiler: Regelwahrheit / InteractionDefinition + StatePatch
 include(":modules:scene")           // Scene Compiler / 3D-RE-GEN: SceneBundle + räumliche Wahrheit
 include(":modules:target")          // Target Adapter: ProductionBundle + RunnableBuild

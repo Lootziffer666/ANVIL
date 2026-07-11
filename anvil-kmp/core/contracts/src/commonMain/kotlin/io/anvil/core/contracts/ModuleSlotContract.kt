@@ -16,6 +16,7 @@ data class ModuleContext(
     val workspaceId: String,
     val runId: String,
     val artifactRoot: String,
+    val createdAt: String = "unspecified",
     val privacyMode: PrivacyMode = PrivacyMode.LOCAL_ONLY,
 )
 

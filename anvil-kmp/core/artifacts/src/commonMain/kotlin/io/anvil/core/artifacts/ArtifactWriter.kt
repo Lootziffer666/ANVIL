@@ -10,6 +10,7 @@ class ArtifactWriter {
         require(request.artifactRef.sha256.isNotBlank()) { "Artifact checksum is required." }
         require(request.createdAt.isNotBlank()) { "Artifact timestamp is required." }
 
+        val payloadChecksum = Sha256.digestPrefixed(request.payload)
         val manifest = ArtifactManifest(
             artifactId = ArtifactId(request.artifactRef.id),
             createdAt = request.createdAt,
@@ -21,7 +22,7 @@ class ArtifactWriter {
             type = request.artifactRef.type,
             uri = request.artifactRef.uri,
             sizeBytes = request.payload.encodeToByteArray().size,
-            checksumSha256 = request.artifactRef.sha256,
+            checksumSha256 = payloadChecksum,
             parentRefs = request.parentRefs + listOfNotNull(request.artifactRef.parentArtifactId),
         )
         val registry = currentRegistry.upsert(manifest)
@@ -38,8 +39,11 @@ class ArtifactWriter {
         ArtifactValidationFinding("has-run", manifest.origin.runId.value.isNotBlank(), "Run id must be present."),
         ArtifactValidationFinding("has-type", manifest.type.isNotBlank(), "Artifact type must be present."),
         ArtifactValidationFinding("has-timestamp", manifest.createdAt.isNotBlank(), "Timestamp must be present."),
-        ArtifactValidationFinding("has-checksum", manifest.checksumSha256.startsWith("sha256:"), "Checksum must use sha256 prefix."),
+        ArtifactValidationFinding("has-checksum", isSha256(manifest.checksumSha256), "Checksum must be sha256:<64 lowercase hex chars>."),
     )
+
+    private fun isSha256(value: String): Boolean =
+        value.length == 71 && value.startsWith("sha256:") && value.drop(7).all { it in '0'..'9' || it in 'a'..'f' }
 
     private fun ArtifactRegistry.upsert(manifest: ArtifactManifest): ArtifactRegistry = copy(
         artifacts = artifacts.filterNot { it.artifactId == manifest.artifactId } + manifest,

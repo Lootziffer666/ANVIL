@@ -4,6 +4,7 @@ import io.anvil.core.artifacts.ArtifactRegistry
 import io.anvil.core.artifacts.ArtifactWriteRequest
 import io.anvil.core.artifacts.ArtifactWriteResult
 import io.anvil.core.artifacts.ArtifactWriter
+import io.anvil.core.artifacts.Sha256
 import io.anvil.core.contracts.ModuleArtifactRef
 import io.anvil.core.run.RunSummary
 import kotlinx.serialization.Serializable
@@ -64,7 +65,7 @@ class WorkspaceSyncService(
     ): WorkspaceSyncExportResult {
         val bundle = exportBundle(request, registry, runSummaries)
         val payload = json.encodeToString(bundle)
-        val checksum = stableSha256(payload)
+        val checksum = Sha256.digestPrefixed(payload)
         val artifactRef = ModuleArtifactRef(
             id = "ART_SYNC_${stableHash(request.bundleId.value + checksum)}",
             workspaceId = request.workspaceId,
@@ -136,10 +137,11 @@ class WorkspaceSyncService(
         WorkspaceSyncValidationFinding("workspace", bundle.workspaceId.isNotBlank(), "Workspace id is required."),
         WorkspaceSyncValidationFinding("timestamp", bundle.exportedAt.isNotBlank(), "Export timestamp is required."),
         WorkspaceSyncValidationFinding("no-cross-workspace-artifacts", bundle.registry.artifacts.all { it.origin.workspaceId.value == bundle.workspaceId }, "Bundle must not contain artifact manifests from other workspaces."),
-        WorkspaceSyncValidationFinding("checksums-only", bundle.registry.artifacts.all { it.checksumSha256.startsWith("sha256:") }, "All artifact manifests must carry sha256 checksums."),
+        WorkspaceSyncValidationFinding("checksums-only", bundle.registry.artifacts.all { isSha256(it.checksumSha256) }, "All artifact manifests must carry sha256 checksums."),
     )
 
-    private fun stableSha256(value: String): String = "sha256:${stableHash(value)}"
+    private fun isSha256(value: String): Boolean =
+        value.length == 71 && value.startsWith("sha256:") && value.drop(7).all { it in '0'..'9' || it in 'a'..'f' }
 
     private fun stableHash(value: String): String {
         var hash = 0

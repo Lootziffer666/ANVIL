@@ -145,7 +145,7 @@ class GameplayCompilerModule : ModuleSlotContract {
                 type = type,
                 uri = "${context.artifactRoot}/gameplay/$hash.json",
                 sha256 = "sha256:$hash",
-                timestamp = "pending-artifact-writer-timestamp",
+                timestamp = context.createdAt,
             ),
             payload = payload,
             executionPhase = ExecutionPhase.COMPLETE,

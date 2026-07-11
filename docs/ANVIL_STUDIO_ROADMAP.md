@@ -11,7 +11,7 @@ besetzt:
 
 | Rolle | Besitzer | Wahrheit |
 |-------|----------|----------|
-| Bedeutung, Ton, Weltversprechen | BARD | Kreative Absicht |
+| Bedeutung, Ton, Weltversprechen | BARD (externes privates Repo) | Kreative Absicht |
 | Produktionsentscheidung | WIZARD | Fähigkeiten, Assets, Route |
 | Orchestrierung | ANVIL | Plan, Task, Run, Artifact |
 | Figuren-/Actor-Produktion | SWIFT | Character-/Presentation-Bundles |
@@ -28,7 +28,7 @@ Persistenz, Target-Build und objektive Spielerfahrungsdaten.
 
 | Ebene | Status | Fehlender Besitzer |
 |-------|--------|--------------------|
-| Bedeutung, Ton, Weltversprechen | BARD entsteht | — |
+| Bedeutung, Ton, Weltversprechen | BARD entsteht extern | — |
 | Assets, Fähigkeiten, Produktionswissen | WIZARD | — |
 | Charakterdarstellung und Animation | SWIFT | — |
 | Atmosphäre und visuelle Weltzustände | SHADED | — |
@@ -51,9 +51,9 @@ P0 erzeugt einen vertikalen Slice, der aus menschlicher Intuition ein lauffähig
 belegbares Mini-Spiel erzeugt. Ziel ist nicht Produktionsumfang, sondern durchgehende
 Wahrheitskette.
 
-### 1. BARD abschließen
+### 1. BARD abschließen (externes privates Repo)
 
-BARD liefert den gesperrten kreativen Vertrag:
+BARD liefert den gesperrten kreativen Vertrag. Der Code und das private Profilpaket liegen nicht in diesem ANVIL-Repo; ANVIL konsumiert nur die versionierten Contracts und Artifact-Refs:
 
 - `CreativeSeed/v1`
 - `CreativeBrief/v1`
@@ -68,6 +68,7 @@ DoD:
 - Ein Kandidat wird zu `locked CreativeBrief/v1`.
 - `ProductionIntent/v1` ist ohne Prosainterpretation durch WIZARD konsumierbar.
 - Keine privaten Profilregeln verlassen BARD.
+- Kein BARD-Code oder `bard-profile` liegt im ANVIL-Repo.
 
 ### 2. Gameplay Compiler
 

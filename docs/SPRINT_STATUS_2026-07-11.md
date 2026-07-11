@@ -15,7 +15,8 @@ Es gibt jetzt eine erste **KMP-Wirbelsäule** für:
 - Run Surface
 - Agent Handoff
 - Workspace Sync
-- contract-first Studio-Module
+- contract-first Studio-Module ohne BARD-Code
+- BARD als externes privates Repo
 - Bellows als kanonischen Modellrouting-Pfad
 
 Der Sprint hat viele neue Flächen geöffnet. Der nächste Schritt sollte daher **Stabilisierung** sein: Build reparieren, Kern-Tests schreiben und einen kleinen End-to-End-Run nachweisen.
@@ -69,7 +70,7 @@ Der Sprint hat viele neue Flächen geöffnet. Der nächste Schritt sollte daher 
 
 | Modul | Pfad | Wahrheit / Aufgabe |
 |-------|------|--------------------|
-| BARD | `anvil-kmp/modules/bard` | Bedeutung, CreativeBrief, ProductionIntent, Challenge/Audit. |
+| BARD | externes privates Repo | Bedeutung, CreativeBrief, ProductionIntent, Challenge/Audit; in ANVIL nur Contract-Refs. |
 | Gameplay | `anvil-kmp/modules/gameplay` | Regeln, Interactions, Conditions, Effects, StatePatch. |
 | Scene | `anvil-kmp/modules/scene` | Bühne, SceneBundle, Anchors, Navigation, Kamera. |
 | Interface | `anvil-kmp/modules/interface` | Input Actions, HUD, Prompts, Accessibility-Basis. |
@@ -124,7 +125,7 @@ Handoff / Sync / Module Artifacts
 Und eine erste Studio-Kette:
 
 ```text
-BARD        → Bedeutung
+BARD(ext.)  → Bedeutung
 Gameplay    → Regeln
 Scene       → Bühne
 Interface   → Bedienung
@@ -158,8 +159,8 @@ Offen:
    - Modul-Serialization-Roundtrips
 
 3. **Erster Mini-End-to-End-Run**
-   - Seed → BARD
-   - BARD → Gameplay/Scene/Interface/Acoustic/Target
+   - Seed → externes BARD
+   - externes BARD → Gameplay/Scene/Interface/Acoustic/Target
    - RunSurface → ArtifactRegistry
    - Handoff Export
    - Sync Bundle
