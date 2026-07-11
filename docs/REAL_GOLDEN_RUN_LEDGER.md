@@ -352,6 +352,107 @@ echten ANVIL-seitigen Adapter, real gegen den echten SHADED-Checkout verifiziert
 
 ---
 
+## R-13..R-17 — CUE-AGENT: `cue audio-check` (Gate H)
+
+- **Repo:** CUE-AGENT
+- **Status:** DONE
+- **Files:** `src/qa/audio-scenario.schema.json` (R-13); `docs/AUDIO_CHECK.md` (R-14);
+  `src/qa/audio-check.js` (R-15); `bin/cue.js` (Dispatch + Hilfetext, R-16);
+  `test/audio-check.smoke.test.js` (R-17)
+- **Contract:** neu `cue.audio-proof/v1` (bereits als Contract-ID in ANVILs Registry seit
+  Gate H/B-01 vorhanden — diese Runde liefert die bislang fehlende REALE
+  CLI-Implementierung dazu, kein neuer Contract-Eintrag nötig)
+- **Owner:** CUE (technischer Beweis)
+- **Problem:** `cue audio-check` existierte real nicht (per `node bin/cue.js --help`,
+  bereits in der vorigen Runde/`FABLE_FIX_LEDGER.md` Gate H live verifiziert und
+  dokumentiert als "im CUE-AGENT-Repo zu implementieren, außerhalb des damaligen
+  Scopes"). ANVILs `CueCliAdapter` musste `cue.audio-proof` deshalb explizit
+  `BlockedExternalContract` zurückgeben.
+- **Smallest safe change:** Neues, eigenständiges `src/qa/audio-check.js` im selben
+  Stil wie `playable.js`/`temporal.js` (kein Fork bestehender Dateien, nur ein
+  winziges eigenes `runFlowSteps`-Duplikat für den optionalen `--scenario`-Flow,
+  begründet dokumentiert statt eines riskanten Umbaus von `playable.js`).
+  Erkennt exakt den REALEN `window.ANVIL_AUDIO`-Vertrag, den ANVILs
+  `ToneJsRuntimeWriter.kt` tatsächlich generiert (`getDebugState`/`setState`/
+  `getEventLog` — Quelle gelesen, nicht geraten). Von sechs Gate-H-Beweiskategorien
+  sind vier mit dem AKTUELLEN Vertrag real+deterministisch prüfbar (CUE_FIRED,
+  STATE_REACTION, TRANSITION_TIMING, LOOP_CONTINUITY); zwei (CLIPPING_CHECK,
+  VOICE_AUDIBILITY) sind mit dem aktuellen Vertrag NICHT prüfbar (kein
+  Pegel-/Analyser-Hook) — diese werden ehrlich mit `ok: null`, `required:false`
+  ausgewiesen, nie fingiert (dokumentierte Fallback-Strategie in
+  `docs/AUDIO_CHECK.md`, R-14). Fehlt `window.ANVIL_AUDIO` ganz, gibt es KEINEN
+  stillen Fallback-Erfolg (anders als `temporal-check`s generischer Modus) —
+  Verdict `KEIN AUDIO-VERTRAG GEFUNDEN`, Exit 1, weil der Audio-Vertrag selbst der
+  Prüfzweck ist.
+- **Command:** `node --test test/audio-check.smoke.test.js`; `npm test` (volle Suite,
+  Regressionscheck); echter End-to-End-CLI-Lauf gegen einen echten lokalen
+  Mock-Server: `node bin/cue.js audio-check http://127.0.0.1:8951/ --json`.
+- **Result:** PASS — 3/3 neue Smoke-Tests grün (BELEGT-Fall mit allen vier
+  prüfbaren Kategorien `ok:true` + beiden nicht-prüfbaren Kategorien `ok:null`,
+  Fallback-Fall ohne stillen Erfolg, `--scenario`-Override). Volle Suite:
+  `tests 35`, `pass 33`, `fail 0`, `skipped 2` (die 2 Skips sind bereits vor
+  diesem Atom vorhanden, Chromium-Verfügbarkeits-Gates in anderen Tests,
+  keine Regression). Echter CLI-Lauf: Exit 0, vollständiges reales JSON mit
+  Verdict `"AUDIO-VERTRAG BELEGT (Clipping/Audibility nicht prüfbar)"`.
+- **Evidence:** Terminal-Output oben (echter `node bin/cue.js audio-check`-Lauf mit
+  vollem JSON), `npm test`-Output (35 Tests).
+- **Remaining risk:** Es existiert noch KEIN echter, deployter Ziel-Build, der
+  `window.ANVIL_AUDIO` tatsächlich auf `window` exponiert (ANVILs
+  `WebTargetWriter` liefert laut `docs/FABLE_FIX_LEDGER.md` nur `ASSEMBLED`, nie
+  `RUNNABLE`) — `audio-check` wurde daher nur gegen eine handgeschriebene,
+  vertragsgetreue Mock-Seite real verifiziert, nicht gegen einen echten
+  ANVIL-Web-Audio-Build. Das ist dieselbe Einschränkung, die `CueCliAdapterTest`
+  bereits für `playable-check`/`temporal-check` dokumentiert (nie live gegen eine
+  echte laufende URL getestet).
+
+---
+
+**Gate 5 (CUE-AGENT) Status: ABGESCHLOSSEN.** `cue audio-check` ist real
+implementiert, real getestet, real per CLI verifiziert — CUE-AGENT ist für diesen
+Vertrag kein Fixture-Blocker mehr.
+
+---
+
+## R-18 — ANVIL: `CueCliAdapter` um `audio-check` erweitert
+
+- **Repo:** ANVIL
+- **Status:** DONE
+- **Files:** `anvil-kmp/core/externaladapters/src/main/kotlin/io/anvil/core/externaladapters/CueCliAdapter.kt`,
+  `.../src/test/kotlin/io/anvil/core/externaladapters/CueCliAdapterTest.kt`
+- **Contract:** `cue.audio-proof/v1` (bereits seit B-01/Gate H registriert, Owner CUE)
+- **Owner:** CUE
+- **Problem:** `CueCliAdapter` gab `cue.audio-proof` bisher explizit als
+  `BlockedExternalContract` zurück, mit der Begründung "`cue audio-check` existiert
+  nicht". Das stimmt seit Gate 5 (R-13..R-17) nicht mehr — der Adapter war jetzt
+  selbst der letzte Fixture-Blocker für diesen Vertrag.
+- **Smallest safe change:** Eine Zeile im `subcommand`-`when`-Dispatch
+  (`"cue.audio-proof" -> "audio-check"`), `producedOutputContracts` um
+  `cue.audio-proof` ergänzt, Klassendoc korrigiert (die alte "deliberately no
+  audio-check support"-Begründung war jetzt sachlich falsch). Kein neuer
+  Contract-Eintrag nötig (`cue.audio-proof` war schon registriert).
+- **Command:** `/opt/gradle/bin/gradle :core:externaladapters:test --console=plain`
+- **Result:** PASS — `BUILD SUCCESSFUL`. `CueCliAdapterTest`: `tests="8"
+  failures="0" errors="0"` (die alte "audio-check existiert nicht"-Testerwartung
+  wurde durch zwei neue Tests mit ECHT in dieser Session aufgezeichnetem
+  `node bin/cue.js audio-check ... --json`-Output ersetzt: BELEGT-Fall exit 0
+  → Produced, "KEIN AUDIO-VERTRAG GEFUNDEN"-Fall exit 1 → weiterhin Produced,
+  genau wie bei `playable-check`s negativem Verdict).
+- **Evidence:** `anvil-kmp/core/externaladapters/build/test-results/test/TEST-io.anvil.core.externaladapters.CueCliAdapterTest.xml`.
+  Die beiden JSON-Fixtures sind Kopien der in R-13..R-17 real aufgezeichneten
+  `audio-check`-Läufe (BELEGT gegen echten Mock-Server, "kein Hook gefunden"
+  gegen echten Mock-Server ohne `ANVIL_AUDIO`).
+- **Remaining risk:** Kein neuer Manual-Integration-Test für `invoke()` gegen den
+  echten CUE-AGENT-Checkout (nur `health()` hat einen solchen Test,
+  `CueCliManualIntegrationTest`) — der reale End-to-End-Beweis für `audio-check`
+  wurde stattdessen direkt per Bash geführt (s. R-13..R-17-Evidence) und deckt
+  denselben Kommandopfad ab, den dieser Adapter erzeugt.
+
+---
+
+**Gate 6 (ANVIL) Status: ABGESCHLOSSEN.**
+
+---
+
 **Gate 1 (WIZARD) Status: ABGESCHLOSSEN.** Alle vier Atome (R-01–R-04) real
 implementiert, real getestet (23/23 grün), Build grün. WIZARD ist ab hier kein
 Fixture mehr für diesen Vertrag — `POST /api/production-assessment` liefert

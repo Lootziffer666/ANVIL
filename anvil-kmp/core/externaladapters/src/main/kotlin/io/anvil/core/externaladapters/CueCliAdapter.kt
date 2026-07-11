@@ -12,15 +12,16 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 /**
- * Real adapter for CUE-AGENT's documented CLI (`cue doctor|playable-check|temporal-check
- * --json`), verified against the actual `bin/cue.js` in this session — not guessed. There
- * is deliberately no `audio-check` support: that command does not exist in CUE-AGENT yet
- * (see `docs/GOLDEN_RUN_REPORT.md` Gate H), and this adapter does not invent it.
+ * Real adapter for CUE-AGENT's documented CLI (`cue doctor|playable-check|temporal-check|
+ * audio-check --json`), verified against the actual `bin/cue.js` in this session — not
+ * guessed. `audio-check` was added to CUE-AGENT in Real Golden Run Gate H (`docs/AUDIO_CHECK.md`
+ * in the CUE-AGENT repo) — this adapter now dispatches to it like the other two checks.
  *
- * `playable-check`/`temporal-check` both exit `1` for a genuine negative verdict (e.g.
- * "NICHT BELEGT") — that is real, valid CUE output, not a failure, so both exit codes 0
- * and 1 map to [ExternalToolResult.Produced]. Only "no JSON on stdout at all" (crash,
- * missing browser, etc.) maps to [ExternalToolResult.Failed].
+ * `playable-check`/`temporal-check`/`audio-check` all exit `1` for a genuine negative
+ * verdict (e.g. "NICHT BELEGT", "KEIN AUDIO-VERTRAG GEFUNDEN") — that is real, valid CUE
+ * output, not a failure, so both exit codes 0 and 1 map to [ExternalToolResult.Produced].
+ * Only "no JSON on stdout at all" (crash, missing browser, etc.) maps to
+ * [ExternalToolResult.Failed].
  */
 class CueCliAdapter(
     private val repoRoot: File,
@@ -30,7 +31,8 @@ class CueCliAdapter(
 
     override val toolId: String = "cue-agent-cli"
     override val acceptedInputContracts: List<ContractId> = listOf(ContractId("anvil.runnable-build"))
-    override val producedOutputContracts: List<ContractId> = listOf(ContractId("cue.playable-proof"), ContractId("cue.temporal-proof"))
+    override val producedOutputContracts: List<ContractId> =
+        listOf(ContractId("cue.playable-proof"), ContractId("cue.temporal-proof"), ContractId("cue.audio-proof"))
 
     override suspend fun health(): ExternalToolHealth {
         val result = processRunner.run(listOf(nodeExecutable, "bin/cue.js", "doctor", "--json"), repoRoot, timeoutSeconds = 60)
@@ -57,6 +59,7 @@ class CueCliAdapter(
         val subcommand = when (request.contractId.value) {
             "cue.playable-proof" -> "playable-check"
             "cue.temporal-proof" -> "temporal-check"
+            "cue.audio-proof" -> "audio-check"
             else -> return ExternalToolResult.BlockedExternalContract("CueCliAdapter does not produce ${request.contractId.value}.")
         }
         val url = request.payload

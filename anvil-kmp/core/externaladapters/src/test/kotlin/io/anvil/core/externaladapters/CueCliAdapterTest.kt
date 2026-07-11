@@ -89,12 +89,50 @@ class CueCliAdapterTest {
     }
 
     @Test
-    fun invoke_noAudioCheckSupport_isBlockedNotGuessed() = runTest {
-        // CUE-AGENT has no `audio-check` command (verified via --help in this session) —
-        // this adapter must never invent one.
-        val adapter = CueCliAdapter(repoRoot = File("/tmp/fake-cue"), processRunner = FakeProcessRunner(ProcessResult(0, "", "")))
-        val result = adapter.invoke(ExternalToolRequest(ContractId("cue.audio-proof"), 1, PrivacyMode.OPEN, "http://localhost:1/"))
-        assertIs<ExternalToolResult.BlockedExternalContract>(result)
+    fun invoke_audioCheck_realBelegtOutput_isProduced() = runTest {
+        // Real, unedited stdout of `node bin/cue.js audio-check <url> --json` against a
+        // real local mock page implementing window.ANVIL_AUDIO (Real Golden Run Gate H) —
+        // captured in this session, not invented.
+        val realAudioBelegtJson = """
+            {"url":"http://127.0.0.1:8951/","checkedAt":"2026-07-11T23:03:32.538Z","mode":"anvil-audio",
+             "signals":{"navOk":true,"consoleErrors":0,"hasAudioHook":true,"eventLogLengthAtEnd":1},
+             "interaction":"generischer Klick auf <button>","probeState":{"name":"anvil_audio_check_probe","value":1},
+             "checks":[{"id":"CUE_FIRED","required":true,"ok":true,"label":"..."},
+                       {"id":"STATE_REACTION","required":true,"ok":true,"label":"..."},
+                       {"id":"TRANSITION_TIMING","required":true,"ok":true,"label":"..."},
+                       {"id":"LOOP_CONTINUITY","required":true,"ok":true,"label":"..."},
+                       {"id":"CLIPPING_CHECK","required":false,"ok":null,"label":"..."},
+                       {"id":"VOICE_AUDIBILITY","required":false,"ok":null,"label":"..."}],
+             "failed":[],"verdict":"AUDIO-VERTRAG BELEGT (Clipping/Audibility nicht prüfbar)",
+             "reportDir":"/home/user/CUE-AGENT/audio-reports/127-0-0-1-8951"}
+        """.trimIndent()
+        val runner = FakeProcessRunner(ProcessResult(exitCode = 0, stdout = realAudioBelegtJson, stderr = ""))
+        val adapter = CueCliAdapter(repoRoot = File("/tmp/fake-cue"), processRunner = runner)
+
+        val result = adapter.invoke(ExternalToolRequest(ContractId("cue.audio-proof"), 1, PrivacyMode.OPEN, "http://127.0.0.1:8951/"))
+        val produced = assertIs<ExternalToolResult.Produced>(result)
+        assertTrue(produced.payload.contains("AUDIO-VERTRAG BELEGT"))
+        assertEquals(listOf("node", "bin/cue.js", "audio-check", "http://127.0.0.1:8951/", "--json"), runner.lastCommand)
+    }
+
+    @Test
+    fun invoke_audioCheck_realNoHookVerdictExitOne_isStillProduced() = runTest {
+        // Real, unedited stdout for the "window.ANVIL_AUDIO not found" case — a genuine
+        // negative verdict (exit 1), not a crash, so still Produced (same rule as
+        // playable-check's "NICHT BELEGT SPIELBAR").
+        val realNoHookJson = """
+            {"url":"http://127.0.0.1:8952/","checkedAt":"2026-07-11T23:05:53.778Z","mode":"generic",
+             "signals":{"navOk":true,"consoleErrors":0,"hasAudioHook":false},"checks":[],
+             "failed":["ANVIL_AUDIO_HOOK"],"verdict":"KEIN AUDIO-VERTRAG GEFUNDEN",
+             "note":"window.ANVIL_AUDIO ... wurde nicht gefunden ...",
+             "reportDir":"/home/user/CUE-AGENT/audio-reports/127-0-0-1-8952"}
+        """.trimIndent()
+        val runner = FakeProcessRunner(ProcessResult(exitCode = 1, stdout = realNoHookJson, stderr = ""))
+        val adapter = CueCliAdapter(repoRoot = File("/tmp/fake-cue"), processRunner = runner)
+
+        val result = adapter.invoke(ExternalToolRequest(ContractId("cue.audio-proof"), 1, PrivacyMode.OPEN, "http://127.0.0.1:8952/"))
+        val produced = assertIs<ExternalToolResult.Produced>(result)
+        assertTrue(produced.payload.contains("KEIN AUDIO-VERTRAG GEFUNDEN"))
     }
 
     @Test
