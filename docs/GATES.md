@@ -23,6 +23,7 @@ Gates sind sequenziell, jede hat:
 | `docs-only` | Nur Dokumentation, kein funktionaler Code |
 | `partial` | Teilweise implementiert, wesentliche Teile fehlen |
 | `blocked` | Durch externe Abhängigkeit blockiert |
+| `planned` | Roadmap-Gate ist benannt, aber noch nicht implementiert |
 | `superseded` | Durch spätere Entscheidung ersetzt |
 
 ## Übersicht
@@ -50,6 +51,22 @@ Gates sind sequenziell, jede hat:
 | A19 | Workspace Sync Protocol | `done` |
 | A20 | OmniRoute Gateway Bridge | `docs-only` |
 | AX | Repo Reality Lock | `done` |
+
+
+## KMP-/Studio-Gates (B-Serie)
+
+| Gate | Name | Status | Leitdokument |
+|------|------|--------|--------------|
+| B10 | Studio Roadmap / Contract Registry | `docs-only` | [`ANVIL_STUDIO_ROADMAP.md`](ANVIL_STUDIO_ROADMAP.md) |
+| B11 | Gameplay Compiler Contracts | `planned` | `GameplayPlan/v1`, `InteractionDefinition/v1`, `StatePatch/v1` |
+| B12 | Scene Compiler / 3D-RE-GEN Contracts | `planned` | `SceneBundle/v1`, `NavigationGraph/v1`, `CameraPlan/v1` |
+| B13 | Target Adapter MVP | `planned` | `TargetAdapterContract/v1`, `RunnableBuild/v1` |
+| B14 | Interface Compiler MVP | `planned` | `InputActionMap/v1`, `HUDState/v1` |
+| B15 | Acoustic Runtime Slice | `planned` | `AudioCueGraph/v1`, `AudioProof/v1` |
+
+B-Serie-Gates folgen der Roadmap-Regel: erst Contract Registry / Wahrheitsbesitzer,
+dann Implementierung. Keine Engine-, Plugin- oder Modulabhängigkeit darf vor dem
+zugehörigen Contract-Gate eingeführt werden.
 
 ## Gate-Details
 
@@ -127,3 +144,4 @@ Jede neue Gate wird hier eingetragen. Gate-Reihenfolge wird nicht nachträglich 
 | 2026-05-08 | A1–A20 | Initial erstellt |
 | 2026-05-09 | AX | Reconciliation, Statusklassen eingeführt, Status korrigiert |
 | 2026-05-10 | AT1–AT4 | Donor-Codebase Transplant Preparation angelegt |
+| 2026-07-11 | B10 | Studio Roadmap / fehlende Wahrheitsbesitzer dokumentiert |
