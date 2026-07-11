@@ -30,6 +30,7 @@ include(":modules:gameplay")        // Gameplay Compiler: Regelwahrheit / Intera
 include(":modules:scene")           // Scene Compiler / 3D-RE-GEN: SceneBundle + räumliche Wahrheit
 include(":modules:target")          // Target Adapter: ProductionBundle + RunnableBuild
 include(":modules:interface")       // Interface Compiler: InputActionMap + HUDState
+include(":modules:acoustic")        // Acoustic Runtime: AudioCueGraph + AudioProof
 include(":app:bellows-gateway")     // JVM: Ktor-Server (/v1/...), CLI, JCEKS-CredentialVault
 
 // ── Vorerst nicht im Gateway-Build ─────────────────────────────────────────────

@@ -62,7 +62,7 @@ Gates sind sequenziell, jede hat:
 | B12 | Scene Compiler / 3D-RE-GEN Contracts | `prototype` | `SceneBundle/v1`, `NavigationGraph/v1`, `CameraPlan/v1` |
 | B13 | Target Adapter MVP | `prototype` | `TargetAdapterContract/v1`, `RunnableBuild/v1` |
 | B14 | Interface Compiler MVP | `prototype` | `InputActionMap/v1`, `HUDState/v1` |
-| B15 | Acoustic Runtime Slice | `planned` | `AudioCueGraph/v1`, `AudioProof/v1` |
+| B15 | Acoustic Runtime Slice | `prototype` | `AudioCueGraph/v1`, `AudioProof/v1` |
 
 B-Serie-Gates folgen der Roadmap-Regel: erst Contract Registry / Wahrheitsbesitzer,
 dann Implementierung. Keine Engine-, Plugin- oder Modulabhängigkeit darf vor dem
@@ -149,3 +149,4 @@ Jede neue Gate wird hier eingetragen. Gate-Reihenfolge wird nicht nachträglich 
 | 2026-07-11 | B12 | Scene Compiler / 3D-RE-GEN Contract-MVP begonnen |
 | 2026-07-11 | B13 | Target Adapter Contract-MVP begonnen |
 | 2026-07-11 | B14 | Interface Compiler Contract-MVP begonnen |
+| 2026-07-11 | B15 | Acoustic Runtime Contract-MVP begonnen |
