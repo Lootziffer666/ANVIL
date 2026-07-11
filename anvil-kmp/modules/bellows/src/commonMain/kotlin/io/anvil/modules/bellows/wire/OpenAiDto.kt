@@ -2,6 +2,7 @@ package io.anvil.modules.bellows.wire
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 /**
  * OpenAI-kompatible Wire-Typen (`/v1/chat/completions`, `/v1/models`).
@@ -16,12 +17,45 @@ data class OpenAiChatRequest(
     @SerialName("max_tokens") val maxTokens: Int? = null,
     val temperature: Double? = null,
     val stream: Boolean = false,
+    val tools: List<OpenAiToolDefinition>? = null,
+    @SerialName("tool_choice") val toolChoice: String? = null,
 )
 
 @Serializable
 data class OpenAiMessage(
     val role: String,
     val content: String? = null,
+    val name: String? = null,
+    @SerialName("tool_call_id") val toolCallId: String? = null,
+    @SerialName("tool_calls") val toolCalls: List<OpenAiToolCall>? = null,
+)
+
+/** OpenAI Function-Calling: Tool-Definition, die im Request mitgeschickt wird. */
+@Serializable
+data class OpenAiToolDefinition(
+    val type: String = "function",
+    val function: OpenAiFunctionDef,
+)
+
+@Serializable
+data class OpenAiFunctionDef(
+    val name: String,
+    val description: String? = null,
+    val parameters: JsonElement? = null,
+)
+
+/** Ein vom Modell angeforderter Tool-Aufruf (in der Antwort, `message.tool_calls`). */
+@Serializable
+data class OpenAiToolCall(
+    val id: String,
+    val type: String = "function",
+    val function: OpenAiToolCallFunction,
+)
+
+@Serializable
+data class OpenAiToolCallFunction(
+    val name: String,
+    val arguments: String,
 )
 
 @Serializable

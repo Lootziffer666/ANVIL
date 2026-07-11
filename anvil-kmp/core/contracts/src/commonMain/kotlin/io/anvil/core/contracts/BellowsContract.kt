@@ -1,6 +1,7 @@
 package io.anvil.core.contracts
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 /**
  * Bellows — der LLM-Routing-Layer.
@@ -19,6 +20,30 @@ data class ChatMessage(
     /** "system" | "user" | "assistant" | "tool" */
     val role: String,
     val content: String,
+    /** Nur für `role == "tool"`: Name des aufgerufenen Tools (OpenAI-Konvention). */
+    val name: String? = null,
+    /** Nur für `role == "tool"`: welchem [ToolCall.id] diese Ergebnis-Nachricht antwortet. */
+    val toolCallId: String? = null,
+    /** Nur für `role == "assistant"`, wenn das Modell Tools aufrufen will. */
+    val toolCalls: List<ToolCall>? = null,
+)
+
+/** Ein Tool/eine Funktion, die das Modell aufrufen darf (OpenAI-Function-Calling-Schema). */
+@Serializable
+data class ToolDefinition(
+    val name: String,
+    val description: String? = null,
+    /** JSON-Schema der Parameter (roh durchgereicht — Bellows validiert es nicht). */
+    val parameters: JsonElement? = null,
+)
+
+/** Ein einzelner Tool-Aufruf, den das Modell in seiner Antwort angefordert hat. */
+@Serializable
+data class ToolCall(
+    val id: String,
+    val name: String,
+    /** Roh-JSON-String der Argumente (OpenAI liefert sie so, nicht als Objekt). */
+    val arguments: String,
 )
 
 /**
@@ -32,6 +57,9 @@ data class ChatMessage(
  * @param temperature    Sampling-Temperatur.
  * @param stream         Ob die Antwort als Stream (SSE) erwartet wird.
  * @param costCapUsd     Optionales Kosten-Limit; Routen, die es überschreiten, werden übersprungen.
+ * @param tools          Optionale Tool-/Funktionsdefinitionen (OpenAI-Function-Calling).
+ *                       `null` ⇒ Verhalten unverändert wie vor Einführung von Tool-Calling.
+ * @param toolChoice     Optional "auto" | "none" | "required" (OpenAI-Konvention).
  */
 @Serializable
 data class ModelRequest(
@@ -42,6 +70,8 @@ data class ModelRequest(
     val temperature: Double? = null,
     val stream: Boolean = false,
     val costCapUsd: Double? = null,
+    val tools: List<ToolDefinition>? = null,
+    val toolChoice: String? = null,
 )
 
 /** Die Antwort eines Providers. Kanonischer Name (nie `AIResponse`). */
@@ -51,8 +81,10 @@ data class ModelResponse(
     /** Tatsächlich genutztes Modell, inkl. Provider-Präfix (z.B. "openrouter:gpt-4o-mini"). */
     val modelUsed: String,
     val usage: TokenUsage? = null,
-    /** "stop" | "length" | "content_filter" | … */
+    /** "stop" | "length" | "content_filter" | "tool_calls" | … */
     val finishReason: String? = null,
+    /** Vom Modell angeforderte Tool-Aufrufe, falls `finishReason == "tool_calls"`. */
+    val toolCalls: List<ToolCall>? = null,
 )
 
 @Serializable

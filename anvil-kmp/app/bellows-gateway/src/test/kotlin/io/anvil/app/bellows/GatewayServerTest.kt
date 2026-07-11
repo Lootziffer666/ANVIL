@@ -3,12 +3,15 @@ package io.anvil.app.bellows
 import io.anvil.core.contracts.ModelRequest
 import io.anvil.core.contracts.ModelResponse
 import io.anvil.core.contracts.QualityState
+import io.anvil.core.contracts.ToolCall
 import io.anvil.modules.bellows.BellowsRouter
 import io.anvil.modules.bellows.ProviderAdapter
 import io.anvil.modules.bellows.wire.OpenAiChatRequest
 import io.anvil.modules.bellows.wire.OpenAiChatResponse
+import io.anvil.modules.bellows.wire.OpenAiFunctionDef
 import io.anvil.modules.bellows.wire.OpenAiMessage
 import io.anvil.modules.bellows.wire.OpenAiModelList
+import io.anvil.modules.bellows.wire.OpenAiToolDefinition
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
@@ -99,5 +102,53 @@ class GatewayServerTest {
             setBody(OpenAiChatRequest(model = "test-model", messages = listOf(OpenAiMessage("user", "hi"))))
         }
         assertEquals(HttpStatusCode.OK, ok.status)
+    }
+
+    @Test
+    fun chatCompletions_toolsRoundTripToAdapterAndBack() = testApplication {
+        var seenToolNames: List<String>? = null
+        val router = BellowsRouter(
+            listOf(
+                object : ProviderAdapter {
+                    override val id = "fake"
+                    override val isLocal = true
+                    override val models = listOf("test-model")
+                    override fun handles(model: String?) = true
+                    override suspend fun route(request: ModelRequest): ModelResponse {
+                        seenToolNames = request.tools?.map { it.name }
+                        return ModelResponse(
+                            content = "",
+                            modelUsed = "fake:test-model",
+                            finishReason = "tool_calls",
+                            toolCalls = listOf(ToolCall(id = "call_1", name = "search_assets", arguments = """{"query":"dusty desert"}""")),
+                        )
+                    }
+                    override fun qualityState() = QualityState.STABLE
+                },
+            ),
+        )
+        application { bellowsGateway(router, gatewayKey = null) }
+        val client = createClient { install(ContentNegotiation) { json(gatewayJson) } }
+
+        val resp = client.post("/v1/chat/completions") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                OpenAiChatRequest(
+                    model = "test-model",
+                    messages = listOf(OpenAiMessage("user", "find me a desert asset")),
+                    tools = listOf(OpenAiToolDefinition(function = OpenAiFunctionDef(name = "search_assets", description = "search"))),
+                ),
+            )
+        }
+        assertEquals(HttpStatusCode.OK, resp.status)
+        assertEquals(listOf("search_assets"), seenToolNames, "tools müssen bis zum Provider-Adapter durchgereicht werden")
+
+        val body = resp.body<OpenAiChatResponse>()
+        val message = body.choices.first().message!!
+        assertEquals("tool_calls", body.choices.first().finishReason)
+        assertEquals(null, message.content, "content muss null sein, wenn die Antwort nur aus Tool-Aufrufen besteht")
+        assertEquals(1, message.toolCalls?.size)
+        assertEquals("search_assets", message.toolCalls?.first()?.function?.name)
+        assertEquals("""{"query":"dusty desert"}""", message.toolCalls?.first()?.function?.arguments)
     }
 }
