@@ -115,7 +115,10 @@ object AnvilContractRegistry {
             descriptor("anvil.runnable-build", ContractOwner.TARGET, listOf("target"), listOf("cue", "commander")),
 
             // ── Gate B-01: externe Studio-Nähte (Fable-Reparaturauftrag) ────────────
-            descriptor("anvil.wizard.production-assessment", ContractOwner.WIZARD, listOf("wizard"), listOf("gameplay", "scene", "interface", "acoustic", "target", "cue")),
+            // "anvil" added (Real Golden Run R-06): WizardHttpAdapter (core:externaladapters)
+            // now consumes this contract directly inside ANVIL itself, before any run-plan
+            // step relays it onward — previously this was a pure downstream-relay contract.
+            descriptor("anvil.wizard.production-assessment", ContractOwner.WIZARD, listOf("wizard"), listOf("anvil", "gameplay", "scene", "interface", "acoustic", "target", "cue")),
             descriptor("anvil.wizard.capability-cast", ContractOwner.WIZARD, listOf("wizard"), listOf("gameplay", "target")),
 
             descriptor("swift.actor-bundle", ContractOwner.SWIFT, listOf("swift"), listOf("target", "shaded", "cue")),

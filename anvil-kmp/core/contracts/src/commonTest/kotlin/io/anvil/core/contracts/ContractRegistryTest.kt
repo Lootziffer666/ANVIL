@@ -71,6 +71,24 @@ class ContractRegistryTest {
     }
 
     @Test
+    fun requireConsumerAllowed_wizardProductionAssessment_allowsAnvilItself() {
+        // Real Golden Run R-06: WizardHttpAdapter (core:externaladapters) consumes this
+        // contract directly inside ANVIL, not only via a downstream run-plan step.
+        val descriptor = AnvilContractRegistry.default.requireConsumerAllowed(
+            ContractId("anvil.wizard.production-assessment"), 1, "anvil",
+        )
+        assertEquals(ContractOwner.WIZARD, descriptor.owner)
+    }
+
+    @Test
+    fun requireConsumerAllowed_wizardProductionAssessment_stillAllowsExistingDownstreamConsumers() {
+        val id = ContractId("anvil.wizard.production-assessment")
+        listOf("gameplay", "scene", "interface", "acoustic", "target", "cue").forEach { consumer ->
+            AnvilContractRegistry.default.requireConsumerAllowed(id, 1, consumer)
+        }
+    }
+
+    @Test
     fun newExternalSeamContracts_areRegisteredWithSingleOwner() {
         val ids = listOf(
             "anvil.wizard.production-assessment" to ContractOwner.WIZARD,
