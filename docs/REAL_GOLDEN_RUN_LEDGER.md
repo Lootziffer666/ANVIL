@@ -239,6 +239,119 @@ RealGoldenRunTest → Report.
 
 ---
 
+## R-07..R-11 — SHADED: Scene-Project-Contract + Headless-Orchestrierung
+
+- **Repo:** SHADED
+- **Status:** DONE
+- **Files:** `contracts/shaded-scene-project.schema.json` (R-07); `editor/facade.js`
+  (+`addActorBundle`/`getRuntimeStatus`/`getDebugSnapshot`/`exportProject`/`loadProject`,
+  R-08), `editor/facade.test.js` (R-08); `editor/app.js` (`window.SHADED_ORCHESTRATOR`,
+  R-09); `tools/orchestrate.js`, `tools/orchestrate-example-request.json` (R-10);
+  `docs/ORCHESTRATION.md` (R-11); `package.json` (`check`-Script erweitert); `CLAUDE.md`.
+- **Contract:** neu `shaded.scene-project/v1` (Owner SHADED) + CLI-Vertrag `tools/orchestrate.js`
+  (Beweis-Ziel für ANVILs `ShadedCliAdapter`, R-12)
+- **Owner:** SHADED (sichtbare Szenen-Wahrheit)
+- **Problem:** SHADED hatte keinen headless ansteuerbaren Vertrag — nur die interaktive
+  Editor-UI (Maus/Tastatur) und die Runtime-`window.SHADED`-API (nur im Browser-Kontext
+  sinnvoll nutzbar). ANVIL kann so nicht real prüfen/beweisen, dass eine Szene inkl.
+  Actors/Storyboard tatsächlich lädt — es gab nur den fixture-basierten Pfad.
+- **Smallest safe change:** Fünf neue Methoden AUF der bestehenden `SceneEditorFacade`
+  (kein Fork, kein zweiter Actor-/Storyboard-Zustand — `addActorBundle` ruft dieselbe
+  `window.SHADED.addActor()`-Wahrheit wie die interaktive `ActorPlacer`-Fassade auf;
+  `loadProject`s Storyboard-Übernahme mutiert dieselbe Live-Referenz wie
+  `StoryboardTimeline`). `window.SHADED_ORCHESTRATOR` in `app.js` bündelt sie nur für
+  externe Headless-Skripte (kein Duplikat von `window.SHADED`). `tools/orchestrate.js`
+  ist reine Orchestrierungs-Glue (echter lokaler Server + echtes headless Chromium,
+  identisches Muster wie das bereits bestehende `tools/verify-editor.js`) — kein neuer
+  Shader-/Analyse-Code.
+  **Beim Testen echten Bug gefunden und gefixt:** `loadSceneFile()` rief `create()`
+  auf, bevor das Bild asynchron dekodiert war (Race Condition) — behoben durch
+  Rückgabe eines Promise, das auf die echte Canvas-Größenänderung wartet (gleiche
+  Technik wie bereits für `paint-canvas` in `tools/verify-editor.js` etabliert; keine
+  feste Sleep-Zeit).
+- **Command:** `npm run check` (Syntax aller neuen/geänderten Dateien + Schema-JSON-Validität);
+  `node editor/facade.test.js`; `node tools/orchestrate.js --project tools/orchestrate-example-request.json --json`;
+  `node tools/orchestrate.js --project tools/does-not-exist.json --json` (Exit-2-Pfad);
+  `node tools/verify-editor.js` (Regressionscheck der bestehenden interaktiven Editor-Suite).
+- **Result:** PASS — `npm run check`: "index script parses", keine Syntaxfehler.
+  `facade.test.js`: 13/13 PASS ("✅ facade.test PASSED"). `orchestrate.js` Erfolgsfall:
+  Exit 0, echtes JSON (`{"status":"ok","ready":true,"actorCount":1,"storyboardSteps":1,...}`).
+  `orchestrate.js` Fehlerfälle: Exit 2 bei fehlender Request-Datei UND bei fehlendem
+  Szenenbild, jeweils mit `code:"missing_input"`. `verify-editor.js`: alle 11
+  bestehenden Checks weiterhin PASS (keine Regression durch die `loadSceneFile()`-Änderung).
+- **Evidence:** Terminal-Output oben, real ausgeführt (kein Mock-DOM, echtes headless
+  Chromium via Playwright, echte Fixture-Dateien `file_00000000974871f49fe71f6b456f9579.png`
+  + `tools/verify-test-actor.{png,json}`).
+- **Remaining risk:** `orchestrate.js`s Depth-Auto-Probe-404-Falle (behoben durch
+  Weiterreichen des echten Dateinamens) ist eine allgemeine Falle für künftige Aufrufer,
+  die erfundene Dateinamen an `loadImageFile` übergeben — in `docs/ORCHESTRATION.md`
+  nicht explizit dokumentiert (kleine Lücke, keine Funktionsgefährdung, da der reale
+  `_depth`-Fehlversuch von `loadImageFile` selbst bereits harmlos abgefangen wird —
+  nur `orchestrate.js`s strikte "keine Konsolenfehler"-Prüfung reagiert empfindlich
+  darauf). `exportProject()`/`getDebugSnapshot()` können keine Bild-Bytes zurückgeben
+  (dokumentiertes, bewusstes Schema-Limit, kein Bug).
+
+---
+
+**Gate 3 (SHADED) Status: ABGESCHLOSSEN.** Scene-Project-Contract, Facade-Erweiterung,
+Orchestrator-Debug-API und CLI real implementiert und real verifiziert (13/13 Facade-Tests,
+echter CLI-Erfolgslauf + zwei echte Fehlerpfade, keine Regression der bestehenden Editor-Suite).
+
+---
+
+## R-12 — ANVIL: `ShadedCliAdapter.kt`
+
+- **Repo:** ANVIL
+- **Status:** DONE
+- **Files:** `anvil-kmp/core/externaladapters/src/main/kotlin/io/anvil/core/externaladapters/ShadedCliAdapter.kt`,
+  `.../src/test/kotlin/io/anvil/core/externaladapters/ShadedCliAdapterTest.kt`,
+  `.../src/test/kotlin/io/anvil/core/externaladapters/ShadedCliManualIntegrationTest.kt`,
+  `anvil-kmp/core/contracts/.../ContractRegistry.kt` (+`shaded.scene-project`-Registrierung),
+  `anvil-kmp/core/contracts/.../ContractRegistryTest.kt`
+- **Contract:** `shaded.scene-project/v1` (Consumer-Seite; Owner SHADED)
+- **Owner:** SHADED bleibt Owner; ANVIL ist hier Consumer/Transport.
+- **Problem:** SHADEDs neuer, echter CLI-Vertrag (`tools/orchestrate.js`, R-10) hatte auf
+  ANVIL-Seite noch keinen Adapter — ohne ihn bliebe SHADED für den Golden Run weiterhin
+  ein Fixture-Pfad, obwohl SHADED selbst jetzt real ansteuerbar ist.
+- **Smallest safe change:** Neue Klasse nach demselben Muster wie `SwiftCliAdapter`/
+  `CueCliAdapter` (`ExternalToolPort`, JVM-only, `ProcessRunner`-Abstraktion). `invoke()`
+  schreibt `request.payload` (rohes JSON, SHADEDs eigenes `orchestrate.js`-Request-Format)
+  in eine Temp-Datei und shellt `node tools/orchestrate.js --project <tmp> --json`;
+  Exit-Code-Mapping identisch zu `SwiftCliAdapter`s Konvention (0 Produced, 2 "missing
+  input" → Failed, sonst generisch Failed). `health()` nutzt einen echten Trick: ein
+  Aufruf OHNE `--project` lässt `orchestrate.js` sofort (vor jedem Browser-Start) mit
+  `{"status":"error","code":"missing_input",...}` und Exit 2 antworten — ein schneller,
+  echter Erreichbarkeits-Beweis ohne Playwright/Server zu starten. `shaded.scene-project`
+  wurde additiv in `AnvilContractRegistry` registriert (Owner SHADED, Producer `shaded`,
+  Consumer `anvil, target, cue` — `anvil` ergänzt aus demselben Grund wie bei R-06).
+- **Command:** `/opt/gradle/bin/gradle :core:contracts:jvmTest :core:externaladapters:test --console=plain`;
+  danach real gegen den echten SHADED-Checkout:
+  `SHADED_REPO_PATH=/home/user/SHADED /opt/gradle/bin/gradle :core:externaladapters:test --tests "*ShadedCliManualIntegrationTest*" --console=plain --rerun`
+- **Result:** PASS — `BUILD SUCCESSFUL`. `ShadedCliAdapterTest`: `tests="9"
+  failures="0" errors="0"` (Health STABLE/DEGRADED/FAILED, echter Erfolgsfall mit real
+  aus SHADED aufgezeichnetem JSON, Payload landet nachweislich in der Temp-Datei, zwei
+  echte `missing_input`-Exit-2-Fälle, Crash-ohne-stdout, falscher Input-Contract).
+  `ShadedCliManualIntegrationTest` mit `SHADED_REPO_PATH=/home/user/SHADED` (echter
+  Checkout, kein Fixture-Pfad): `tests="1" failures="0" errors="0"` — `health()` liefert
+  real `QualityState.STABLE`. `ContractRegistryTest`: weiterhin grün (12+2 neue Fälle).
+- **Evidence:** Test-Report-XMLs unter
+  `anvil-kmp/core/externaladapters/build/test-results/test/TEST-io.anvil.core.externaladapters.ShadedCli*.xml`.
+  Die drei JSON-Fixtures in `ShadedCliAdapterTest` sind unbearbeitete, in dieser Session
+  real erzeugte `node tools/orchestrate.js`-Ausgaben (Erfolg, fehlende Request-Datei,
+  fehlendes Szenenbild — siehe R-07..R-11-Terminal-Output).
+- **Remaining risk:** `invoke()` wurde nur gegen `FakeProcessRunner` mit real
+  aufgezeichnetem JSON getestet, nicht als echter End-to-End-Shellout in diesem Atom
+  (das folgt in R-19, `RealGoldenRunTest`, wo ein echter Chromium-Lauf über den
+  Adapter selbst getriggert wird). Die Temp-Datei wird bei Erfolg UND Fehlschlag
+  gelöscht (`finally`), aber nicht bei JVM-Absturz — vernachlässigbares Leck (OS-Temp).
+
+---
+
+**Gate 4 (ANVIL) Status: ABGESCHLOSSEN.** SHADEDs realer CLI-Vertrag hat jetzt einen
+echten ANVIL-seitigen Adapter, real gegen den echten SHADED-Checkout verifiziert.
+
+---
+
 **Gate 1 (WIZARD) Status: ABGESCHLOSSEN.** Alle vier Atome (R-01–R-04) real
 implementiert, real getestet (23/23 grün), Build grün. WIZARD ist ab hier kein
 Fixture mehr für diesen Vertrag — `POST /api/production-assessment` liefert

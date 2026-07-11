@@ -126,6 +126,10 @@ object AnvilContractRegistry {
 
             descriptor("shaded.scene-config", ContractOwner.SHADED, listOf("shaded"), listOf("target", "cue")),
             descriptor("shaded.actor-binding", ContractOwner.SHADED, listOf("shaded"), listOf("target", "cue")),
+            // Real Golden Run R-07/R-12: shaded.scene-project (contracts/shaded-scene-project.schema.json
+            // in the SHADED repo) — ShadedCliAdapter (core:externaladapters) consumes it directly inside
+            // ANVIL, same reasoning as "anvil" being added to anvil.wizard.production-assessment (R-06).
+            descriptor("shaded.scene-project", ContractOwner.SHADED, listOf("shaded"), listOf("anvil", "target", "cue")),
 
             descriptor("cue.playable-proof", ContractOwner.CUE, listOf("cue"), listOf("bard", "commander")),
             descriptor("cue.temporal-proof", ContractOwner.CUE, listOf("cue"), listOf("bard", "commander")),

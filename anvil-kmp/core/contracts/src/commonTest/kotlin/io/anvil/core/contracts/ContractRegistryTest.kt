@@ -89,6 +89,16 @@ class ContractRegistryTest {
     }
 
     @Test
+    fun requireConsumerAllowed_shadedSceneProject_allowsAnvilItself() {
+        // Real Golden Run R-12: ShadedCliAdapter (core:externaladapters) consumes this
+        // contract directly inside ANVIL, not only via a downstream run-plan step.
+        val descriptor = AnvilContractRegistry.default.requireConsumerAllowed(
+            ContractId("shaded.scene-project"), 1, "anvil",
+        )
+        assertEquals(ContractOwner.SHADED, descriptor.owner)
+    }
+
+    @Test
     fun newExternalSeamContracts_areRegisteredWithSingleOwner() {
         val ids = listOf(
             "anvil.wizard.production-assessment" to ContractOwner.WIZARD,
@@ -97,6 +107,7 @@ class ContractRegistryTest {
             "swift.render-result" to ContractOwner.SWIFT,
             "shaded.scene-config" to ContractOwner.SHADED,
             "shaded.actor-binding" to ContractOwner.SHADED,
+            "shaded.scene-project" to ContractOwner.SHADED,
             "cue.playable-proof" to ContractOwner.CUE,
             "cue.temporal-proof" to ContractOwner.CUE,
             "cue.audio-proof" to ContractOwner.CUE,
