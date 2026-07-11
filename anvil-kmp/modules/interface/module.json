@@ -1,0 +1,23 @@
+{
+  "id": "anvil-interface-compiler",
+  "slot": "interface-input-compiler",
+  "version": "0.1.0",
+  "contract": "ModuleSlotContract",
+  "purpose": "Compiles semantic input, HUD, prompts, tutorial and accessibility contracts without owning gameplay outcomes or visual world truth.",
+  "operations": ["COMPILE", "VALIDATE"],
+  "inputs": [
+    "anvil.interface.intent/v1",
+    "anvil.interface.bundle/v1"
+  ],
+  "outputs": [
+    "anvil.interface.bundle/v1",
+    "anvil.interface.validation-report/v1"
+  ],
+  "forbidden": [
+    "gameplay-rule-authoring",
+    "technical-ready-verdict",
+    "creative-intent-mutation",
+    "direct-keycode-gameplay-binding",
+    "workspace-status-mutation"
+  ]
+}

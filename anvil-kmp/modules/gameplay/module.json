@@ -1,0 +1,23 @@
+{
+  "id": "anvil-gameplay-compiler",
+  "slot": "gameplay-rule-compiler",
+  "version": "0.1.0",
+  "contract": "ModuleSlotContract",
+  "purpose": "Compiles BARD play grammar and WIZARD capability casts into executable gameplay rules without owning creative intent or visual state.",
+  "operations": ["COMPILE", "VALIDATE"],
+  "inputs": [
+    "anvil.gameplay.compile-request/v1",
+    "anvil.gameplay.plan/v1"
+  ],
+  "outputs": [
+    "anvil.gameplay.plan/v1",
+    "anvil.gameplay.validation-report/v1"
+  ],
+  "forbidden": [
+    "creative-intent-mutation",
+    "asset-selection",
+    "visual-state-authoring",
+    "actor-belief-authoring",
+    "workspace-status-mutation"
+  ]
+}

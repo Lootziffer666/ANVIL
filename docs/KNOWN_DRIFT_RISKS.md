@@ -33,8 +33,8 @@ State Surface: Zustand zuerst, nicht Menüs.
 **Status:** ⚠️ TEILWEISE BEHOBEN. Der KMP-Pfad ist sauber: Gate B9 liefert mit `JvmCredentialVault`
 (JCEKS, verschlüsselt) eine `CredentialVaultContract`-Implementierung für Bellows; die
 `bellows.config.json` enthält nur Referenzen (`apiKeyRef`/`apiKeyEnv`), nie Klartext-Keys
-(verifiziert: Secret nicht im Keystore-Klartext). **Verbleibend:** der historische JS-`token-manager`
-(`app/`, eingefroren) speichert `_key` weiterhin im Klartext in localStorage.
+(verifiziert: Secret nicht im Keystore-Klartext). **Legacy-Status:** der historische JS-`token-manager`
+(`app/`, eingefroren) ist deaktiviert. Er purgt alte `_key`-Werte aus `localStorage`, behält nur deaktivierte Metadaten und verweist auf Bellows CredentialVault.
 
 ### 6. Overengineering
 **Risiko:** Zu viel Abstraktion, zu wenig Nutzen.  
@@ -120,3 +120,9 @@ State Surface: Zustand zuerst, nicht Menüs.
 - Erlaubte Anvil-Begriffe definiert
 - Donor-Referenzen nur in `docs/provenance/` erlaubt
 **Status:** Regeln stehen. Compliance-Prüfung 2026-05-20: Keine verbotenen Begriffe ("ogcode", "Striker", "ogden") außerhalb `docs/provenance/` gefunden. Muss bei jeder Transplant-Aktion erneut geprüft werden.
+
+### 16. Gateway-Drift: OmniRoute vs Bellows ✅ BEHOBEN
+**Risiko:** A20/OmniRoute könnte als zweiter Gateway neben Bellows interpretiert werden.
+**Entscheidung:** Bellows bleibt der kanonische ANVIL-Gateway und Modellrouter. OmniRoute ist nur Referenz.
+**Gegenmaßnahme:** `docs/OMNIROUTE_BRIDGE.md` markiert OmniRoute als superseded/reference; `docs/GATES.md` setzt A20 auf `superseded`.
+**Status:** Behoben am 2026-07-11.

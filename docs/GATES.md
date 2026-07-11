@@ -36,8 +36,8 @@ Gates sind sequenziell, jede hat:
 | A4 | Workspace Model | `done` |
 | A5 | Module Slot Contract | `done` |
 | A6 | The Forge — Module Launchpad | `done` |
-| A7 | Artifact Output Layer | `partial` |
-| A8 | Blueprint Export: Agent-Ready Prompt Packs | `partial` |
+| A7 | Artifact Output Layer | `prototype` |
+| A8 | Blueprint Export: Agent-Ready Prompt Packs | `prototype` |
 | A9 | Tasker/App-Factory Blueprint Track | `docs-only` |
 | A10 | Local Preview / Run Surface | `prototype` |
 | A11 | Governance Files | `done` |
@@ -47,9 +47,9 @@ Gates sind sequenziell, jede hat:
 | A15 | Nvidia Build Models | `done` |
 | A16 | HuggingFace Launcher Surface | `done` |
 | A17 | Platform Abstraction Layer | `done` |
-| A18 | Pake Desktop Shell | `docs-only` |
+| A18 | Pake Desktop Shell | `prototype` |
 | A19 | Workspace Sync Protocol | `done` |
-| A20 | OmniRoute Gateway Bridge | `docs-only` |
+| A20 | OmniRoute Gateway Bridge | `superseded` |
 | AX | Repo Reality Lock | `done` |
 
 
@@ -58,11 +58,15 @@ Gates sind sequenziell, jede hat:
 | Gate | Name | Status | Leitdokument |
 |------|------|--------|--------------|
 | B10 | Studio Roadmap / Contract Registry | `docs-only` | [`ANVIL_STUDIO_ROADMAP.md`](ANVIL_STUDIO_ROADMAP.md) |
-| B11 | Gameplay Compiler Contracts | `planned` | `GameplayPlan/v1`, `InteractionDefinition/v1`, `StatePatch/v1` |
-| B12 | Scene Compiler / 3D-RE-GEN Contracts | `planned` | `SceneBundle/v1`, `NavigationGraph/v1`, `CameraPlan/v1` |
-| B13 | Target Adapter MVP | `planned` | `TargetAdapterContract/v1`, `RunnableBuild/v1` |
-| B14 | Interface Compiler MVP | `planned` | `InputActionMap/v1`, `HUDState/v1` |
-| B15 | Acoustic Runtime Slice | `planned` | `AudioCueGraph/v1`, `AudioProof/v1` |
+| B11 | Gameplay Compiler Contracts | `prototype` | `GameplayPlan/v1`, `InteractionDefinition/v1`, `StatePatch/v1` |
+| B12 | Scene Compiler / 3D-RE-GEN Contracts | `prototype` | `SceneBundle/v1`, `NavigationGraph/v1`, `CameraPlan/v1` |
+| B13 | Target Adapter MVP | `prototype` | `TargetAdapterContract/v1`, `RunnableBuild/v1` |
+| B14 | Interface Compiler MVP | `prototype` | `InputActionMap/v1`, `HUDState/v1` |
+| B15 | Acoustic Runtime Slice | `prototype` | `AudioCueGraph/v1`, `AudioProof/v1` |
+| B16 | Artifact Output Layer MVP | `prototype` | `ArtifactManifest/v1`, `ArtifactRegistry/v1` |
+| B17 | Run Surface MVP | `prototype` | `RunPlan/v1`, `RunSummary/v1` |
+| B18 | Handoff Export MVP | `prototype` | `HandoffExportRequest/v1`, `HandoffPackage/v1` |
+| B19 | Workspace Sync Registry MVP | `prototype` | `WorkspaceSyncBundle/v1`, `WorkspaceSyncMergeReport/v1` |
 
 B-Serie-Gates folgen der Roadmap-Regel: erst Contract Registry / Wahrheitsbesitzer,
 dann Implementierung. Keine Engine-, Plugin- oder Modulabhängigkeit darf vor dem
@@ -92,8 +96,8 @@ Für vollständige Details pro Gate siehe:
 
 ## Gate A20 — OmniRoute Gateway Bridge
 - **Dateien:** `docs/OMNIROUTE_BRIDGE.md`
-- **Zweck:** Ein Endpoint für 160+ Provider
-- **Status:** `docs-only` — Nur Docs + Provider-Eintrag, kein Bridge-Code
+- **Zweck:** Externe Gateway-Referenz; Bellows bleibt kanonisch
+- **Status:** `superseded` — keine OmniRoute-Implementierung, keine zweite Provider-Wahrheit
 
 ## Gate AX — Repo Reality Lock
 - **Dateien:** `docs/REPO_REALITY_LOCK.md`, `docs/GATE_RECONCILIATION.md`, `docs/KNOWN_DRIFT_RISKS.md`
@@ -145,3 +149,15 @@ Jede neue Gate wird hier eingetragen. Gate-Reihenfolge wird nicht nachträglich 
 | 2026-05-09 | AX | Reconciliation, Statusklassen eingeführt, Status korrigiert |
 | 2026-05-10 | AT1–AT4 | Donor-Codebase Transplant Preparation angelegt |
 | 2026-07-11 | B10 | Studio Roadmap / fehlende Wahrheitsbesitzer dokumentiert |
+| 2026-07-11 | B11 | Gameplay Compiler Contract-MVP begonnen |
+| 2026-07-11 | B12 | Scene Compiler / 3D-RE-GEN Contract-MVP begonnen |
+| 2026-07-11 | B13 | Target Adapter Contract-MVP begonnen |
+| 2026-07-11 | B14 | Interface Compiler Contract-MVP begonnen |
+| 2026-07-11 | B15 | Acoustic Runtime Contract-MVP begonnen |
+| 2026-07-11 | B16/A7 | Artifact Output Layer Manifest-/Registry-MVP begonnen |
+| 2026-07-11 | B17/A10 | Run Surface Module-Execution-MVP begonnen |
+| 2026-07-11 | A13 | Legacy Token Manager deaktiviert |
+| 2026-07-11 | A18 | Pake Icon-Asset und Build-Script ergänzt |
+| 2026-07-11 | B18/A8 | Handoff Export über Artifact Layer als KMP-MVP begonnen |
+| 2026-07-11 | B19/A19 | Workspace Sync über Artifact-/Run-Registry als KMP-MVP begonnen |
+| 2026-07-11 | A20 | Bellows als kanonischen Gateway bestätigt; OmniRoute Bridge superseded |

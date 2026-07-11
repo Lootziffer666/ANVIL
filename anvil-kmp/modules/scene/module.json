@@ -1,0 +1,23 @@
+{
+  "id": "anvil-scene-compiler",
+  "slot": "scene-spatial-compiler",
+  "version": "0.1.0",
+  "contract": "ModuleSlotContract",
+  "purpose": "Compiles production intent and gameplay anchors into spatial scene bundles without owning rules, actor knowledge, or visual atmosphere.",
+  "operations": ["COMPILE", "VALIDATE"],
+  "inputs": [
+    "anvil.scene.intent/v1",
+    "anvil.scene-bundle/v1"
+  ],
+  "outputs": [
+    "anvil.scene-bundle/v1",
+    "anvil.scene.validation-report/v1"
+  ],
+  "forbidden": [
+    "gameplay-rule-authoring",
+    "actor-belief-authoring",
+    "creative-intent-mutation",
+    "audio-state-authoring",
+    "workspace-status-mutation"
+  ]
+}

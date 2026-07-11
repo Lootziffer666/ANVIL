@@ -1,7 +1,7 @@
 # Workspace Sync Protocol
 
 **Gate:** A19
-**Status:** Active
+**Status:** Active; Gate B19/A19 hat jetzt einen KMP-Prototyp über Artifact-/Run-Registry.
 **Dateien:** `app/sync.js`
 
 ## Zweck
@@ -81,3 +81,31 @@ Android + Windows im selben WiFi → mDNS Discovery → HTTP Sync
 | [go-gitea/gitea](https://github.com/go-gitea/gitea) | Self-Hosted Git für Sync |
 | [tw93/Pake](https://github.com/tw93/Pake) | Desktop Shell (A18) |
 | [homarr-labs/homarr](https://github.com/homarr-labs/homarr) | Dashboard als Sync-Hub |
+
+
+---
+
+## Gate B19/A19 — Workspace Sync über Artifact-/Run-Registry
+
+Der aktuelle MVP lebt in `anvil-kmp/core/sync` und macht Sync-Bundles zu
+serialisierbaren KMP-Verträgen statt losen UI-JSONs:
+
+- `WorkspaceSyncExportRequest/v1` beschreibt Bundle, Workspace, Export-Run,
+  Device und optionale Run-Refs.
+- `WorkspaceSyncBundle/v1` enthält ausschließlich Artifact-Manifeste und
+  Run-Zusammenfassungen, keine Artifact-Payloads und keine Secrets.
+- `WorkspaceSyncService.exportArtifact(...)` schreibt das Sync-Bundle über
+  `ArtifactWriter` als eigenes Artifact zurück.
+- `WorkspaceSyncService.merge(...)` importiert nur unbekannte Artifact-Manifeste
+  desselben Workspace und erzeugt einen `WorkspaceSyncMergeReport/v1`.
+
+### Zusätzliche Regeln
+
+1. Sync-Bundles dürfen keine Artifact-Payloads enthalten.
+2. Cross-Workspace-Manifeste werden beim Export ausgeschlossen und beim Import
+   blockiert.
+3. Doppelte Artifact-IDs werden nicht überschrieben, sondern im Merge-Report als
+   übersprungen markiert.
+4. Prüfsummen müssen `sha256:`-präfigiert bleiben.
+5. Token-Secrets bleiben weiterhin außerhalb des Bundles; nur Bellows Vault darf
+   Secrets halten.
