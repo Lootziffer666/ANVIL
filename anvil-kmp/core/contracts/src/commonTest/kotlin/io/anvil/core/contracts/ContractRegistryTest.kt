@@ -71,6 +71,34 @@ class ContractRegistryTest {
     }
 
     @Test
+    fun requireConsumerAllowed_wizardProductionAssessment_allowsAnvilItself() {
+        // Real Golden Run R-06: WizardHttpAdapter (core:externaladapters) consumes this
+        // contract directly inside ANVIL, not only via a downstream run-plan step.
+        val descriptor = AnvilContractRegistry.default.requireConsumerAllowed(
+            ContractId("anvil.wizard.production-assessment"), 1, "anvil",
+        )
+        assertEquals(ContractOwner.WIZARD, descriptor.owner)
+    }
+
+    @Test
+    fun requireConsumerAllowed_wizardProductionAssessment_stillAllowsExistingDownstreamConsumers() {
+        val id = ContractId("anvil.wizard.production-assessment")
+        listOf("gameplay", "scene", "interface", "acoustic", "target", "cue").forEach { consumer ->
+            AnvilContractRegistry.default.requireConsumerAllowed(id, 1, consumer)
+        }
+    }
+
+    @Test
+    fun requireConsumerAllowed_shadedSceneProject_allowsAnvilItself() {
+        // Real Golden Run R-12: ShadedCliAdapter (core:externaladapters) consumes this
+        // contract directly inside ANVIL, not only via a downstream run-plan step.
+        val descriptor = AnvilContractRegistry.default.requireConsumerAllowed(
+            ContractId("shaded.scene-project"), 1, "anvil",
+        )
+        assertEquals(ContractOwner.SHADED, descriptor.owner)
+    }
+
+    @Test
     fun newExternalSeamContracts_areRegisteredWithSingleOwner() {
         val ids = listOf(
             "anvil.wizard.production-assessment" to ContractOwner.WIZARD,
@@ -79,6 +107,7 @@ class ContractRegistryTest {
             "swift.render-result" to ContractOwner.SWIFT,
             "shaded.scene-config" to ContractOwner.SHADED,
             "shaded.actor-binding" to ContractOwner.SHADED,
+            "shaded.scene-project" to ContractOwner.SHADED,
             "cue.playable-proof" to ContractOwner.CUE,
             "cue.temporal-proof" to ContractOwner.CUE,
             "cue.audio-proof" to ContractOwner.CUE,
