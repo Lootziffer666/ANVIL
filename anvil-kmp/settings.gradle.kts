@@ -36,6 +36,7 @@ include(":modules:interface")       // Interface Compiler: InputActionMap + HUDS
 include(":modules:acoustic")        // Acoustic Runtime: AudioCueGraph + AudioProof
 include(":core:externaladapters")   // Gate E-03: real ExternalToolPort CLI adapters (SWIFT, CUE-AGENT)
 include(":app:bellows-gateway")     // JVM: Ktor-Server (/v1/...), CLI, JCEKS-CredentialVault
+include(":app:studio-run")          // Gate C1: seed+engine -> real RunSurface orchestration, real adapters where configured
 
 // Gate I — Golden Run proof. Lives under :surfaces:* (not :core:run) because it must
 // import both :core:* and :modules:* to orchestrate the end-to-end chain; CLAUDE.md §3

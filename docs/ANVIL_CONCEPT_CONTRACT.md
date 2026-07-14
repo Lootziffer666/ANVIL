@@ -68,20 +68,43 @@ Beispiele: `android-apk`, `desktop-exe`, `export-json`, `export-pdf`.
 
 ### Anvil ≠ Ink & Iron Glow
 
+**Korrigiert (2026-07-14):** Diese Zeile stand hier vorher falsch: IIG war als
+"Tattoo-Studio-Marke" mit "Studio-Kunden" als Zielgruppe beschrieben — nie verifiziert,
+vermutlich aus dem Namensbestandteil "Ink" hergeleitet. Vom Nutzer direkt korrigiert:
+**Ink & Iron Glow (IIG)** ist das unabhängige Kunstwerkstudio des Nutzers — Bücher,
+Malerei, Tools, bewusst formoffen, keine einzelne Ausdrucksform. Anvil war ursprünglich
+als eigenständige IDE gedacht; mittlerweile ist Anvil der Kopf dieses Indie-Studios — der
+operative Kern, über den die Pipeline-Module (DECOMPILE, SHADED, LAB, TRIVIUM, CUE-AGENT,
+SWIFT, MIXTRACT, Anvil-Bellows, MYTHIC, ...) zu einem fast autarken Spielstudio
+zusammenlaufen. "Anvil ≠ IIG" gilt also als Ebenen-Unterscheidung (Anvil = Werkzeug/
+operativer Hub, IIG = die kreative Praxis/Identität dahinter), nicht als Aussage über
+getrennte, unverbundene Projekte.
+
 | | Anvil | Ink & Iron Glow (IIG) |
 |---|---|---|
-| **Was** | IDE / Entwicklungswerkbank | Tattoo-Studio-Marke |
-| **Zielgruppe** | Entwickler (Christian) | Studio-Kunden |
+| **Was** | Werkzeug / operativer Hub der Pipeline | unabhängiges, formoffenes Kunstwerkstudio |
 | **Design** | Werkstatt-Ästhetik, State Surfaces | IIG Design System (kupfer/dunkel) |
 | **Repos** | `ANVIL` | `Homepage`, `Anvil-Bellows` (ehem. CATALON-GUARD) |
 
 Anvil-UI-Texte dürfen keine IIG-Branding-Elemente enthalten.  
 The Forge ist kein Inki-Feature.
 
-### Anvil ≠ Anvil-Bellows (ehem. CATALON-GUARD)
+### Anvil × Anvil-Bellows (ehem. CATALON-GUARD)
 
-Anvil-Bellows ist ein eigenständiges Projekt unter dem IIG-Dach.  
-Der Name „Bellows" (Blasebalg) referenziert die Schmiede-Metapher, gehört aber zum IIG-Ökosystem, nicht zu Anvil-IDE.
+Anvil-Bellows ist ein eigenständiges Repo/Deployment (Python/LiteLLM, kein Teil des
+Kotlin-Monorepos `anvil-kmp`) — organisatorisch IIG-Infrastruktur, kein Anvil-IDE-natives
+Modul. Das schließt geteilte Nutzung nicht aus, im Gegenteil: Anvil-Bellows ist der
+netzwerk-erreichbare, budget-geschützte Multi-Provider-Gateway (Vertex AI, OpenRouter,
+...), den sowohl die Nicht-Kotlin-Pipeline-Repos (DECOMPILE, SHADED, LAB, CUE-AGENT —
+direkt per `BELLOWS_BASE_URL`, siehe `Anvil-Bellows/README.md`) als auch Anvils eigener
+Kotlin-nativer Router (`:modules:bellows`, Gate B9) als **einen konfigurierten
+Upstream-Provider** nutzen können, statt Cloud-Credentials zweimal zu verwalten. Siehe
+`modules/bellows/README.md` für das Kompositions-Rezept. Die beiden Implementierungen
+bleiben bewusst getrennte Prozesse (unterschiedliche Stacks, unterschiedliche
+Default-Ports — 8765 vs. 4000) und stehen nicht in Konkurrenz zueinander: Anvils
+Kotlin-Router ist die In-Process-Schnittstelle für Anvils eigene Module/Orchestrierung
+(`RunSurface`); der standalone Proxy ist das dauerhaft laufende Backend, das jede
+Sprache/jedes Repo über HTTP erreichen kann.
 
 ---
 

@@ -208,6 +208,49 @@
 
 ---
 
+> **Hinweis (2026-07-14):** Zwischen B9 und hier laufen im Code bereits Gate-Referenzen
+> ("Gate E-03" in `core/externaladapters`, "Gate I" in `surfaces/golden-run`, "R-19..R-21"
+> in `RealGoldenRunTest`), die nie in dieses Register aufgenommen wurden — reale, verifizierte
+> Arbeit (echte SWIFT/CUE-AGENT-Adapter, der Golden-Run-Beweis), nur die Doku hier ist
+> dahinter zurückgeblieben. Nicht rückwirkend repariert (nicht Teil dieser Gate), aber hier
+> vermerkt, damit es nicht als unentdeckte Lücke stehen bleibt.
+
+## 🚀 C-Gates — Studio Run Orchestration
+
+### Gate C1 — Studio Run: Seed-to-Prototype Orchestrator
+- **Ziel:** Der bis hierhin fehlende Baustein: Gate E-03 bewies die echten CLI/HTTP-Adapter
+  (SWIFT, CUE-AGENT, dazu WIZARD/SHADED aus R-19..21), Gate I bewies die echte
+  `RunSurface`-Modulkette (Gameplay→Scene→Interface→Acoustic→Target) — aber beides lief nur
+  getrennt und nur in Tests. Kein Programm setzte beides zu einem echten, außerhalb von Tests
+  lauffähigen Lauf zusammen.
+- **Ergebnis:**
+  - `:app:studio-run` (JVM-Application, `app:*` darf alles importieren — §3): `StudioRunAssembler`
+    (reine, deterministische Funktion Seed→`RunPlan`+Modul-Map, unit-testbar ohne IO), `Main.kt`
+    (CLI: `--seed`, `--engine`, `--platform`, `--verbs`, `--roles`, `--out`, `--cue-target-url`),
+    `FixturePorts.kt` (selbst-beschriftete `"fixture":true`-Stand-ins für BARD/WIZARD/SWIFT/
+    SHADED/CUE, exakt wenn kein echtes System konfiguriert ist).
+  - Real-vs-Fixture ist nie stillschweigend: jeder Lauf druckt `REAL`/`FIXTURE` pro System und
+    dessen `health()` vor der Ausführung.
+  - Audio-Asset-Erzeugung (`AcousticProducerModule` + echter `AcousticProvider`) bewusst nicht
+    im Plan — separate, vom Nutzer selbst gebaute Pipeline (2026-07-13 Gap-Survey).
+    `AcousticRuntimeModule` (reiner Anvil-Code) läuft trotzdem echt mit.
+  - `docs/STUDIO_RUN.md` — Bedienung, CLI-Referenz, ehrliche Grenzen.
+- **Verifiziert:** `:app:studio-run:test` grün (5 Tests: Determinismus, 5-Schritt-Plan-Form,
+  echter `RunSurface`-Lauf bis `COMPLETE`, seed-abhängige Payloads, leere-Seed-Ablehnung);
+  `./gradlew build` über das gesamte aktive Modul-Set grün; Live-Smoke per `installDist` +
+  echtem CLI-Lauf (Fixture-only UND gegen einen echten lokalen HTTP-Stand-in für WIZARD, der
+  `WizardHttpAdapter`s echten `/api/health`+`/api/production-assessment`-Vertrag bedient).
+- **Nebenbefund (während der Live-Smoke gefunden und gefixt):** POSIX/C-Locale ohne `LANG`
+  (in dieser Sandbox real reproduziert) mojibake't jedes Nicht-ASCII-Konsolenzeichen zu `?` —
+  dieselbe Fehlerklasse, gegen die `:app:bellows-gateway`s `Main.kt` bereits für Windows-Legacy-
+  Codepages absichert. `studio-run`s `Main.kt` erzwingt jetzt ebenso UTF-8-`PrintStream` für
+  `System.out`/`System.err`.
+- **Kill:** Ein externes System wird als `REAL` behandelt, ohne dass es real konfiguriert wurde;
+  ein Fixture-Payload ohne `"fixture":true`-Selbstauskunft; BARD bekommt einen "echten" Adapter,
+  der in Wahrheit nur Seed-Worte umformatiert.
+
+---
+
 ## 🔜 Deferred Gates (warten auf Execution Core)
 
 > A21–A24 können nicht sinnvoll implementiert werden, bevor der Execution Core existiert.
@@ -273,5 +316,8 @@
 | 2026-05-20 | Gate B7: KMP Knight Contract — KnightContract, FileContent, WriteResult, UnifiedDiff (data class), PatchResult, DiffEngine, PatchApplier (applyPatch) |
 | 2026-05-20 | Gate B8: Compose Commander Shell — CommanderState, CommanderEvent, CommanderViewModel, CommanderApp, WorkspaceBrowser, DiffViewer, RunLog, QualityBadge |
 | 2026-06-09 | Gate B9: Bellows Gateway (Produktionsreife) — OpenAI-kompatibler Router/Gateway (JVM/Windows), OpenAiCompatibleAdapter, BellowsRouter (Fallback + LOCAL_ONLY), Ktor-Server + CLI + JCEKS-Vault, Bridge entfernt. Build JVM-fähig (Android opt-in, Gradle-Wrapper). Verifiziert per Tests + Live-Smoke. |
+| 2026-07-14 | `docs/ANVIL_CONCEPT_CONTRACT.md` korrigiert: IIG war fälschlich als "Tattoo-Studio-Marke" beschrieben (nie verifiziert), vom Nutzer live korrigiert — unabhängiges, formoffenes Kunstwerkstudio; Anvil-Bellows-Abgrenzung von "unrelated project" auf "getrennte, komponierbare Prozesse" präzisiert. |
+| 2026-07-14 | Bellows-Komposition dokumentiert + verifiziert: `modules/bellows/README.md` zeigt das Rezept, den standalone Anvil-Bellows-Proxy (Gap-1-Fix) als weiteren `OpenAiCompatibleAdapter`-Provider einzutragen, statt Credentials doppelt zu verwalten — genau die Verallgemeinerung, die B9s "Bridge entfernt" bereits anbahnte. Verifiziert per `ProviderFactoryTest`. |
+| 2026-07-14 | Gate C1: Studio Run — `:app:studio-run`, das erste Programm, das den Execution Core (Gate I) und die echten External-Adapter (Gate E-03, R-19..21) außerhalb von Tests zu einem lauffähigen Seed→Prototyp-Lauf zusammensteckt. Siehe `docs/STUDIO_RUN.md`. |
 
 Gate-Reihenfolge wird nicht nachträglich geändert.
