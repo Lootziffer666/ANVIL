@@ -25,6 +25,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.java.Java
 import io.ktor.client.plugins.HttpTimeout
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -87,7 +88,13 @@ fun main(args: Array<String>) = runBlocking {
     }
 
     println("\n-- WIZARD production assessment --")
-    val briefText = """{"seedWords":${seedWords.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }},"note":"Studio Run seed — no real BARD adapter exists, this is not an AI-expanded brief."}"""
+    // WIZARD's real `/api/production-assessment` contract requires exactly `{"brief": "<non-empty
+    // string>"}` (WIZARD/src/lib/contracts/productionAssessment.ts, isProductionAssessmentRequest) —
+    // found live against the real deployed WIZARD server (a prior `{"seedWords": [...], "note": ...}`
+    // shape passed against a fixture/mock but 400'd against the real one). No real BARD exists to
+    // expand the seed into a proper brief, so this is honestly just the raw seed text, not a
+    // fabricated AI-expanded one.
+    val briefText = Json.encodeToString(WizardProductionAssessmentRequest(brief = seedWords.joinToString(" ")))
     val wizardResult = systems.wizard.port.invoke(
         ExternalToolRequest(ContractId("anvil.wizard.production-assessment-request"), 1, PrivacyMode.OPEN, briefText),
     )
@@ -174,6 +181,10 @@ fun main(args: Array<String>) = runBlocking {
     println(" wrote: ${outDir.path}/{run-summary,handoff,sync-bundle}.json")
     println("\nSTUDIO RUN COMPLETE — target=${targetArtifact.artifactId.value} (${assembly.plan.steps.last().payload.length} chars in final step payload)")
 }
+
+/** WIZARD's real wire shape (WIZARD/src/lib/contracts/productionAssessment.ts `ProductionAssessmentRequest`). */
+@Serializable
+internal data class WizardProductionAssessmentRequest(val brief: String, val maxPerRole: Int? = null)
 
 private fun printToolResult(label: String, result: ExternalToolResult) {
     when (result) {
