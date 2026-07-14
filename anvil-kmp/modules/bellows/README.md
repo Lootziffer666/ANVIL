@@ -47,3 +47,38 @@ app/bellows-gateway/build/install/bellows/bin/bellows serve
 ./gradlew :modules:bellows:jvmTest          # Router, Privacy, Fallback, Adapter (Mock-Engine)
 ./gradlew :app:bellows-gateway:test         # HTTP-Contract, SSE, Auth, CredentialVault
 ```
+
+## Anvil-Bellows als Upstream-Provider (Komposition statt Duplikat)
+
+Es gibt zwei "Bellows": diesen Kotlin-nativen Router (`:modules:bellows` +
+`:app:bellows-gateway`, Port 8765) und das eigenständige `Anvil-Bellows`-Repo
+(Python/LiteLLM, Port 4000, `Anvil-Bellows/README.md`). Siehe
+`docs/ANVIL_CONCEPT_CONTRACT.md` ("Anvil × Anvil-Bellows") — das sind bewusst getrennte
+Prozesse, keine Konkurrenz: Der standalone Proxy hält die echten Cloud-Credentials
+(Vertex AI, OpenRouter) inkl. Budget-Schutz und ist über HTTP von jeder Sprache aus
+erreichbar; dieser Kotlin-Router ist die In-Process-Schnittstelle für Anvils eigene
+Module/Orchestrierung (`RunSurface`).
+
+Statt Cloud-Credentials ein zweites Mal hier zu verwalten, kann dieser Router den
+standalone Proxy einfach als **einen weiteren `ProviderAdapter`** behandeln — er ist
+bereits ein OpenAI-kompatibler Endpoint, `OpenAiCompatibleAdapter` deckt ihn ohne
+Zusatzcode ab:
+
+```json
+{
+  "providers": [
+    {
+      "id": "anvil-bellows",
+      "baseUrl": "http://<bellows-host>:4000/v1",
+      "apiKeyEnv": "ANVIL_BELLOWS_MASTER_KEY",
+      "models": ["gpt-4o", "gpt-4o-mini", "refinery", "refinery-deepseek", "qwen-coder"],
+      "local": false
+    }
+  ]
+}
+```
+
+(`apiKeyEnv` statt `apiKeyRef`, wenn der Master-Key schon als Umgebungsvariable vorliegt
+— kein Vault-Eintrag nötig. Modellnamen aus `Anvil-Bellows/config.yaml`s `model_list`
+übernehmen.) Verifiziert per Mock-Engine gegen die reale Anvil-Bellows-Antwortform in
+[`ProviderFactoryTest`](src/commonTest/kotlin/io/anvil/modules/bellows/ProviderFactoryTest.kt).
