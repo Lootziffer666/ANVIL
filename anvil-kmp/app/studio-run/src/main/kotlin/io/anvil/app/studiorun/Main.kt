@@ -28,6 +28,9 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.io.File
 import java.time.Instant
 import java.util.UUID
@@ -137,6 +140,13 @@ fun main(args: Array<String>) = runBlocking {
         listOf("cue.playable-proof", "cue.temporal-proof", "cue.audio-proof").forEach { contractId ->
             val result = systems.cue.port.invoke(ExternalToolRequest(ContractId(contractId), 1, PrivacyMode.OPEN, cueTargetUrl))
             printToolResult(contractId, result)
+            // CUE maps genuine negative verdicts (exit 1, e.g. "KEIN AUDIO-VERTRAG GEFUNDEN")
+            // to Produced too — real output, not a failure. Without surfacing the verdict
+            // here, "Produced(637 chars)" reads like a pass; found in the first full relay
+            // run, where the audio proof was an (expected, honest) negative.
+            if (result is ExternalToolResult.Produced) {
+                cueVerdictOf(result.payload)?.let { println("   verdict: $it") }
+            }
         }
     } else {
         println(" skipped — no --cue-target-url supplied (S_TARGET produces a build PLAN, not a served URL; pass the URL of an already-running build to get a real CUE verdict).")
@@ -185,6 +195,17 @@ fun main(args: Array<String>) = runBlocking {
 /** WIZARD's real wire shape (WIZARD/src/lib/contracts/productionAssessment.ts `ProductionAssessmentRequest`). */
 @Serializable
 internal data class WizardProductionAssessmentRequest(val brief: String, val maxPerRole: Int? = null)
+
+/**
+ * Extracts the `verdict` field from a CUE check's JSON stdout (all of CUE's
+ * *-check commands emit one). Null for non-JSON or verdict-less payloads —
+ * printing then just falls back to the plain Produced(...) line.
+ */
+internal fun cueVerdictOf(payload: String): String? = try {
+    Json.parseToJsonElement(payload).jsonObject["verdict"]?.jsonPrimitive?.contentOrNull
+} catch (_: Exception) {
+    null
+}
 
 private fun printToolResult(label: String, result: ExternalToolResult) {
     when (result) {
